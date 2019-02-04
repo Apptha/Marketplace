@@ -1,0 +1,190 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$name = $nationalShippingPrice = $internationalShippingPrice ='';
+$sellerArray = array();
+$shippingmethod = Mage::getStoreConfig('onestepcheckout/general/default_shipping_method');
+$_shippingRateGroups = $this->getShippingRates();
+?>
+<!---Title  of the page -->
+<!---Start of Shipping Methods -->
+<?php if (!($_shippingRateGroups)): ?>
+    <strong><?php echo $this->__('Sorry, no quotes are available for this order at this time.') ?></strong>
+<?php else: ?>
+    <dl class="shipment-methods">
+        <?php foreach ($_shippingRateGroups as $code => $_rates): ?>
+            <dd><?php echo $this->getCarrierName($code) ?></dd>
+            <?php foreach ($_rates as $_rate): ?>
+                <dt  >
+
+                <?php if ($_rate->getErrorMessage()): ?>
+                    <ul class="messages"><li class="error-msg"><ul><li><?php echo $_rate->getErrorMessage() ?></li></ul></li></ul>
+                <?php else: ?>
+                    <input name="shipping_method" type="radio" class="validate-one-required-by-name" value="<?php echo $_rate->getCode() ?>" id="s_method_<?php
+                     echo $_rate->getCode() ?>"<?php
+                      if ($_rate->getCode() === $shippingmethod){
+                           echo ' checked="checked"'; 
+}
+?>')" />
+                    <label for="s_method_<?php echo $_rate->getCode() ?>"><!--<b><?php
+                     echo $this->getCarrierName($code) ?>:</b>--> <?php
+                      echo $_rate->getMethodTitle() ?>
+                        <strong>
+                            <?php $_excl = $this->getShippingPrice($_rate->getPrice(), $this->helper('tax')->displayShippingPriceIncludingTax()); ?>
+                            <?php $_incl = $this->getShippingPrice($_rate->getPrice(), true); ?>
+
+                            <?php echo $_excl; ?>
+                            <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                                (<?php echo $this->__('Incl. Tax'); ?> <?php
+                                 echo $_incl; ?>)
+                            <?php endif; ?>
+                        </strong>
+                    </label>
+                <?php endif ?>
+                </dt>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+        <?php
+        
+        $marketplaceEnabled = Mage::getStoreConfig('marketplace/marketplace/activate');
+        $marketplaceInstalled = Mage::helper('core')->isModuleEnabled('Apptha_Marketplace');
+        $sellerShippingEnabled = Mage::getStoreConfig('carriers/apptha/active');
+        $checkSellerOrProductShipping = Mage::getStoreConfigFlag('marketplace/shipping/shippingcost');
+        if ($marketplaceEnabled == 1 && $marketplaceInstalled == 1 && $sellerShippingEnabled == 1) {
+            $quote = Mage::getSingleton('checkout/session')->getQuote();            
+            $total = $subTotal = $totalshipamount = '';
+            $carrierTitle = Mage::getStoreConfig('carriers/apptha/title');
+            ?>
+            <h4 class="shipping_info"><?php echo $carrierTitle . ' ' . $this->__('Shipping Info'); ?></h4>
+            <table class="onestepcheckout-shippinginfo">
+            <?php
+                        foreach ($quote->getAllItems() as $quote_item) {
+                            
+                           
+                            $qty = $quote_item->getQty();
+                            $product = Mage::getModel('catalog/product')->load($quote_item->getProductId()); 
+                             $productVisibility=$product->getVisibility();
+                             $productTypeArray=array("virtual","downloadable");
+                             if( !in_array($product->getTypeId(),$productTypeArray)&& ($productVisibility!=1) ){
+                            if(!$checkSellerOrProductShipping)  {
+                               $title = "Seller Name";
+                               $sellerId = $product->getSellerId();
+                               if(!in_array($sellerId,$sellerArray)){
+                               	array_push($sellerArray, $sellerId);
+                               	$collection = Mage::getModel('marketplace/sellerprofile')->getCollection()
+                               	->addFieldToFilter('seller_id', $sellerId);
+                               	foreach ($collection as $data) {
+                               		 $nationalShippingPrice = $data->getData('national_shipping_cost');
+                               		 $internationalShippingPrice = $data->getData('international_shipping_cost');
+                               		 $sellerDefaultCountry = $data->getData('country');
+                               		$name = $data['store_title'];
+                               	}
+                               	if(!$name){
+                               		$name = Mage::app()->getStore()->getName();
+                               	}
+                            } 
+                            }else  {
+                            $title = "Product Name";
+                            $name = $product->getName();
+                            $nationalShippingPrice = $product->getNationalShippingPrice();
+                            $internationalShippingPrice = $product->getInternationalShippingPrice();
+                            $sellerDefaultCountry = $product->getDefaultCountry();
+                            }
+                           
+                            $shippingCountryId = $quote->getShippingAddress()->getCountry();
+                            ?>
+                 <thead>
+                    <tr>
+                        <th width="35%"><?php echo $this->__($title); ?></th>
+                        <?php if($checkSellerOrProductShipping) {?>
+                        <th width="15%"><?php echo $this->__('Qty'); ?></th>
+                        <?php } ?>
+                        <th width="35%"><?php echo $this->__('Shipping'); ?></th>
+                        <th width="15%"><?php echo $this->__('Rate'); ?></th>
+                    </tr>
+                 </thead>
+                 <tbody>
+                            <tr>
+                            <td><?php echo $name; ?></td>
+                            <?php if($checkSellerOrProductShipping) {?>
+                            <td class="rate-center"><?php echo $qty; ?></td>
+                            <?php } ?>
+                            <td>
+                              <?php
+if (isset($internationalShippingPrice) && isset($shippingCountryId) && $sellerDefaultCountry != $shippingCountryId) {
+echo $this->__('International');
+} else if (isset($nationalShippingPrice) && isset($shippingCountryId) && $sellerDefaultCountry == $shippingCountryId) {
+echo $this->__('National');
+} else {
+echo $this->__('Free');
+}
+?>
+                            </td>
+                             <td class="rate-right">
+                <?php
+if (isset($internationalShippingPrice) && isset($shippingCountryId) && $sellerDefaultCountry != $shippingCountryId) {
+echo $internationalShippingPrice * $qty;
+} else if (isset($nationalShippingPrice) && isset($shippingCountryId) && $sellerDefaultCountry == $shippingCountryId) {
+echo $nationalShippingPrice * $qty;
+} else {
+echo '0';
+}
+?>
+                            </td>
+                             </tr>
+            <?php }  } ?>
+                   
+                </tbody>
+            </table>                      
+            <?php     }     ?>  
+    </dl>
+<?php endif; ?> 
+<!---End of Shipping Methods -->
+<script type="text/javascript" >
+    $$('dl.shipment-methods input').invoke('observe', 'click', function() {
+        shipping.reloadReviewBlock();
+        var payment_methods = $('ajax-payment-methods');
+        payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
+        payment.reloadPaymentBlock();
+        //payment.switchMethod(paymentMethod);
+    });
+
+</script>
+<!---Start of Gift Message  -->
+<div id="onepage-checkout-shipping-method-additional-load" class="apptha_onepage-checkout-shipping-method-additional-load">
+    <?php if (!$this->getQuote()->isVirtual()): ?>
+
+    <?php echo $this->helper('giftmessage/message')->getInline('onepage_checkout', $this->getQuote(), $this->getDontDisplayContainer()) ?>
+<?php endif; ?>
+</div>
+<!---End of Gift Message  -->
+
+<!---End of Gift Message  -->

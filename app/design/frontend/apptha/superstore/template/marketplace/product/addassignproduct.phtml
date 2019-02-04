@@ -1,0 +1,1197 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Initialising variables with empty values like
+ * purchased seperately
+ * number of downloads
+ * is shareable
+ * link smaple type
+ * link type
+ */
+$customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+$linksPurchasedSeparately = $numberOfDownloadsVar = $isShareable = $linkSampleType = $linkType = '';
+$assignProductId = $this->getRequest ()->getParam ( 'id' );
+$productData = Mage::getModel ( 'catalog/product' )->load ( $assignProductId );
+
+$productTypeId = $productData->getTypeId (); 
+$selectedProductId = $this->getRequest()->getParam('pid');
+$productIsInStock = 1;
+/**
+ * Initialising variables with empty values for
+ * sku
+ * description
+ * price
+ * default country
+ * product quantity
+ * shipping option
+ * national shipping price
+ * internation shipping price
+ * default country
+ */
+$sku = $description = $price = $defaultCountry = $productQty = $shippingOption = $nationalShippingPrice = $internationalShippingPrice = $defaultCountry = '';
+/**
+ * Check the selected product id is not equal to empty
+ * if so get the information like
+ * product sku
+ * product description
+ * product price
+ * product default country
+ * product country
+ * product in stock information
+ */
+if(!empty($selectedProductId)){
+$product = $selectedProductData = Mage::getModel('catalog/product')->load($selectedProductId);
+$sku = $selectedProductData->getSku();
+$description = $selectedProductData->getDescription();
+$price = $selectedProductData->getPrice();
+$defaultCountry = $selectedProductData->getDefaultCountry();
+$productQty = Mage::getModel('cataloginventory/stock_item')->loadByProduct($selectedProductId)->getQty();
+$productIsInStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($selectedProductId)->getIsInStock();
+/**
+ * Get the Shippping related information like
+ * product seller shipping option
+ * product national shipping price
+ * product internation shipping price
+ * product default country
+ * product type
+ */
+$shippingOption = $selectedProductData->getSellerShippingOption();
+$nationalShippingPrice = $selectedProductData->getNationalShippingPrice();
+$internationalShippingPrice = $selectedProductData->getInternationalShippingPrice();
+$defaultCountry = $selectedProductData->getDefaultCountry();
+$productTypeId = $selectedProductData->getTypeId ();
+} 
+/**
+ *  Initilize product types
+ */
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+ $sellerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+}
+/**
+ * Check seller enable vacation mode or not
+ */
+$vacationMode = Mage::getModel('marketplace/vacationmode')->load($sellerId,'seller_id');
+    /**
+     * Get the Shippping type
+     */
+    $shippingtypeId = Mage::helper('marketplace/marketplace')->getSellerShipping();
+    $sellerShippingVarAttribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $shippingtypeId);
+    $sellerShippingVar = array();
+    $selectShipping = '<option value="">' . $this->__('Select') . '</option>';
+    foreach ($sellerShippingVarAttribute->getSource()->getAllOptions() as $option) {
+       $value = $option['value'];
+        if ($value != '') {     
+            if($shippingOption==$value ){
+                  $sellerShippingVar[$value] = $option['label'];
+            $selectShipping .= "<option selected='selected'  value='" . $option['value'] . "'>" . $option['label'] . '</option>';
+        } else {
+              $sellerShippingVar[$value] = $option['label'];
+            $selectShipping .= "<option value='" . $option['value'] . "'>" . $option['label'] . '</option>';
+        }
+    }
+    }
+/**
+ *  Initilize product approval disabled
+ */
+$productApproval = 2;
+$vacationStatus = $vacationMode->getVacationStatus();
+$disableProducts = $vacationMode->getProductDisabled();
+$productCustomOptionsEnable = Mage::helper('marketplace')->getPrdouctCustomOptions();
+/**
+ * Check product approval is equal to 1
+ * or vacation status is equal to 1
+ * or disableproducts is equal to 1
+ */
+if (Mage::helper('marketplace')->getProductApproval() == 1 || $vacationStatus == '1' && $disableProducts == '1' ) {
+    $productApproval = Mage::helper('marketplace')->getProductApproval();
+} else {
+    /**
+     *  Initilise product approval disabled
+     */
+    $productApproval = 2;
+}
+$sampleCount = $linkCount = 0;
+?>
+<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>marketplace/nicEdit.js" type="text/javascript"></script>
+<!-- Marketplace wrapper -->
+<div class="marketplace-wrapper" id="marketplace-wrapper">   
+    <div class="page-title">
+    <h2><?php echo $this->__('Add New Product'); ?></h2>         
+    </div>
+ <form onsubmit="return updateShippingPriceValue()" action="<?php
+   if(!empty($selectedProductId)){
+     echo Mage::getUrl('marketplace/sellerproduct/updateassignproduct'); 
+ }
+ else{
+     echo $this->saveAssignProductUrl(); 
+ } ?>" method="post" id="addassign_product_form" enctype="multipart/form-data">  
+ <input type="hidden" value="<?php echo $assignProductId; ?>" id="assign_product_id" name="assign_product_id" />
+ <input type="hidden" value="<?php if(!empty($selectedProductId)){
+     echo  $selectedProductId; 
+ } ?>" id="selected_product_id" name="selected_product_id" /> 
+ <input type="hidden" id="status" name="product[status]" value="<?php
+            /**
+            *  Check the product approval has been set
+            *  if so display the product approval status
+            */
+            if (isset($productApproval)) {
+                echo $productApproval;
+            }
+            ?>">
+    <ul class="form-list">    
+        <li class="wide fields marketplace_addnew_sku">
+            <div class="field">
+                <label for="sku" class="required"> <em>*</em> <?php echo $this->__('SKU'); ?> </label>
+                <div class="input-box">
+                    <input id="sku" name="product[sku]"
+                        value="<?php 
+                        /**
+                         *  Check the product sky is not equal to empty
+                         */
+                        if(!empty($sku)){
+                            echo $sku; 
+                        } ?>"
+                        class="input-text required-entry" type="text" />
+                    <div id="category-loading" style="display: none">
+                    <img src="<?php echo Mage::getBaseUrl('skin') . 'frontend/apptha/superstore/marketplace/images/bx_loader.gif'; ?>" />
+                    </div>
+                    <span id="empty-text" style="display: none; color: red; margin-top: 3px; clear: both; font-size: 13px;"></span>
+                    <span id="available" style="display: none; color: green; margin-top: 3px;"><?php echo $this->__('SKU Available'); ?></span>
+                    <span id="not-available" style="display: none; color: red; margin-top: 3px;"><?php echo $this->__('SKU Not Available'); ?></span>
+                </div>
+            </div>
+        </li>
+        <?php 
+        /**
+         *  Display Description
+         */
+        ?>
+        <li class="wide fields">
+                    <div class="field">
+                        <label for="description" class="required"> <em>*</em> <?php echo $this->__('Product Information'); ?> </label>    
+                        <div class="input-box"><textarea id="description" name="product[description]" class="required-entry textarea" rows="7" cols="75" style="width: 710px;"><?php
+                        /**
+                         *  Check the description is not equal to empty
+                         *  if so display the product description
+                         */
+                         if(!empty($description)){
+                            echo $description; 
+                        } ?></textarea> </div>
+                        
+					<div id="descriptionerror"></div>
+                    </div>
+        </li>
+        <li class="fields">
+                    <?php 
+                    /**
+                     *  Display Product price
+                     */
+                    ?>
+                    <label for="price" class="required"><?php echo $this->__('Price'); ?> <em>*</em></label>   
+                    <div class="input-box" style="width: auto;"><input id="price" name="product[price]" value="<?php
+                    /**
+                     *  Check the product price is not equal to empty
+                     *  if so display the price of the product
+                     */
+                     if(!empty($price)){
+                        echo round($price,2); 
+                    } ?>" class="required-entry validate-zero-or-greater input-text" type="text">   
+                        <strong>
+                            [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+                        </strong>
+                    </div> </li>
+                    
+                    
+                    
+                    
+        <?php 
+        /**
+         *  Display Product quantity
+         */
+        ?>
+        <li class="fields">
+            <div class="field" <?php if($productTypeId == 'configurable'){ echo 'style="display:none;"'; } ?>>
+                <label for="inventory_qty" class="required"><em>*</em> <?php echo $this->__('Qty'); ?></label>
+                <div class="input-box">
+                    <input type="text"
+                    class="input-text required-entry validate-number"
+                        id="inventory_qty" name="product[stock_data][qty]"
+                        value="<?php
+                        /**
+                         *  Check the product quantity is not equal to empty
+                         *  if so display the quantity of the product
+                         */
+                         if(!empty($productQty)){
+                            echo round($productQty,2); 
+                        } ?>"   <?php if($productTypeId == 'configurable'){ echo 'disabled="disabled;"'; } ?>>
+                    </div>
+            </div>
+            <?php 
+            /**
+             *  Display Stock availability informaiton
+             */
+            ?>
+            <div class="field">
+                <label for="inventory_stock_availability"><?php echo $this->__('Stock Availability'); ?></label>
+                <div class="input-box">
+                    <select id="inventory_stock_availability"
+                        name="product[stock_data][is_in_stock]" class="select">
+                        <option value="1" <?php
+                        /**
+                         *  Check the product is in stock
+                         *  if so display message like 'In Stock'
+                         *  if not display message like 'Out of stock'
+                         */
+                         if($productIsInStock == 1){
+                            echo 'selected="selected"'; 
+                        } ?>><?php echo $this->__('In Stock'); ?></option>
+                        <option value="0" <?php if($productIsInStock == 0){
+                            echo 'selected="selected"'; 
+                        } ?>><?php echo $this->__('Out of Stock'); ?></option>
+                    </select>
+                </div>
+               </div>
+</li>
+</ul>
+    <?php 
+    /**
+     *  check the product type id is equal to simple
+     *  or product type id is equal to configurable
+     */
+   if($productTypeId != 'downloadable' && $productTypeId != 'virtual' && (Mage::getStoreConfigFlag('marketplace/shipping/shippingcost')) ){ ?>
+    <div>
+      <h4 class="legend"><?php echo $this->__('Shipping'); ?></h4>
+            <ul class="form-list">
+                    <li class="fields">
+                    <label for="default_country" class="required"><em>*</em><?php echo $this->__('Select Default Country'); ?></label>
+                    <div class="input-box">
+                        <select id="default_country" name="product[default_country]"  class="select select input-text required-entry input-text_pro">
+                            <?php
+                            $collection = Mage::getModel('directory/country')->getCollection();
+                            foreach ($collection as $country) {
+                                $cid = $country->getId();
+                                $cname = $country->getName();
+                                if($defaultCountry == $cid){
+                                   echo '<option selected="selected" value="' . $cid . '">' . $cname . '</option>';  
+                                } else {
+                                echo '<option value="' . $cid . '">' . $cname . '</option>';
+                                }
+                            }
+                            ?>   
+
+                        </select>                      
+                    </div>
+                </li>
+                    <li class="fields">
+                        <label for="seller_shipping" class="required"><em>*</em><?php echo $this->__('Select Shipping'); ?></label>
+                        <div class="input-box">
+                            <select id="seller_shipping" name="product[seller_shipping_option]"  class="select select input-text required-entry input-text_pro">
+    <?php echo $selectShipping; ?>
+                            </select>                      
+                        </div>
+                    </li>
+                    <li class="fields" id="shipping_price" <?php 
+                    /**
+                     *  Check the national shipping price is empty
+                     *  and international shipping price is empty
+                     */
+                    if(empty($nationalShippingPrice) && empty($internationalShippingPrice)){
+                         echo 'style="display:none"'; 
+                    } ?> >
+                        <label for="national_shipping_price" class="required"><em>*</em><?php echo $this->__('National Shipping Price'); ?></label>
+                        <div class="input-box">
+                            <input id="national_shipping_price" name="product[national_shipping_price]" value="<?php echo $nationalShippingPrice;  ?>" class="required-entry validate-zero-or-greater input-text" type="text" >                         
+                        </div>                   
+                        <label for="international_shipping_price" class="required"><em>*</em><?php echo $this->__('International Shipping Price'); ?></label>
+                        <div class="input-box">
+                            <input id="international_shipping_price" name="product[international_shipping_price]" value="<?php echo $internationalShippingPrice;  ?>" class="required-entry validate-zero-or-greater input-text" type="text" >                         
+                        </div>
+                    </li>
+                    
+                    <?php
+                    /**
+                     * Whether checking for configurable product or not
+                     * Display associative product details
+                     */
+                    if($productTypeId == 'configurable'){
+                    ?>                    
+                    <li>   
+                    <?php 
+                    /**
+                     * Get all associated children products data
+                     */  
+                    if(!empty($selectedProductId)){            
+                    $childProducts = Mage::getModel('catalog/product_type_configurable')
+                    ->getUsedProducts(null,$product);
+                    }else{
+                    $childProducts = Mage::getModel('catalog/product_type_configurable')
+                    ->getUsedProducts(null,$productData);	
+                    }
+                    ?>
+                    
+<?php
+if(!empty($selectedProductId)){
+	$attributes = $product->getTypeInstance()->getConfigurableAttributesAsArray();
+}else{
+	$attributes = $productData->getTypeInstance()->getConfigurableAttributesAsArray();
+}
+?>                   
+<?php
+$attributeOptionsArray = array();
+?>                   
+<div class="marketplace_associated_product">
+<h2><?php echo $this->__('Associated Products') ?></h2>
+<table class="data-table my-product-table market_place_manage_products_table" id="my-product-table">
+    <thead>
+        <tr>        
+            <th width="33%" class="mtext_left"><?php echo $this->__('Product Name') ?></th>
+            <?php        
+            $storeId = Mage::app()->getStore()->getStoreId();
+            foreach ($attributes as $attribute){ 
+            /**
+            * Check attribute code has been set already
+            */
+            if(isset($attribute['attribute_code'])){
+            ?>
+            <th><?php echo $attribute['store_label']; ?>
+            <input id="<?php echo 'attribute_code_'.$attribute['attribute_code']; ?>" name="attribute_code[]" value="<?php echo $attribute['attribute_code']; ?>" class="input-hidden" type="hidden">
+            <input id="<?php echo 'attribute_id_'.$attribute['attribute_id']; ?>" name="attribute_ids[]" value="<?php echo $attribute['attribute_id']; ?>" class="input-hidden" type="hidden">
+            </th>
+            <?php 
+            }
+            }
+            ?> 
+            <th><?php echo $this->__('Qty'); ?></th>          
+        </tr>    
+    </thead>
+    <tbody>
+    <?php foreach($childProducts as $childProduct){ 
+    	$childProductData = Mage::getModel('catalog/product')->load($childProduct->getId());
+    	$childProductQty = Mage::getModel('cataloginventory/stock_item')->loadByProduct($childProduct->getId())->getQty();
+    ?>
+    <tr>   
+    <td>
+    <input type="hidden" name="selected_child_product_ids[]" id="child_product_id_<?php echo $childProductData->getId(); ?>" value="<?php echo $childProductData->getId(); ?>" />
+    <?php echo $childProductData->getName(); ?></td>
+    <?php 
+    foreach ($attributes as $attribute){
+    	/**
+    	 * Check attribute code has been set already
+    	 */
+    	if(isset($attribute['attribute_code'])){       
+    	?>
+                <td><?php echo $childProductData->getAttributeText($attribute['attribute_code']); ?>                
+                <input id="<?php echo $childProduct->getId(); ?>_attribute_<?php echo $attribute['attribute_code']; ?>" name="child_product[<?php echo $childProduct->getId(); ?>][<?php echo $attribute['attribute_code']; ?>]" value="<?php echo $childProductData->getAttributeText($attribute['attribute_code']); ?>" class="input-hidden" type="hidden">
+                </td>
+                <?php 
+                $attr = $childProductData->getResource()->getAttribute($attribute['attribute_code']);
+                /**
+                 * Getting option values
+                 */
+                $attributeOptionsArray[] = $attr->getSource()->getOptionId($childProductData->getAttributeText($attribute['attribute_code']));
+                }
+                }
+    ?>
+    <td>    
+    <input type="text"
+                    class="input-text required-entry validate-number"
+                        id="<?php echo $childProduct->getId(); ?>_inventory_qty" name="child_product[<?php echo $childProductData->getId(); ?>][qty]"
+                        value="<?php
+                        /**
+                         *  Check the product quantity is not equal to empty
+                         *  if so display the quantity of the product
+                         */
+                        if(!empty($childProductQty)){
+                            echo round($childProductQty,2); 
+                        } ?>" >
+    <input id="<?php echo $childProduct->getId(); ?>_price" name="child_product[<?php echo $childProduct->getId(); ?>][price]" value="0" class="required-entry validate-zero-or-greater input-hidden" type="hidden">
+    <input id="<?php echo $childProduct->getId(); ?>_sku" name="child_product[<?php echo $childProduct->getId(); ?>][sku]" value="<?php echo $childProduct->getSku().'-'.$customerId.'-'.rand(100, 100000); ?>" class="input-hidden" type="hidden">                    
+    </td>
+    </tr>
+    <?php } ?>
+    </tbody>
+</table>
+</div> 
+<?php 
+$attributeValueForPrice = array();
+foreach ($attributes as $attribute){
+	/**
+	 *  Check the attribute values are not empty
+	 */
+	if(!empty($attribute['values'])){
+		foreach($attribute['values'] as $attributesValue){
+			$valueIndex = $attributesValue['value_index'];
+			/**
+			 *  Get percentage option of atribute price value
+			 */
+			$attributeValueForPrice[$valueIndex]['is_percent'] = $attributesValue['is_percent'];
+			/**
+			 *  Check pricing value of atributes value
+			 *  is not empty
+			 */
+			if(!empty($attributesValue['pricing_value'])){
+				$attributeValueForPrice[$valueIndex]['pricing_value'] = $attributesValue['pricing_value'];
+			}else{
+				$attributeValueForPrice[$valueIndex]['pricing_value'] = '-';
+			}			
+		}
+	}
+}
+?>                 
+    
+ <div class="super-product-attributes">                   
+ <h2><?php echo $this->__('Super product attributes configuration'); ?></h2>  
+    <?php 
+    foreach($attributes as $attribute){
+    if(isset($attribute['attribute_code'])){
+    ?>
+     <div class="marketplace_super_product_container"> 
+     <b>     
+     <?php echo $this->__('Attribute Name').':'; ?>
+     </b>           
+     <?php echo $attribute['store_label']; ?>
+     <div>
+     <ul class="marketplace_super_product_configuration">    
+     <?php  
+     $attributeDetails = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute['attribute_code']);
+     $options = $attributeDetails->getSource()->getAllOptions(false);
+     foreach($options as $option){      
+     $optionValue = $option['value'];
+     if(in_array($optionValue,$attributeOptionsArray)){ 
+     ?>
+     <li>
+     <div>  
+     <b><?php echo $this->__('Option').': '; ?></b><?php
+      echo $option['label'];  ?>
+     </div>
+     <div>
+     <b><?php echo $this->__('Price').': '; ?></b>     
+     <input class="validate-zero-or-greater input-text" type="text" value="<?php if($attributeValueForPrice[$optionValue]['pricing_value'] != '-'){
+         echo round($attributeValueForPrice[$optionValue]['pricing_value'],2); 
+     } ?>" name="simple_product[option_price][<?php
+          echo $optionValue; ?>]" id="super_price_option_<?php
+           echo $optionValue; ?>">    
+     <select style="display: none;" class="select" id="super_price_option_mode_<?php echo $optionValue; ?>" name="simple_product[option_price_mode][<?php
+      echo $optionValue; ?>]">
+     <option value="fixed"><?php echo $this->__('Fixed'); ?></option>
+     <option value="percentage" <?php if(isset($attributeValueForPrice[$optionValue]['is_percent'])){
+     $attributeValueForPriceIsPercent = $attributeValueForPrice[$optionValue]['is_percent'];
+         if($attributeValueForPriceIsPercent == 1){
+             echo 'selected="selected"'; 
+         }
+     } ?>><?php
+          echo $this->__('Percentage'); ?></option>
+     </select>     
+     [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+     <input type="hidden" name="simple_product[label][<?php echo $optionValue; ?>]" value="<?php
+      echo $option['label']; ?>">
+     </div>
+     <input type="hidden" name="attributes[<?php echo $optionValue; ?>]" value="<?php
+      echo $attribute['attribute_id']; ?>">
+     </li>
+     <?php     
+     } 
+     }
+     ?> 
+     </ul>     
+    </div>
+     </div> 
+    <?php   
+    }
+    }
+    ?>
+</div>                                                                                           
+</li>
+<?php } ?>
+</ul>
+</div>
+<?php } 
+    /**
+     *  Marketplace downloadable product information container
+     *  Checking whether product type as downloadable or not
+     */
+    if ($productTypeId == 'downloadable') {
+        /**
+        *  Initialising variables with empty values like
+        * Sample title
+        * links title
+        * links purchased seperately
+        */
+        $samplesTitle = $linksTitle = $linksPurchasedSeparately = '';
+        /**
+         *  Check the selected product id is not equal to empty
+         *  if so get the product samples title
+         *  product links title
+         *  product links purchased seperately
+         */
+        if(!empty($selectedProductId)){
+        $samplesTitle = $product->getSamplesTitle();
+        $linksTitle = $product->getLinksTitle();
+        $linksPurchasedSeparately = $product->getLinksPurchasedSeparately();
+        }
+        ?>
+                <div id="marketplace_downloadable_product_div" class="fieldset marketplace-downloadable-products marketplace_downloadable_product_div">
+                    <h4 class="legend"><?php echo $this->__('Downloadable Information'); ?></h4>
+                    <ul class="form-list">
+                        <li class="mp_dp_head"><?php echo $this->__('Samples'); ?></li>
+                        <li class="fields mp_dp_fields">
+                            <div class="headings">
+                                <span class="label"><label for="name"><?php echo $this->__('Title'); ?></label>
+                                </span>
+                                <span class="value">
+                                    <input type="text" class="input-text" name="product[samples_title]" value="<?php
+        /**
+         * Check the smaples title has been set
+         * if so display the samples title
+        */
+        if (isset($samplesTitle)) {
+            echo $samplesTitle;
+        }
+        ?>">
+                                </span>
+                            </div>
+                            <div class="marketplace-sample">                     
+                                <table cellspacing="0" class="data border">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th><label><?php echo $this->__('Title'); ?><span class="required"></span></label></th>
+                                            <th><label><?php echo $this->__('File'); ?></label></th>
+                                            <th><label class="nobr"><?php echo $this->__('Sort Order'); ?></label></th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sample_items_body" class="sample_items_body"> 
+
+        <?php
+        /**
+         *  check the id of the selected product is not equal to empty
+         */
+        if(!empty($selectedProductId)){
+        $downloadableSample = Mage::getModel('downloadable/sample')->getCollection()
+                ->addProductToFilter($product->getId())
+                ->addTitleToResult($product->getStoreId());
+        }else{
+        $downloadableSample = array();
+        }
+        $sampleCount = 0;
+        foreach ($downloadableSample as $sample) {
+            $sampleTitle = $sampleType = $sampleFile = $sampleOrder = '';
+            $sampleTitle = $sample->getTitle();
+            $sampleType = $sample->getSampleType();
+            $sampleFile = $sample->getSampleFile();
+            $sampleOrder = $sample->getSortOrder();
+            $sampleUrl = $sample->getSampleUrl();
+            ?>
+
+                                            <tr id="<?php echo 'marketplace_download_sample_row_' . $sampleCount; ?>">
+                                                <td>
+                                                    <input type="hidden" class="__delete__" name="<?php echo 'downloadable[sample][' . $sampleCount . '][is_delete]'; ?>" value="">
+                                                    <input type="hidden" name="<?php echo 'downloadable[sample][' . $sampleCount . '][sample_id]'; ?>" value="<?php
+                                                     echo $sampleCount; ?>">
+                                                    <input type="text" class="required-entry input-text" name="<?php echo 'downloadable[sample][' . $sampleCount . '][title]'; ?>" value="<?php
+                                if (isset($sampleTitle)) {
+                                    echo $sampleTitle;
+                                }
+            ?>">
+                                                    <input type="hidden" name="<?php echo 'downloadable[sample][' . $sampleCount . '][sample_file]'; ?>" value="<?php
+                                                           if (isset($sampleFile)) {
+                                                               echo $sampleFile;
+                                                           }
+                                                           ?>">
+                                                </td>
+                                                <td>
+                                                    <div class="files-wide">
+                                                        <div class="marketplace_row">
+                                                            <div id="<?php echo 'downloadable_sample_' . $sampleCount . '_file_save-old'; ?>" class="file-row-info"><span class="file-info"><b><span class="file-info-name"><?php
+                                                            /**
+                                                             *  Check the sample file has been set
+                                                             *  if so display the sample file
+                                                             */
+                                        if (isset($sampleFile)) {
+                                            echo $sampleFile;
+                                        }
+                                                           ?></span></b> <span class="file-info-size">
+                                                                    </span></span></div>
+                                                            <label for="<?php echo 'downloadable_sample_' . $sampleCount . '_file_type'; ?>">
+                                                                <input type="radio" class="radio validate-one-required-by-name" id="<?php echo 'downloadable_sample_' . $sampleCount . '_file_type'; ?>" name="<?php
+                                                                 echo 'downloadable[sample][' . $sampleCount . '][type]'; ?>" value="file" <?php
+                                                                if ($sampleType == 'file') {
+                                                                    echo 'checked="checked"';
+                                                                }
+                                                           ?>> 
+                                                                <?php echo $this->__('File'); ?>:</label>
+                                                            <input type="file" class="validate-downloadable-file" id="<?php echo 'downloadable_sample_' . $sampleCount . '_file_save'; ?>" name="<?php
+                                                             echo 'sample_' . $sampleCount; ?>" value="" onchange="hideOldFileName(this.id)">
+
+                                                            <div id="<?php echo 'downloadable_sample_' . $sampleCount . '_file'; ?>">
+                                                                <div class="no-display" id="<?php echo 'downloadable_sample_' . $sampleCount . '_file-template'; ?>">
+                                                                </div>
+                                                            </div></div><div class="row">
+                                                            <label for="<?php echo 'downloadable_sample_' . $sampleCount . '_url_type'; ?>">
+                                                                <input type="radio" class="radio validate-one-required-by-name" id="<?php echo 'downloadable_sample_' . $sampleCount . '_url_type'; ?>" name="<?php
+                                                                 echo 'downloadable[sample][' . $sampleCount . '][type]'; ?>" value="url" <?php
+                                                           if ($sampleType == 'url') {
+                                                               echo 'checked="checked"';
+                                                           }
+                                                                ?>> 
+                                                                <?php echo $this->__('URL'); ?>:</label> <input type="text" class="validate-downloadable-url input-text" name="<?php
+                                                                 echo 'downloadable[sample][' . $sampleCount . '][sample_url]'; ?>" value="<?php
+                                                                       if (isset($sampleUrl)) {
+                                                                           echo $sampleUrl;
+                                                                       }
+                                                                       ?>">
+                                                        </div>
+                                                        <div>
+                                                            <span id="<?php echo 'downloadable_sample_' . $sampleCount . '_container'; ?>"></span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="a-center">
+                                                    <input type="text" name="<?php echo 'downloadable[sample][' . $sampleCount . '][sort_order]'; ?>" value="<?php
+                                                    if (isset($sampleOrder)) {
+                                                        echo $sampleOrder;
+                                                    }
+                                                                       ?>" class="input-text sort marketplace_sort_order">
+                                                </td>
+                                                <td>
+                                                    <button onclick="removeMarketPlaceDownloadableSamplesRow(this)" type="button" class="scalable button">
+                                                        <span><span><span><?php echo $this->__('Delete'); ?></span></span></span></button>
+                                                </td>
+                                            </tr>  
+            <?php
+            $sampleCount = $sampleCount + 1;
+        }
+        /**
+         *  End foreach for downloadable sample data   
+         */
+        ?>  
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>                                  
+                                            <td colspan="100" class="a-right">
+                                                <button id="add_sample_item" name="sample_items_body"  title="<?php echo $this->__('Add New Row'); ?>" type="button" class="button scalable add add-select-row" onclick="addMarketPlaceDownloadableSamplesRow(this.name)">
+                                                    <span><span><?php echo $this->__('Add New Row'); ?></span></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>   
+                            </div>                    
+                        </li>
+                         <?php 
+                         /**
+                          *  Display download option 
+                          */
+                         ?>
+                        <li class="mp_dp_head"><?php echo $this->__('Download'); ?></li>
+                        <li class="fields mp_dp_fields">
+                            <div class="headings">
+                                <span class="label"><label for="name"><?php echo $this->__('Title'); ?></label></span>
+                                <span class="value"><input type="text" class="input-text downloadable_links_title" id="downloadable_links_title" name="product[links_title]" value="<?php
+                                if (isset($linksTitle)) {
+                                    echo $linksTitle;
+                                }
+        ?>"></span><div class="clear"></div>
+                                <span class="label"><label for="name"><?php echo $this->__('Links can be purchased separately'); ?></label></span>
+                                <select name="product[links_purchased_separately]" id="downloadable_link_purchase_type" class="downloadable_link_purchase_type" title=""><option value="1" <?php
+                                /**
+                                 *  Check the links purchased separately is equal to 1
+                                 *  if so make the value as selected in drop down
+                                 */
+                                if ($linksPurchasedSeparately == 1) {
+                                    echo 'selected="selected"';
+                                }
+                          
+        ?> ><?php echo $this->__('Yes'); ?></option><option value="0" <?php
+                                        /**
+                                        *  Check the links purchased separately is equal to 0
+                                        *  if so make the current value as selected in drop down
+                                        */
+                                        if ($linksPurchasedSeparately == 0) {
+                                            echo 'selected="selected"';
+                                        }
+                               
+                                    ?>><?php echo $this->__('No'); ?></option></select>                
+                                <div class="clear"></div>
+                            </div>
+                            <table width="100%" cellspacing="CCC">
+                                <tbody id="link_items_body" class="link_items_body">
+        <?php
+        /**
+         *  Check the selected product id is not equal to empty
+         *  if so retrieve the downloadable link
+         */
+        if(!empty($selectedProductId)){
+        $downloadableLink = Mage::getModel('downloadable/link')->getCollection()
+                ->addProductToFilter($product->getId())
+                ->addTitleToResult($product->getStoreId())
+                ->addPriceToResult($product->getStore()->getWebsiteId());
+
+        }else{
+        $downloadableLink = array();
+        }
+        $linkCount = 0;
+        foreach ($downloadableLink as $link) {
+
+            $linkTilte = $link->getTitle(); 
+            $numberOfDownloadsVar = $link->getNumberOfDownloads();
+            $isShareable = $link->getIsShareable(); 
+            $sortOrder = $link->getSortOrder();
+            $linkUrl = $link->getLinkUrl(); 
+            $linkSampleUrlVal = $link->getSampleUrl();
+            $linkType = $link->getLinkType();
+            $linkSampleType = $link->getSampleType();
+            $linkPrice = $link->getPrice(); 
+            $linkFile = $link->getLinkFile(); 
+            $linkSampleFile = $link->getSampleFile();
+            ?>
+                                        <tr id="<?php echo 'marketplace_download_link_row_' . $linkCount; ?>">
+                                            <td>
+                                                <table border="0" cellspacing="0" cellpadding="0" width="100%" class="marketplace_download_info_table">
+                                                    <tr>
+                                                        <th><label><?php echo $this->__('Title'); ?></label><span class="required"></span></th>
+                                                        <td>
+                                                            <input type="hidden" class="__delete__" name="<?php echo 'downloadable[link][' . $linkCount . '][is_delete]'; ?>" value="">
+                                                            <input type="hidden" name="<?php echo 'downloadable[link][' . $linkCount . '][link_id]'; ?>" value="<?php
+                                                             echo $linkCount; ?>">
+                                                            <input type="hidden" name="<?php echo 'downloadable[link][' . $linkCount . '][link_file]'; ?>" value="<?php
+                            /**
+                            *  Check the link file has been set
+                            *  if so assign link file as value
+                             */
+                            if (isset($linkFile)) {
+                                echo $linkFile;
+                            }
+            ?>">
+                                    <input type="hidden" name="<?php echo 'downloadable[link][' . $linkCount . '][link_sample_file]'; ?>" value="<?php
+                                                                    /**
+                                                                    *  Check the link sample file has been set
+                                                                    *  if so assign link sample file as value
+                                                                    */
+                                                                   if (isset($linkSampleFile)) {
+                                                                       echo $linkSampleFile;
+                                                                   }
+                                                                   ?>">
+                                                            <input type="text" class="required-entry input-text" name="<?php echo 'downloadable[link][' . $linkCount . '][title]'; ?>" value="<?php
+                                                                /**
+                                                                *  Check the link title has been set
+                                                                *  if so assign link title as value
+                                                                */
+                                                                   if (isset($linkTilte)) {
+                                                                       echo $linkTilte;
+                                                                   }
+                                                                   ?>">
+                                                        </td>
+                                                    </tr>
+                                                    <tr><th><label><?php echo $this->__('Price'); ?></label></th>
+                                                        <td class="input-price">
+                                                            <input type="text" id="<?php echo 'downloadable_link_' . $linkCount . '_price_value'; ?>" class="input-text validate-number link-prices" name="<?php
+                                                             echo 'downloadable[link][' . $linkCount . '][price]'; ?>" value="<?php
+                                                             /**
+                                                              *  Check the link price has been set
+                                                              *  if so assign link price as value
+                                                              */
+                                                if (isset($linkPrice)) {
+                                                    echo $linkPrice;
+                                                }
+                                                                   ?>">
+                                                            <p> [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]</p>
+                                                        </td></tr>
+                                                    <tr>
+                                                        <th><label class="nobr"><?php echo $this->__('Max. Downloads'); ?></label></th>
+                                                        <td>
+                                                            <input type="text" id="<?php echo 'downloadable_link_' . $linkCount . '_downloads'; ?>" name="<?php
+                                                             echo 'downloadable[link][' . $linkCount . '][number_of_downloads]'; ?>" class="input-text downloads" value="<?php
+                                                             /**
+                                                              *  Check the number of downloads has been set
+                                                              *  if so assign number of downloads as value
+                                                              */
+                                                if (isset($numberOfDownloadsVar)) {
+                                                    echo $numberOfDownloadsVar;
+                                                }
+                                                                   ?>">
+                                                            <p>
+                                                                <input type="checkbox" class="checkbox" id="<?php echo 'downloadable_link_' . $linkCount . '_is_unlimited'; ?>" name="<?php
+                                                                 echo 'downloadable[link][' . $linkCount . '][is_unlimited]'; ?>" value="1" <?php
+                                                                 /**
+                                                                  *  Check the number of downloads is zero
+                                                                  */
+                                                           if ($numberOfDownloadsVar == 0) {
+                                                               echo 'checked="checked"';
+                                                           }
+                                                  
+                                                                   ?>>
+                                                                <label for="<?php echo 'downloadable_link_' . $linkCount . '_is_unlimited'; ?>"><?php
+                                                                 echo $this->__('Unlimited'); ?></label>
+                                                            </p></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th><label><?php echo $this->__('Shareable'); ?></label></th>
+                                                        <td><select id="<?php echo 'downloadable_link_' . $linkCount . '_shareable'; ?>" name="<?php
+                                                         echo 'downloadable[link][' . $linkCount . '][is_shareable]'; ?>">
+                                                                <option value="1" <?php
+                                                                /**
+                                                                 *  Check the sharable option is enabled
+                                                                 *  if so make the current drop down as selected
+                                                                 */
+                                                        if ($isShareable == 1) {
+                                                            echo 'selected="selected"';
+                                                        }
+                                                   
+                                                                   ?>><?php echo $this->__('Yes'); ?></option>
+                                                                <option value="0" <?php                                                                     
+                                                                /**
+                                                                 *  Check the sharable is equal to zero
+                                                                 *  if so make the current drop down 'Yes' as selected option
+                                                                 */
+                                                                            if ($isShareable == 0) {
+                                                                                echo 'selected="selected"';
+                                                                            }                                                                     
+                                                                        ?>><?php echo $this->__('No'); ?></option>
+                                                                <option value="2" <?php                                                                      
+                                                                /**
+                                                                 *  Check the sharable is equal two
+                                                                 *  if so make the current drop down 'No' as selected option
+                                                                 */
+                                                                            if ($isShareable == 2) {
+                                                                                echo 'selected="selected"';
+                                                                            }                                                                  
+                                                                        ?>><?php echo $this->__('Use config'); ?></option>
+                                                            </select></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th><label><?php echo $this->__('Sample'); ?></label></th>
+                                                        <td>
+                                                            <div class="files-wide">
+                                                                <div class="marketplace_row">
+                                                                    <div id="<?php echo 'downloadable_link_' . $linkCount . '_file_save-old'; ?>" class="file-row-info"><span class="file-info"><b><span class="file-info-name"><?php
+                                                                    /**
+                                                                     *  Check the link sample file has been set
+                                                                     *  if so display the sample file downloadable link
+                                                                     */
+                                                    if (isset($linkSampleFile)) {
+                                                        echo $linkSampleFile;
+                                                    }
+                                                                        ?></span></b><span class="file-info-size"></span></span></div>
+                                                                    <label for="<?php echo 'downloadable_link_' . $linkCount . '_sample_file_type'; ?>">
+                                                                        <input type="radio" class="radio" id="<?php echo 'downloadable_link_' . $linkCount . '_sample_file_type'; ?>" name="<?php
+                                                                         echo 'downloadable[link][' . $linkCount . '][sample][type]'; ?>" value="file" <?php
+                                                                         /**
+                                                                          *  Check the sample link type is equal to file
+                                                                          *  if so make the downloadable link type file as selected option
+                                                                          */
+                                                                            if ($linkSampleType == 'file') {
+                                                                                echo 'checked="checked"';
+                                                                            }
+                                                                     
+                                                                        ?>>
+                                                                        <?php echo $this->__('File'); ?>:</label>
+                                                                    <input type="file" class="validate-downloadable-file" id="<?php echo 'downloadable_link_' . $linkCount . '_file_save'; ?>" name="<?php
+                                                                     echo 'l_sample_' . $linkCount; ?>" value="" onchange="hideOldFileName(this.id)">                                                                               
+                                                                </div>
+                                                                <div class="row"><label for="<?php echo 'downloadable_link_' . $linkCount . '_sample_url_type'; ?>">
+                                                                        <input type="radio" class="radio" id="<?php echo 'downloadable_link_' . $linkCount . '_sample_url_type'; ?>" name="<?php
+                                                                         echo 'downloadable[link][' . $linkCount . '][sample][type]'; ?>" value="url" <?php
+                                                                         /**
+                                                                          *  Check the sample link type is equal to url
+                                                                          *  if so make the downloadable link type url as selected option
+                                                                          */
+                                                                       if ($linkSampleType == 'url') {
+                                                                           echo 'checked="checked"';
+                                                                       }                                                                 
+                                                                        ?>>
+                                                                        <?php echo $this->__('URL'); ?>:</label>
+                                                                    <input type="text" class="input-text" name="<?php echo 'downloadable[link][' . $linkCount . '][sample][url]'; ?>" value="<?php
+                                                                        if (isset($linkUrl)) {
+                                                                            echo $linkSampleUrlVal;
+                                                                        }
+                                                                        ?>">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th><label><?php echo $this->__('File'); ?></label></th>
+                                                        <td>
+                                                            <div class="files-wide">
+                                                                <div class="marketplace_row">
+                                                                    <div id="<?php echo 'downloadable_sample_link_' . $linkCount . '_file_save-old'; ?>" class="file-row-info"><span class="file-info"><b><span class="file-info-name"><?php
+                                                                    /**
+                                                                     *  Check the link file has been set already
+                                                                     *  if so Display the link file
+                                                                     */
+                                                        if (isset($linkFile)) {
+                                                            echo $linkFile;
+                                                        }
+                                                                        ?></span></b><span class="file-info-size"></span></span></div>
+                                                                    <label for="<?php echo 'downloadable_link_' . $linkCount . '_file_type'; ?>">
+                                                                        <input type="radio" class="radio validate-one-required-by-name" id="<?php echo 'downloadable_link_' . $linkCount . '_file_type'; ?>" name="<?php
+                                                                         echo 'downloadable[link][' . $linkCount . '][type]'; ?>" value="file" <?php
+                                                                         /**
+                                                                          *  Check the link type is equal to file
+                                                                          *  if so make the downloadable link type is file
+                                                                          */
+                                                                            if ($linkType == 'file') {
+                                                                                echo 'checked="checked"';
+                                                                            }
+                                                                    
+                                                                        ?>>
+                                                                        <?php echo $this->__('File'); ?>:
+                                                                    </label>
+                                                                    <input type="file" class="validate-downloadable-file" id="<?php echo 'downloadable_sample_link_' . $linkCount . '_file_save'; ?>" name="<?php
+                                                                     echo 'links_' . $linkCount; ?>" value="" onchange="hideOldFileName(this.id)">                                                    
+                                                                </div><div class="row">
+                                                                    <label for="<?php echo 'downloadable_link_' . $linkCount . '_url_type'; ?>">
+                                                                        <input type="radio" class="radio validate-one-required-by-name" id="<?php echo 'downloadable_link_' . $linkCount . '_url_type'; ?>" name="<?php
+                                                                         echo 'downloadable[link][' . $linkCount . '][type]'; ?>" value="url" <?php
+                                                                         /**
+                                                                          *  Check the link type is equal to url
+                                                                          *  if so make the downloadable link type is url
+                                                                          */
+                                                                if ($linkType == 'url') {
+                                                                    echo 'checked="checked"';
+                                                                }
+                                                       
+                                                                        ?>>
+                                                                        <?php echo $this->__('URL'); ?>:</label><input type="text" class="validate-downloadable-url input-text" name="<?php
+                                                                         echo 'downloadable[link][' . $linkCount . '][link_url]'; ?>" value="<?php
+                                                                               if (isset($linkUrl)) {
+                                                                                   echo $linkUrl;
+                                                                               }
+                                                                               ?>">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th><label class="nobr"><?php echo $this->__('Sort Order'); ?></label>
+                                                        <td>
+                                                            <input type="text" name="<?php echo 'downloadable[link][' . $linkCount . '][sort_order]'; ?>" value="<?php
+                                                            /**
+                                                             *  Check the Sorting order has been set already
+                                                             *  if so assing the sort order
+                                                             */
+                                                            if (isset($sortOrder)) {
+                                                                echo $sortOrder;
+                                                            }
+                                                                               ?>" class="input-text sort"></td>
+                                                    </tr>
+                                                    <tr><th>&nbsp;</th>
+                                                        <td>
+                                                            <button id="<?php echo 'downloadable_link_' . $linkCount . '_delete_button'; ?>" onclick="removeMarketPlaceDownloadableLinksRow(this);"  type="button" class="scalable button">
+                                                                <span><span><span> <?php
+                                                                /**
+                                                                 *  Display Delete Option 
+                                                                 */
+                                                                echo $this->__('Delete'); ?></span></span></span></button></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+<?php
+            $linkCount = $linkCount + 1;
+        } /**
+         *  End foreach for downloadable link data   
+         */
+        ?>   </tbody> 
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="8" class="a-right">
+                                            <button id="add_link_item" class="button" title="Add New Row" type="button"  name="link_items_body" onclick="addMarketPlaceDownloadableLinksRow(this.name)">
+                                                <span><span><span><?php
+                                                /**
+                                                 *  Provide new row adding option
+                                                 */
+                                                echo $this->__('Add New Row'); ?></span></span></span></button></td>
+                                    </tr>
+                                </tfoot>   
+                            </table>
+                        </li>
+                    </ul>
+                    <div class="clear"></div>
+                </div> 
+    <?php } 
+    ?> 
+<button class="button" id="save_button" type="submit" title="<?php echo $this->__('Save'); ?>" class="button">
+<span><span><?php echo $this->__('Save'); ?></span></span></button>
+</form>
+<?php 
+/**
+ *  Dynamically downloadable products Sample and Sample_links row
+ */
+?>
+<table style="display:none;"> 
+    <tr id="marketplace_download_sample_row_CCC">
+        <td> <input type="hidden" class="__delete__" name="downloadable[sample][CCC][is_delete]" value=""> <input type="hidden" name="downloadable[sample][CCC][sample_id]" value="CCC"> <input type="text" class="required-entry input-text" name="downloadable[sample][CCC][title]" value="">
+        </td>
+        <td>
+            <div class="files-wide">
+                <div class="marketplace_row">
+                    <label for="downloadable_sample_CCC_file_type">
+                    <input type="radio" class="radio validate-one-required-by-name" id="downloadable_sample_CCC_file_type" name="downloadable[sample][CCC][type]" value="file" checked="checked"> 
+<?php echo $this->__('File'); ?>:</label> <input type="file" class="validate-downloadable-file" id="downloadable_sample_CCC_file_save" name="sample_CCC" value="">
+                    <div id="downloadable_sample_CCC_file">
+                        <div class="no-display" id="downloadable_sample_CCC_file-template">
+                        </div>
+                    </div></div><div class="row">
+                    <label for="downloadable_sample_CCC_url_type">
+                        <input type="radio" class="radio validate-one-required-by-name" id="downloadable_sample_CCC_url_type" name="downloadable[sample][CCC][type]" value="url"> 
+<?php echo $this->__('URL'); ?>:</label> <input type="text" class="validate-downloadable-url input-text" name="downloadable[sample][CCC][sample_url]" value="">
+                </div>
+                <div>
+               <span id="downloadable_sample_CCC_container"></span>
+                </div>
+            </div>
+        </td>
+        <td class="a-center">
+            <input type="text" name="downloadable[sample][CCC][sort_order]" value="" class="input-text sort marketplace_sort_order">
+        </td>
+        <td>
+            <button onclick="removeMarketPlaceDownloadableSamplesRow(this)" type="button" class="scalable button"> <span><span><span><?php echo $this->__('Delete'); ?></span></span></span></button>
+        </td>
+    </tr>
+</table>
+<!-- Dynamically downloadable products Links row -->
+<table style="display:none;"> 
+    <tr id="marketplace_download_link_row_CCC">
+        <td class="marketplace_download_info_td">
+            <table border="0" cellspacing="0" cellpadding="0" width="100%" class="marketplace_download_info_table">
+                <tr><th><label><?php             
+                echo $this->__('Title'); ?></label><span class="required">*</span></th>
+                    <td>
+                        <input type="hidden" class="__delete__" name="downloadable[link][CCC][is_delete]" value=""> <input type="hidden" name="downloadable[link][CCC][link_id]" value="CCC"> <input type="text" class="required-entry input-text" name="downloadable[link][CCC][title]" value="">
+                    </td>
+                </tr>
+                <tr><th><label><?php
+                /**
+                 *  Display Price info
+                 */
+                echo $this->__('Price'); ?></label></th>
+                    <td class="input-price">
+                        <input type="text" id="downloadable_link_CCC_price_value" class="input-text validate-number link-prices" name="downloadable[link][CCC][price]" value="0">
+                        <p><label> [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]</label></p>
+                    </td>
+                </tr>
+                <tr><th><label class="nobr"><?php echo $this->__('Max. Downloads'); ?></label></th>
+                    <td>
+                        <input type="text" id="downloadable_link_CCC_downloads" name="downloadable[link][CCC][number_of_downloads]" class="input-text downloads" value="0">
+                        <p>
+                            <input type="checkbox" class="checkbox" id="downloadable_link_CCC_is_unlimited" name="downloadable[link][CCC][is_unlimited]" value="1" checked="checked">
+                            <label for="downloadable_link_CCC_is_unlimited"><?php echo $this->__('Unlimited'); ?></label>
+                        </p></td>
+                </tr>
+                <tr><th><label><?php
+                /**
+                 *  Display Shareable option
+                 */
+                echo $this->__('Shareable'); ?></label></th>
+                    <td><select id="downloadable_link _CCC_shareable" name="downloadable[link][CCC][is_shareable]">
+                            <option value="1"><?php echo $this->__('Yes'); ?></option>
+                            <option value="CCC"><?php echo $this->__('No'); ?></option>
+                            <option value="2" selected="selected"><?php echo $this->__('Use config'); ?></option>
+                        </select></td>
+                </tr>
+                <tr><th><label><?php echo $this->__('Sample'); ?></label></th>
+                    <td>
+                        <div class="files-wide">
+                            <div class="marketplace_row">
+                                <label for="downloadable_link_CCC_sample_file_type">
+                                    <input type="radio" class="radio" id="downloadable_link_CCC_sample_file_type" name="downloadable[link][CCC][sample][type]" value="file">
+<?php echo $this->__('File'); ?>:</label>
+                                <input type="file" class="validate-downloadable-file" id="downloadable_link_CCC_file_save" name="l_sample_CCC" value="">
+                            </div><div class="row"><label for="downloadable_link_CCC_sample_url_type">
+                                    <input type="radio" class="radio" id="downloadable_link_CCC_sample_url_type" name="downloadable[link][CCC][sample][type]" value="url">
+<?php echo $this->__('URL'); ?>:</label>
+                                <input type="text" class="input-text" name="downloadable[link][CCC][sample][url]" value="">
+                            </div>                
+                        </div>
+                    </td>
+                </tr>
+                <tr><th><label><?php 
+                /**
+                 *  Display Sample downloadable option
+                 */
+                echo $this->__('File'); ?></label></th>
+                    <td>
+                        <div class="files-wide">
+                            <div class="marketplace_row">
+                                <label for="downloadable_link_CCC_file_type">
+                                    <input type="radio" class="radio validate-one-required-by-name" id="downloadable_link_CCC_file_type" name="downloadable[link][CCC][type]" value="file" checked="checked">
+<?php echo $this->__('File'); ?>:
+                                </label>
+                                <input type="file" class="validate-downloadable-file" id="downloadable_sample_link_CCC_file_save" name="links_CCC" value="">
+                            </div><div class="row">
+                                <label for="downloadable_link_CCC_url_type">
+                                    <input type="radio" class="radio validate-one-required-by-name" id="downloadable_link_CCC_url_type" name="downloadable[link][CCC][type]" value="url">
+<?php echo $this->__('URL'); ?>:</label><input type="text" class="validate-downloadable-url input-text" name="downloadable[link][CCC][link_url]" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr><th><label class="nobr"><?php echo $this->__('Sort Order'); ?></label></th>
+                    <td>
+                        <input type="text" name="downloadable[link][CCC][sort_order]" value="" class="input-text sort"></td>
+                </tr>
+                <tr><th>&nbsp;</th>
+                    <td>
+                        <button id="downloadable_link_CCC_delete_button" onclick="removeMarketPlaceDownloadableLinksRow(this);"  type="button" class="scalable button">
+                            <span><span><span> <?php echo $this->__('Delete'); ?></span></span></span></button></td>
+                </tr>
+            </table>
+        </td>  
+    </tr>
+</table> 
+</div>
+<!--  Product SKU available or not  -->
+<script type="text/javascript">
+// Functions for downloadable products    
+    var marketplaceDownloadableSampleRow = <?php echo $sampleCount; ?>;
+    var marketplaceDownloadableLinkRow = <?php echo $linkCount; ?>;
+</script>
+<?php echo $this->getChildHtml('marketplace_product_addassignproduct_js'); ?>
+<?php 
+    /**
+     *  Check the product type id is equal to sample
+     *  or product type id is configurable
+     */
+    if($productTypeId == 'simple' || $productTypeId == 'configurable'){ ?>
+    <script type="text/javascript">
+        $('seller_shipping').observe('change', function(event) {
+            var selected = $('seller_shipping').select("option[selected]")[0].innerHTML;
+            if (selected == 'Shipping Cost') {
+                $('shipping_price').setStyle('display:block');
+            } else{
+                $('shipping_price').setStyle('display:none');        
+            }
+        });
+    </script>
+    <?php } ?>  

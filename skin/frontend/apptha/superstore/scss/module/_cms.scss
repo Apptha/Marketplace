@@ -1,0 +1,181 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/* ============================================ *
+ * CMS Pages
+ * ============================================ */
+
+// ----------------------------------------------
+// Content for static pages
+
+.cms-page-view,
+.cms-no-route {
+    .page-title,
+    .page-head {
+        h1,
+        h3 {
+            border: none;
+        }
+    }
+
+    .std {
+
+        img {
+            max-width: 100%;
+        }
+
+        p {
+            color: $c-text;
+            font-family: $f-stack-serif;
+            font-size: 14px;
+            font-style: italic;
+            line-height: 24px;
+        }
+
+        h1 {
+            color: $c-text-primary;
+        }
+
+        h2 {
+            color: $c-text-primary;
+        }
+
+        li {
+            color: $c-text;
+            font-family: $f-stack-serif;
+            font-size: $f-size;
+            font-style: italic;
+            line-height: 24px;
+        }
+    }
+
+    .col-left {
+        &:after {
+            @include clearfix;
+        }
+    }
+}
+
+.cms-no-route {
+    .std {
+
+        img {
+            width: 100%;
+        }
+    }
+}
+
+.cms-page-view .std,
+.cms-home .std,
+.cms-no-route .std {
+    .messages {
+        margin-bottom: $box-spacing;
+
+        ul {
+            margin-bottom: 0;
+        }
+
+        li {
+            list-style: none;
+            margin-left: 0;
+            font-style: normal;
+            font-family: $f-stack-sans;
+        }
+    }
+}
+
+// ----------------------------------------------
+// Accordition
+
+#accordion {
+    @include accordion;
+
+    li {
+        position: relative;
+        overflow: hidden;
+
+        .plusimage h2 {
+            margin-right: $gap;
+        }
+    }
+}
+
+// ----------------------------------------------
+// Sitemap
+
+.page-sitemap {
+    .links {
+        display: block;
+        text-align: right;
+        margin: 0 20px 0 0;
+
+        a { position: relative; }
+    }
+
+    .sitemap {
+        padding: 0 20px;
+        margin: 15px 0;
+        font-size: $f-size-xs;
+
+        li {
+            margin: 3px 0;
+        }
+    }
+}
+
+// ----------------------------------------------
+// Contact page
+
+.contacts-index-index {
+    h1 {
+        border: none;
+    }
+}
+
+#contactForm {
+    padding-left: 40px;
+
+    h2 {
+        display: none;
+    }
+
+    &:after {
+        @include clearfix;
+    }
+
+    .fieldset .legend + .required {
+        margin: 0;
+    }
+}
+
+@include bp(max-width, $bp-medium) {
+
+    #contactForm {
+        padding-left: 0;
+    }
+}

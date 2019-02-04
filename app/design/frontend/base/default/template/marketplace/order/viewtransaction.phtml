@@ -1,0 +1,108 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<div class="page-title sellers_store mp_order_transaction" id="mp_order_transaction"><h1><?php echo $this->__('Transaction History'); ?></h1>
+    <?php //Display remaining amount and received amount from admin ?>
+    <div class="top_amount">
+        <span class="right_space">
+            <?php echo $this->__('Total Amount Received') ?> : <b><?php
+             echo Mage::helper('marketplace/transaction')->getAmountReceived(); ?></b>
+        </span>
+        <span>
+            <?php echo $this->__('Amount Pending') ?> :  <b><?php
+             echo Mage::helper('marketplace/transaction')->getAmountRemaining(); ?></b>
+        </span>
+    </div> 
+</div>
+<?php
+// Display transaction history of the seller
+
+$loginId = Mage::getSingleton('customer/session')->isLoggedIn();
+$groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+$getGroupId = Mage::helper('marketplace')->getGroupId();
+$customer = Mage::getSingleton("customer/session")->getCustomer();
+$customer_status = $customer->getCustomerstatus();
+if ($groupId != $getGroupId  || $customer_status != 1) {
+return;
+}
+    //Get Transaction collection
+    $collection = $this->getCollection();
+    $count = count($collection);
+    ?>
+    <table class="data-table my-orders-table" id="my-orders-table" summary="<?php echo $this->__('Items Ordered') ?>">    
+        <thead>
+            <tr>
+                <th><?php echo $this->__('Transaction Id') ?></th> 
+                <th><?php echo $this->__('Order Id') ?></th>     
+                <th class="a-center"><?php echo $this->__('Earned Amount') ?></th> 
+                <th class="a-center"><?php echo $this->__('Admin Commission') ?></th>
+                <th class="a-center"><?php echo $this->__('Paid On') ?></th>
+                <th class="a-center no-border-right"><?php echo $this->__('Payment Status') ?></th>            
+            </tr>
+        </thead>              
+        <?php
+        //Display transaction info
+        if ($count > 0) {
+            foreach ($collection as $_collection) {
+                $commission_id = $_collection['commission_id'];
+                $order_id = $_collection['order_id'];
+                $orderModel = Mage::getModel('sales/order')->load($order_id);
+                ?>
+                <tbody>  
+                    <tr>
+                        <td><?php echo $_collection['id']; ?></td> 
+                        <td><?php echo $orderModel['increment_id']; ?></td>               
+                        <td class="a-center"><?php echo Mage::helper('core')->currency($_collection['seller_commission'], true, false); ?></td>
+                        <td class="a-center"><?php echo Mage::helper('core')->currency($_collection['admin_commission'], true, false); ?></td>
+                        <td class="a-center"><?php $paid_date = $_collection['paid_date'];
+                echo date('M j, Y', strtotime($paid_date)); ?></td>                
+                        <td class="a-center">
+                            <?php if ($_collection['received_status'] != '1') { ?>
+                                <a href='<?php echo $this->getAcknowledge($commission_id); ?>'>
+                                <span><span><?php echo $this->__('Acknowledge') ?></span></span></a>
+                            <?php
+                            } else {
+                                $acknowledge_date = $_collection['acknowledge_date'];
+
+                                echo '<h6>' . $this->__('Acknowledged on') . ' ' . date('M j, Y', strtotime($acknowledge_date)) . '</h6>';
+                            }
+                            ?>
+                        </td>
+                    </tr>  
+        <?php } ?>  
+            </tbody>     
+    <?php } else { ?>
+            <tfoot><tr><td colspan="6" class="a-center no_product_content"><?php echo $this->__('No Transactions to Show'); ?></td></tr></tfoot>
+    <?php } ?>
+    </table>
+<?php //Display pagination
+echo $this->getPagerHtml();
+?>

@@ -1,0 +1,133 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Template for displaying product price in different places (products grid, product view page etc)
+ *
+ * @see Mage_Catalog_Block_Product_Abstract
+ */
+?>
+<?php
+
+$routeName = Mage::app()->getRequest()->getRouteName();
+$identifier = Mage::getSingleton('cms/page')->getIdentifier();
+
+/**
+ *  Count for timer calculation declared here 
+ */
+if($routeName == 'cms' && $identifier == 'home'){
+$productsCollections= $this->getProductCollection();
+$helper= $this->helper('catalog/output');
+$coreHelper= $this->helper('core');
+$count= Mage::helper('superdeals')->getOfferSlider();
+$storeConfigDealsEnabled  = Mage::getStoreConfig('superdeals/superdeals_group/deals_enable');
+$dealsEnable= Mage::helper('core/data')->isModuleEnabled('Apptha_Superdeals');
+$dealsEnable= intval($dealsEnable);
+$storeConfigSliderEnabled = Mage::getStoreConfig('superdeals/slider/enable_slide');
+$advanceOption= Mage::getStoreConfig('advanced/modules_disable_output/Apptha_Superdeals');
+$advanceOption= intval($advanceOption);
+?>
+<?php if($productsCollections->count()):?>
+<?php if (($storeConfigDealsEnabled == 1) && ($storeConfigSliderEnabled == 1) && ( $dealsEnable == 1)&& ( $advanceOption == 0)): ?>
+<script type="text/javascript">
+Event.observe(window, 'dom:loaded', function() {
+         var primaryShow = new protoShow('primary-show', {
+              captions: false,
+              controls: true,
+              transitionType: "slide"
+});
+});
+document.observe('dom:loaded', function() {
+    // reference ID of our show container
+    var show = new protoShow('primary-show');
+});
+</script>
+<div class="deal_slider">
+<div id="primary-show" class="transition-slide apptha_superdeals_primary-show">
+<a href="javascript:void(0)"
+onclick="document.getElementById('primary-show').style.display='none'"><span
+class="close"></span> </a>
+<div class="primary-show-container">
+<h2 class="banner_title">
+<?php echo $this->__('Have you checked out this offer?') ?>
+</h2>
+<ul class="show">
+<?php foreach ($productsCollections as $products): ?>
+<?php
+$savingsdollarvalue = ($products->getPrice() - $products->getFinalPrice());
+$originalPrice = $products->getPrice(); 
+$discountPrice = $products->getFinalPrice(); 
+$savings= $originalPrice - $discountPrice; 
+$savingsPercentage = round(($savings / $originalPrice) * 100, 0); 
+$productType = $products->getTypeID();?>
+<li class="slide">
+<div class="banner_slide_image">
+<a href="<?php echo $products->getProductUrl() ?>"
+title="<?php echo $this->stripTags($this->getImageLabel($products, 'small_image'), null, true) ?>"
+class="product-image"><img
+src="<?php echo $this->helper('catalog/image')->init($products, 'small_image')->resize(65); ?>"
+width="65" height="65"
+alt="<?php echo $this->stripTags($this->getImageLabel($products, 'small_image'), null, true) ?>" />
+</a>
+</div>
+<div class="banner_slide_desc">
+<h2 class="product-name">
+<a href="<?php echo $products->getProductUrl() ?>"
+title="<?php echo $this->stripTags($products->getName(), null, true) ?>">
+<?php
+
+
+$productNameVal = $products->getName();
+$lenPrName = strlen ($productNameVal);
+$subPrName = substr ( $productNameVal, 0, 40 );
+if ($lenPrName >= 40) {
+	$prNameFix = $subPrName . "...";
+} else {
+	$prNameFix = $productNameVal;
+}
+echo $prNameFix;
+ ?>
+</a>
+</h2>
+<p class="special-price">
+<span class="price-label"><?php echo $this->__('Discount:') ?> </span>
+<span class="price"> <?php echo $savingsPercentage, '%';  ?>
+</span>
+</p>
+</div>
+</li>
+<?php  endforeach; ?>
+</ul>
+</div>
+</div></div>
+<?php endif; ?>
+<?php endif; ?>
+<?php } ?>

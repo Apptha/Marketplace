@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<layout version="0.1.0">
+<!--
+Default layout, loads most of the pages
+-->
+    <catalog_category_default>
+        <update handle="MAP_popup" />
+    </catalog_category_default>
+    <catalog_category_layered>
+        <update handle="MAP_popup" />
+    </catalog_category_layered>
+    <catalog_product_compare_index>
+        <update handle="MAP_popup" />
+    </catalog_product_compare_index>
+    <catalog_product_view>
+        <update handle="MAP_popup" />
+        <update handle="MAP_price_msrp_item" />
+    </catalog_product_view>
+    <checkout_cart_index>
+        <update handle="MAP_popup" />
+    </checkout_cart_index>
+    <checkout_onepage_success>
+        <update handle="MAP_popup" />
+    </checkout_onepage_success>
+    <checkout_onepage_failure>
+        <update handle="MAP_popup" />
+    </checkout_onepage_failure>
+    <wishlist_index_index>
+        <update handle="MAP_popup" />
+        <update handle="MAP_price_msrp_wishlist_item" />
+    </wishlist_index_index>
+    <wishlist_shared_index>
+        <update handle="MAP_popup" />
+        <update handle="MAP_price_msrp_wishlist_item" />
+    </wishlist_shared_index>
+    <review_product_list>
+        <update handle="MAP_popup" />
+        <update handle="MAP_price_msrp_item" />
+    </review_product_list>
+    <catalogsearch_result_index>
+        <update handle="MAP_popup" />
+    </catalogsearch_result_index>
+    <catalogsearch_advanced_result>
+        <update handle="MAP_popup" />
+    </catalogsearch_advanced_result>
+    <tag_product_list>
+        <update handle="MAP_popup" />
+    </tag_product_list>
+    <tag_customer_view>
+        <update handle="MAP_popup" />
+    </tag_customer_view>
+
+    <MAP_popup>
+        <reference name="head">
+            <action method="addItem" ifconfig="sales/msrp/enabled"><type>skin_js</type><name>js/msrp.js</name></action>
+            <action method="addItem" ifconfig="sales/msrp/enabled"><type>skin_js</type><name>js/msrp_rwd.js</name></action>
+        </reference>
+        <reference name="content">
+            <block type="core/template" template="catalog/msrp/popup.phtml" name="product.tooltip"></block>
+        </reference>
+    </MAP_popup>
+    <MAP_price_msrp_item>
+        <reference name="catalog_product_price_template">
+            <action method="addPriceBlockType"><type>msrp</type><block>catalog/product_price</block><template>catalog/product/price_msrp_item.phtml</template></action>
+        </reference>
+        <reference name="product.clone_prices">
+            <action method="addPriceBlockType"><type>msrp</type><block>catalog/product_price</block><template>catalog/product/price_msrp_item.phtml</template></action>
+        </reference>
+    </MAP_price_msrp_item>
+    <MAP_price_msrp_wishlist_item>
+        <reference name="catalog_product_price_template">
+            <action method="addPriceBlockType"><type>msrp</type><block>catalog/product_price</block><template>wishlist/render/item/price_msrp_item.phtml</template></action>
+        </reference>
+    </MAP_price_msrp_wishlist_item>
+    <default>
+        <reference name="catalog_product_price_template">
+            <action method="addPriceBlockType"><type>msrp</type><block>catalog/product_price</block><template>catalog/product/price_msrp.phtml</template></action>
+            <action method="addPriceBlockType"><type>msrp_item</type><block>catalog/product_price</block><template>catalog/product/price_msrp_item.phtml</template></action>
+            <action method="addPriceBlockType"><type>msrp_noform</type><block>catalog/product_price</block><template>catalog/product/price_msrp_noform.phtml</template></action>
+        </reference>
+    </default>
+</layout>

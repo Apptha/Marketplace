@@ -1,0 +1,103 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php /** @var $this Apptha_Marketplace_Order_Tracking */ ?>
+<?php 
+$orderId = $this->getRequest()->getParam('orderid');
+$sellerId = Mage::getSingleton('customer/session')->getId();
+$shippingProductDetails = Mage::helper('marketplace/vieworder')->getShippingProductDetails($orderId,$sellerId);
+?>
+<input type="hidden" value="<?php echo '('.$shippingProductDetails.')'; ?>" name="trackingTitleForSeller" id="trackingTitleForSeller" />
+<div class="grid">
+<div class="entry-edit-head">
+   <h4 class="icon-head head-shipping-method">
+   <?php echo $this->__('Shipping Information'); ?>
+   </h4>
+</div>
+<table cellspacing="0" class="data-table" id="tracking_numbers_table">
+    <col width="100" />
+    <col />
+    <col />
+    <col width="80" />
+    <thead>
+        <tr class="headings">
+            <th><?php echo Mage::helper('sales')->__('Carrier') ?></th>
+            <th><?php echo Mage::helper('sales')->__('Title') ?></th>
+            <th><?php echo Mage::helper('sales')->__('Number') ?> <span class="required"></span></th>
+            <th class="last"><?php echo Mage::helper('sales')->__('Action') ?></th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <td colspan="4" class="a-center last" style="padding:8px;"><?php echo $this->getChildHtml('add_button') ?></td>
+        </tr>
+    </tfoot>
+    <tbody id="track_row_container">
+        <tr id="track_row_template" class="template no-display">
+            <td>
+                <select name="tracking[__index__][carrier_code]" id="trackingC__index__" class="select carrier" style="width:110px;" disabled="disabled">
+                    <?php foreach ($this->getCarriers() as $_code=>$_name): ?>
+                    <option value="<?php echo $_code ?>"><?php echo $this->escapeHtml($_name) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td><input class="input-text number-title" type="text" name="tracking[__index__][title]" id="trackingT__index__" value="<?php echo '('.$shippingProductDetails.')'; ?>" disabled="disabled" /></td>
+            <td><input class="input-text " type="text" name="tracking[__index__][number]" id="trackingN__index__" value="" disabled="disabled" /></td>
+            <td class="last"><a href="#" onclick="trackingControl.deleteRow(event);return false"><?php echo $this->__('Delete') ?></a></td>
+        </tr>
+    </tbody>
+</table>
+<div class="box-left entry-edit">
+   	<div class="entry-edit-head"><h4>
+   	<?php echo $this->__('Shipment Comments'); ?>
+   	</h4></div>
+    <fieldset>
+        <div id="order-history_form">
+            <span class="field-row">
+                <textarea id="shipment_comment_text" name="shipment[comment_text]" rows="3" cols="5" style="height:6em; width:99%;"></textarea>
+            </span>
+            <div class="clear"></div>
+        </div>
+    </fieldset>
+</div>
+<div class="buttons-set">
+    <p class="required">
+    *<?php echo $this->__('Required Fields'); ?>
+    </p> 
+	<?php echo $this->getChildHtml('submit_button') ?>        
+           
+</div>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+trackingControl.template = new Template('<tr>' + $('track_row_template').innerHTML.replace(/__index__/g, '#{index}') + '<\/tr>');
+//]]>
+</script>

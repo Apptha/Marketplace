@@ -1,0 +1,676 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+ -->
+<config>
+    <modules>
+        <Apptha_Marketplace>
+            <version>1.9.1</version>
+        </Apptha_Marketplace>
+    </modules>
+    <frontend>
+        <routers>
+            <marketplace>
+                <use>standard</use>
+                <args>
+                    <module>Apptha_Marketplace</module>
+                    <frontName>marketplace</frontName>
+                </args>
+            </marketplace>
+            <sales>
+                <args>
+                    <modules>
+                        <Apptha_Marketplace before="Mage_Sales_OrderController">Apptha_Marketplace_Sales</Apptha_Marketplace>
+                    </modules>
+                </args>
+            </sales>
+            <catalogsearch>
+				<args>
+					<modules>
+						<Apptha_Marketplace before="Mage_CatalogSearch">Apptha_Marketplace_CatalogSearch</Apptha_Marketplace>
+					</modules>
+				</args>
+			</catalogsearch>
+	    </routers>
+        <layout>
+            <updates>
+                <marketplace>
+                    <file>marketplace.xml</file>
+                </marketplace>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <!-- Add Apptha marketplace CSV file -->
+                <Apptha_Marketplace>
+                    <files>
+                        <default>Apptha_Marketplace.csv</default>
+                    </files>
+                </Apptha_Marketplace>
+            </modules>
+        </translate>
+    </frontend>
+    <global>
+     <blocks>
+            <marketplace>
+                <class>Apptha_Marketplace_Block</class>
+            </marketplace>
+            <catalogsearch>
+			 	<rewrite>
+			    	<result>Apptha_Marketplace_Block_Result</result>
+				 </rewrite>
+			</catalogsearch>
+            <catalog>
+				<rewrite>
+					<product_list_toolbar>Apptha_Marketplace_Block_Catalog_Product_List_Toolbar</product_list_toolbar>
+				</rewrite>	
+			</catalog>
+        </blocks>
+        <!-- Add marketplace helper file -->
+        <helpers>
+            <marketplace>
+                <class>Apptha_Marketplace_Helper</class>
+            </marketplace>
+            <catalog>
+             <rewrite>
+                    <product>Apptha_Marketplace_Helper_ProductStatus</product>
+                </rewrite>
+            </catalog>    
+        </helpers>
+        <!-- Add marketplace helper file -->
+        <resources>
+            <marketplace_setup>
+                <setup>
+                    <module>Apptha_Marketplace</module>
+                </setup>
+                <!-- Core setup permission-->
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </marketplace_setup>
+            <!-- Core write permission-->
+            <marketplace_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </marketplace_write>
+            <!-- Core read permission -->
+            <marketplace_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </marketplace_read>
+        </resources>
+        <rewrite>
+            <apptha_marketplace_checkout_cart_add>
+                <from><![CDATA[#^/checkout/cart/#]]>
+                </from>
+                <to>/marketplace/cart/</to>
+            </apptha_marketplace_checkout_cart_add>
+        </rewrite> 
+        <!-- Add marketplace modules -->
+        <models>
+            <marketplace>
+                <class>Apptha_Marketplace_Model</class>
+                <resourceModel>marketplace_mysql4</resourceModel>
+            </marketplace>
+            <marketplace_mysql4>
+                <class>Apptha_Marketplace_Model_Mysql4</class>
+                <entities>
+                    <marketplace>
+                        <table>marketplace</table>
+                    </marketplace>
+                    <!-- Add marketplace seller profile -->
+                    <sellerprofile>
+                        <table>marketplace_sellerprofile</table>
+                    </sellerprofile>
+                    <!-- Add marketplace commission -->
+                    <commission>
+                        <table>marketplace_commission</table>
+                    </commission>
+                    <!-- Add marketplace transaction -->
+                    <transaction>
+                        <table>marketplace_transaction</table>
+                    </transaction>
+                    <!-- Add marketplace seller review -->
+                    <sellerreview>
+                        <table>marketplace_sellerreview</table>
+                    </sellerreview>
+                    <!-- Add marketplace vacationmode -->
+                    <vacationmode>
+                        <table>marketplace_vacationmode</table>
+                    </vacationmode>
+                    <!-- Add marketplace subscriptionplans -->
+                    <subscriptionplans>
+                        <table>marketplace_subscriptionplans</table>
+                    </subscriptionplans>
+                    <!-- Add marketplace subscription info -->
+                    <subscribedinfo>
+                        <table>marketplace_subscribedinfo</table>
+                    </subscribedinfo>
+                    <!-- Add marketplace subscription payments -->
+                    <subscriptionpayments>
+                        <table>marketplace_subscriptionpayments</table>
+                    </subscriptionpayments>
+                   <productzipcode>
+                        <table>marketplace_productzipcode</table>
+                    </productzipcode>
+					  <facebookstore>
+                        <table>marketplace_facebookstore</table>
+                    </facebookstore>
+                    <sellerlanguage>
+						<table>marketplace_sellerlanguage</table>
+					</sellerlanguage>
+					 <sidebar>
+                        <table>marketplace_sidebar</table>
+                    </sidebar>
+                </entities>
+            </marketplace_mysql4>
+            <!-- Rewrite sales invoice -->
+            <sales>
+                <rewrite>
+                    <service_order>Apptha_Marketplace_Model_Sales_Invoice</service_order>
+                </rewrite>
+            </sales>
+            <!-- Rewrite catelog resource product collection -->
+            <catalog_resource>
+                <rewrite>
+                    <product_collection>Apptha_Marketplace_Model_Rewrite_Catalog_Resource_Product_Collection</product_collection>
+                </rewrite>
+            </catalog_resource>
+            <!-- Rewrite order invoice total shipping -->
+            <sales>
+                <rewrite>
+                    <order_invoice_total_shipping>Apptha_Marketplace_Model_Order_Invoice_Total_Shipping</order_invoice_total_shipping>
+                </rewrite>
+            </sales>
+        </models>
+        <events>
+            <!-- Observer for order complete after -->
+            <checkout_onepage_controller_success_action>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer</class>
+                        <method>successAfter</method>
+                    </marketplace>
+                </observers>
+            </checkout_onepage_controller_success_action>
+            <!-- Observer for order complete useing multiple shipping address -->
+            <checkout_multishipping_controller_success_action>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer</class>
+                        <method>successAfter</method>
+                    </marketplace>
+                </observers>
+            </checkout_multishipping_controller_success_action>
+			<!-- Observer for admin sales order view -->
+            <controller_action_postdispatch_adminhtml_sales_order_view>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_order</class>
+                        <method>salesOrderAfter</method>
+                    </marketplace>
+                </observers>
+            </controller_action_postdispatch_adminhtml_sales_order_view>
+          <sales_order_creditmemo_save_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_order</class>
+                        <method>creditMemoEvent</method>
+                    </marketplace>
+                </observers>
+            </sales_order_creditmemo_save_after>
+            <!-- Observer for catelog product prepare save -->
+            <catalog_product_prepare_save>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_product</class>
+                        <method>productEditAction</method>
+                    </marketplace>
+                </observers>
+            </catalog_product_prepare_save>
+             <catalog_product_save_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer</class>
+                        <method>saveOffer</method>
+                    </marketplace>
+                </observers>
+           </catalog_product_save_after>
+            <catalog_product_save_after>
+                <observers>
+                    <zipcodeavailability_save_product_data>
+                        <type>singleton</type>
+                        <class>marketplace/observer_product</class>
+                        <method>saveProductTabData</method>
+                    </zipcodeavailability_save_product_data>
+                </observers>
+            </catalog_product_save_after>
+        <!-- Observer for product attribute befor update -->
+            <catalog_product_attribute_update_before>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_product</class>
+                        <method>productMassEditAction</method>
+                    </marketplace>
+                </observers>
+            </catalog_product_attribute_update_before>
+            <!-- Observer for order cancellation -->
+            <order_cancel_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_order</class>
+                        <method>cancelOrderEmail</method>
+                    </marketplace>
+                </observers>
+            </order_cancel_after>
+            <!-- Observer for customer delete -->
+            <customer_delete_commit_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer</class>
+                        <method>customerdelete</method>
+                    </marketplace>
+                </observers>
+            </customer_delete_commit_after>
+            <!-- Observer for before controller execute -->
+            <controller_action_predispatch>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer</class>
+                        <method>addToCartEvent</method>
+                    </marketplace>
+                </observers>
+            </controller_action_predispatch>
+            <!-- Observer for invoice save after -->
+            <sales_order_invoice_save_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_order</class>
+                        <method>sendInvoiceMailToSeller</method>
+                    </marketplace>
+                </observers>
+            </sales_order_invoice_save_after>
+          <!-- Observer for after shippment -->
+            <sales_order_shipment_save_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_order</class>
+                        <method>sendShippmentAfter</method>
+                    </marketplace>
+                </observers>
+            </sales_order_shipment_save_after>
+            <!-- Observer for after delete product -->
+            <catalog_product_delete_after>
+                <observers>
+                    <marketplace>
+                        <type>singleton</type>
+                        <class>marketplace/observer_product</class>
+                        <method>adminProductDelete</method>
+                    </marketplace>
+                </observers>
+            </catalog_product_delete_after>
+        </events>
+        <template>
+            <email>
+                <!-- Email for seller withdraw request -->
+                <marketplace_seller_withdraw_request_to_admin translate="label" module="marketplace">
+                    <label>Withdraw Request to Admin </label>
+                    <file>marketplace/seller_withdraw_request.html</file>
+                    <type>html</type>
+                </marketplace_seller_withdraw_request_to_admin>
+                <!-- Email for Mass email to seller -->
+                <marketplace_massemail_from_admin_to_seller translate="label" module="marketplace">
+                    <label>Mass Email to Sellers from admin </label>
+                    <file>marketplace/massemail_to_seller.html</file>
+                    <type>html</type>
+                </marketplace_massemail_from_admin_to_seller>
+                <!-- Email for New Seller Registration Notification -->
+                <marketplace_admin_approval_seller_registration_new_seller_template translate="label" module="marketplace">
+                    <label>New Seller Registration Notification</label>
+                    <file>marketplace/new_registration_seller.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_new_seller_template>
+                <!-- Email for Seller Registration Notification -->
+                <marketplace_admin_approval_seller_registration_email_template_selection translate="label" module="marketplace">
+                    <label>Seller Registration Notification</label>
+                    <file>marketplace/seller_new.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_email_template_selection>
+                <!-- Email for Admin Approval Notification -->
+                <marketplace_admin_approval_seller_registration_seller_email_template_selection translate="label" module="marketplace">
+                    <label>Admin Approval Notification</label>
+                    <file>marketplace/seller_admin_approval.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_seller_email_template_selection>
+                <!-- Email for Disapproval Notification -->
+                <marketplace_admin_approval_seller_registration_seller_email_template_disapprove translate="label" module="marketplace">
+                    <label>Admin Disapproval Notification</label>
+                    <file>marketplace/seller_admin_not_approve.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_seller_email_template_disapprove>
+                <!-- Email for New Product Added Notification -->
+                <marketplace_product_addproductemailnotificationtemplate  translate="label" module="marketplace">
+                    <label>New Product Added Notification</label>
+                    <file>marketplace/new_product_notification.html</file>
+                    <type>html</type>
+                </marketplace_product_addproductemailnotificationtemplate>
+                <!-- Email for New Product Approval Notification -->
+                <marketplace_product_addproductapprovalemailnotificationtemplate translate="label" module="marketplace">
+                    <label>New Product Approval Notification</label>
+                    <file>marketplace/new_product_approval_notification.html</file>
+                    <type>html</type>
+                </marketplace_product_addproductapprovalemailnotificationtemplate>
+                <!-- Email for Product Enabled Notification -->
+                <marketplace_product_addproductenabledemailnotificationtemplate translate="label" module="marketplace">
+                    <label>Product Enabled Notification</label>
+                    <file>marketplace/product_status_enabled.html</file>
+                    <type>html</type>
+                </marketplace_product_addproductenabledemailnotificationtemplate>
+                <!-- Email for Product Disabled Notification -->
+                <marketplace_product_addproductdisabledemailnotificationtemplate translate="label" module="marketplace">
+                    <label>Product Disabled Notification</label>
+                    <file>marketplace/product_status_disabled.html</file>
+                    <type>html</type>
+                </marketplace_product_addproductdisabledemailnotificationtemplate>
+                <!-- Email for New Review Notification -->
+                <marketplace_seller_review_admin_notify_review translate="label" module="marketplace">
+                    <label>New Review Notification</label>
+                    <file>marketplace/new_review.html</file>
+                    <type>html</type>
+                </marketplace_seller_review_admin_notify_review>
+                <!-- Email for New Review Received Notification -->
+                <marketplace_seller_review_notify_new_review translate="label" module="marketplace">
+                    <label>New Review Received Notification</label>
+                    <file>marketplace/new_review_received.html</file>
+                    <type>html</type>
+                </marketplace_seller_review_notify_new_review>
+                <!-- Email for Review Approval Notification -->
+                <marketplace_seller_review_approve_review translate="label" module="marketplace">
+                    <label>Review Approval Notification</label>
+                    <file>marketplace/review_approval.html</file>
+                    <type>html</type>
+                </marketplace_seller_review_approve_review>
+                <!-- Email for Contact Admin -->
+                <marketplace_admin_approval_seller_registration_contact_email_template_selection translate="label" module="marketplace">
+                    <label>Contact Admin</label>
+                    <file>marketplace/seller_admin_contact_form.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_contact_email_template_selection>
+                <!-- Email for >Sales Notification -->
+                <marketplace_admin_approval_seller_registration_sales_notification_template_selection translate="label" module="marketplace">
+                    <label>Sales Notification</label>
+                    <file>marketplace/marketplace_sales_notification.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_sales_notification_template_selection>
+                <!-- Email for Cancel Order Notification -->
+                <marketplace_admin_approval_seller_registration_cancel_notification_template_selection translate="label" module="marketplace">
+                    <label>Cancel Order Notification</label>
+                    <file>marketplace/marketplace_cancel_notification.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_cancel_notification_template_selection>
+                <!-- Email for Order Invoiced Notification -->
+                <marketplace_admin_approval_seller_registration_invoiced_notification_template_selection translate="label" module="marketplace">
+                    <label>Order Invoiced Notification</label>
+                    <file>marketplace/marketplace_invoiced_notification.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_invoiced_notification_template_selection>
+                <!-- Email for Contact Seller -->
+                <marketplace_admin_approval_seller_registration_contact_seller translate="label" module="marketplace">
+                    <label>Contact Seller</label>
+                    <file>marketplace/contact_seller.html</file>
+                    <type>html</type>
+                </marketplace_admin_approval_seller_registration_contact_seller>
+                <!-- Email for Bulk Product Upload Notification -->
+                <marketplace_product_bulkproductemailnotificationtemplate translate="label" module="marketplace">
+                    <label>Bulk Product Upload Notification</label>
+                    <file>marketplace/bulk_product_upload_notification.html</file>
+                    <type>html</type>
+                </marketplace_product_bulkproductemailnotificationtemplate>
+                <!-- Email for Bulk Product Upload Approval Notification -->
+                <marketplace_product_bulkproductapprovalemailnotificationtemplate translate="label" module="marketplace">
+                    <label>Bulk Product Upload Approval Notification</label>
+                    <file>marketplace/bulk_product_approval_notification.html</file>
+                    <type>html</type>
+                </marketplace_product_bulkproductapprovalemailnotificationtemplate>
+                <!-- Email for Cancel Order Notification -->
+                <marketplace_cancel_order_admin_email_template_selection translate="label" module="marketplace">
+                    <label>Cancel Order Notification</label>
+                    <file>marketplace/order_cancel_admin.html</file>
+                    <type>html</type>
+                </marketplace_cancel_order_admin_email_template_selection>
+                <!-- Email for Subscription Notification Email to Customer -->
+                <marketplace_subscription_email_notification translate="label" module="marketplace">
+                    <label>Subscription Notification Email to Customer</label>
+                    <file>marketplace/subscriptionnotification.html</file>
+                    <type>html</type>
+                </marketplace_subscription_email_notification>
+                <!-- Email for Subscription Notification Email to Admin -->
+                <marketplace_subscription_admin_subscribe translate="label" module="marketplace">
+                    <label>Subscription Notification Email to Admin</label>
+                    <file>marketplace/admin_subscription_notification.html</file>
+                    <type>html</type>
+                </marketplace_subscription_admin_subscribe>
+                <!-- Email for Upgradation Notification Email to Admin -->
+                <marketplace_subscription_admin_upgradation_notification translate="label" module="marketplace">
+                    <label>Upgradation Notification Email to Admin</label>
+                    <file>marketplace/admin_upgradation_notification.html</file>
+                    <type>html</type>
+                </marketplace_subscription_admin_upgradation_notification>
+                <!-- Email for Upgradation Approval Notification Email to Seller -->
+                <marketplace_subscription_admin_upgradation_seller_notify translate="label" module="marketplace">
+                    <label>Upgradation Approval Notification Email to Seller</label>
+                    <file>marketplace/seller_upgradion_approval.html</file>
+                    <type>html</type>
+                </marketplace_subscription_admin_upgradation_seller_notify>
+                <!-- Email for Upgradation Notification Email to Seller -->
+                <marketplace_subscription_upgradation_seller_notify translate="label" module="marketplace">
+                    <label>Upgradation Notification Email to Seller</label>
+                    <file>marketplace/seller_upgradion_notify.html</file>
+                    <type>html</type>
+                </marketplace_subscription_upgradation_seller_notify>
+                <!-- Email for Subscription plan exipry -->
+                <marketplace_subscription_seller_plan_exipry translate="label" module="marketplace">
+                    <label>Subscription plan exipry</label>
+                    <file>marketplace/seller_plan_exipry.html</file>
+                    <type>html</type>
+                </marketplace_subscription_seller_plan_exipry>
+                <marketplace_cancel_order_buyer_email_template_selection  translate="label" module="marketplace">
+                   <label>Cancel Order Buyer Notification</label>
+                   <file>marketplace/order_cancel_buyer_update.html</file>
+                   <type>html</type>
+               </marketplace_cancel_order_buyer_email_template_selection>
+               <marketplace_cancel_order_admin_email_update_selection  translate="label" module="marketplace">
+                   <label>Cancel Order Admin Notification</label>
+                   <file>marketplace/order_cancel_admin_notification.html</file>
+                   <type>html</type>
+               </marketplace_cancel_order_admin_email_update_selection>
+            </email>
+        </template>
+    </global>
+    <admin>
+        <routers>
+            <marketplaceadmin>
+                <use>admin</use>
+                <args>
+                    <module>Apptha_Marketplace</module>
+                    <frontName>marketplaceadmin</frontName>
+                </args>
+            </marketplaceadmin>
+        </routers>
+    </admin>
+    <!-- Admin menu -->
+    <adminhtml>
+        <menu>
+            <marketplace module="marketplace">
+                <title>Marketplace</title>
+                <sort_order>100</sort_order>
+                <children>
+                    <!-- Manage Sellers menu -->
+                    <manageseller module="marketplace">
+                        <title>Manage Sellers</title>
+                        <sort_order>1</sort_order>
+                        <action>marketplaceadmin/adminhtml_manageseller</action>
+                    </manageseller>
+                    <!-- Add Seller Subscription menu-->
+                    <subscription module="marketplace">
+                        <title>Add Seller Subscription</title>
+                        <sort_order>2</sort_order>
+                        <action>marketplaceadmin/adminhtml_subscription</action>
+                    </subscription>
+                    <!-- Seller Subscription Plans menu-->
+                    <sellersubcriptionplans module="marketplace">
+                        <title>Subscribers</title>
+                        <sort_order>3</sort_order>
+                        <action>marketplaceadmin/adminhtml_sellersubcriptionplans</action>
+                    </sellersubcriptionplans>
+                    <!-- Manage Orders menu-->
+                    <order module="marketplace">
+                        <title>Orders</title>
+                        <sort_order>2</sort_order>
+                        <action>marketplaceadmin/adminhtml_orderview</action>
+                    </order>
+                    <!-- Manage Payments menu-->
+                    <commission module="marketplace">
+                        <title>Payments</title>
+                        <sort_order>3</sort_order>
+                        <action>marketplaceadmin/adminhtml_commission</action>
+                    </commission>
+                    <!-- Products menu -->
+                    <manage_products module="marketplace">
+                        <title>Products</title>
+                        <sort_order>4</sort_order>
+                        <action>marketplaceadmin/adminhtml_products/</action>
+                    </manage_products>
+                    <!-- Reviews and Ratings menu -->
+                    <sellerreview module="marketplace">
+                        <title>Reviews and Ratings</title>
+                        <sort_order>5</sort_order>
+                        <action>marketplaceadmin/adminhtml_sellerreview</action>
+                    </sellerreview>
+                    <!-- Banner Slider menu -->
+                    <bannerslider module="marketplace">
+                        <!-- Checking for module enabled or disabled -->
+                        <depends>
+                            <config>bannerslider/general/enabled</config>
+                        </depends>
+                        <title>Banner Slider</title>
+                        <sort_order>6</sort_order>
+                        <action>bannerslider/adminhtml_bannerslider</action>
+                    </bannerslider>
+                     <sidebar module="marketplace">
+                        <!-- Checking for module enabled or disabled -->
+                        <depends>
+                            <config>bannerslider/general/enabled</config>
+                        </depends>
+                        <title>Manage Sidebar</title>
+                        <sort_order>7</sort_order>
+                        <action>marketplaceadmin/adminhtml_sidebar</action>
+                    </sidebar>
+                    <configuration module="marketplace">
+                        <title>Configuration</title>
+                        <sort_order>10</sort_order>
+                        <action>adminhtml/system_config/edit/section/marketplace</action>
+                    </configuration>
+                </children>
+            </marketplace>
+        </menu>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <marketplace translate="title" module="marketplace">
+                            <title>Marketplace</title>
+                            <sort_order>1000</sort_order>
+                            <children>
+                                <marketplacebackend translate="title">
+                                    <title>Market</title>
+                                </marketplacebackend>
+                            </children>
+                        </marketplace>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <!-- Update marketplace layout xml file -->
+        <layout>
+            <updates>
+                <marketplace>
+                    <file>marketplace.xml</file>
+                </marketplace>
+            </updates>
+        </layout>
+        <!-- Marketplace language transulation CSV file -->
+        <translate>
+            <modules>
+                <Apptha_Marketplace>
+                    <files>
+                        <default>Apptha_Marketplace.csv</default>
+                    </files>
+                </Apptha_Marketplace>
+            </modules>
+        </translate>
+    </adminhtml>
+    <!-- Cron job for event vacation mode -->
+    <crontab>
+        <jobs>
+            <marketplace_observer>
+                <schedule>
+                    <cron_expr>* * */1 * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>marketplace/observer::eventVacationMode</model>
+                </run>
+            </marketplace_observer>
+             <marketplace_observers>
+             <schedule><cron_expr>* * */1 * *</cron_expr></schedule>
+            <run>
+            <model>marketplace/observer::eventExpireSubscription</model>
+            </run>
+             </marketplace_observers>
+         </jobs>
+    </crontab>
+</config> 

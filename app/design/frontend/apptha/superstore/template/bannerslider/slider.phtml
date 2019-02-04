@@ -1,0 +1,119 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+?>
+
+<?php 
+$bannerSliderEnabled = Mage::getStoreConfig('bannerslider/general/enabled');
+if($bannerSliderEnabled){
+$bannerSliderImages = $this->getBannerSliders ();
+?>
+
+<div class="grid_container home_container clearfix">
+	<div class="grid_16 home_page_slider">
+	 <ul class="banner_slider" style="overflow:hidden;height:358px;">
+     <?php $i=0;
+           foreach ($bannerSliderImages as $sliderImage){
+           $sliderImageFile = $sliderImage->getFile ();
+           $sliderImg=Mage::getBaseUrl('media').$sliderImageFile;
+           $sliderUrl=$sliderImage->getLink();
+           $sliderTitle=$sliderImage->getTitle();
+           ?>
+                    <li>
+                        <a href="<?php echo $sliderUrl; ?>"><img src="<?php echo $sliderImg ?>"  alt="<?php echo $sliderTitle;?>" title="<?php echo $sliderTitle;?>" class="slider-image"/>
+                        </a>
+                    </li>
+                    <?php
+                    $i++;
+                    if($i==4){
+                        break;
+                    }
+           }?>                   
+                </ul>
+				  <div id="bx-pager">
+                    <?php 
+                    $i=0;
+                    foreach($bannerSliderImages as $sliderImage){
+                    $sliderTitle=$sliderImage->getTitle();?>
+                    <a href="<?php echo $sliderImage->getLink();?>" data-slide-index="<?php echo $i;?>"><span class="slide_caption"><span><?php echo $sliderTitle;?></span><abbr><?php echo $sliderImage->getBannerHtml();?></abbr></span></a>
+                  <?php $i++;
+                    if($i==4){
+                        break;
+                    }
+                    }?>
+
+                </div>
+            </div>
+            <?php echo $this->getChildHtml('sidebar');?>
+            
+</div>
+
+<?php } ?>
+<script>
+var $j=jQuery.noConflict();
+$j('.banner_slider').bxSlider({
+    auto: true,
+    pagerCustom: '#bx-pager',
+    mode: 'fade',
+    minSlides: 2,
+    maxSlides:4,
+    moveSlides:1,
+    infiniteLoop: true,
+    hideControlOnEnd:true,
+    speed:2000,
+    onSliderLoad: function() {
+       $j('.banner_slider').parent().parent().find('.bx-controls').show();
+    },
+});
+$j('.bxslider').bxSlider({
+	auto: true,
+    mode: 'vertical',
+    slideWidth: 240,
+    moveSlides:4,
+    minSlides: 4,
+    maxSlides: 4,
+    pager: true,
+    infiniteLoop: true,
+    hideControlOnEnd:true,
+    speed: 2000,
+});
+
+$j('#bx-pager a').hover(function(){
+	
+	var newId = $j(this).attr('data-slide-index');
+	var old = $j('#bx-pager a').filter('.active').attr('data-slide-index');
+	if(newId == old) {
+		return false;
+	}
+	$j('#bx-pager a').filter('.active').removeClass('active');
+	$j(this).addClass('active');
+	$j('.banner_slider li:eq('+old+')').css('display','none');
+	$j('.banner_slider li:eq('+newId+')').css('display','block');
+	});
+</script>

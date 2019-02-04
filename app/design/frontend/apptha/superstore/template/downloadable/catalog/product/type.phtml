@@ -1,0 +1,65 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * Downloadable product type
+ *
+ * @see Mage_Downloadable_Block_Catalog_Product_View_Type
+ */
+?>
+<?php 
+
+$_product = $this->getProduct() ?>
+
+<?php if($_product->isSaleable()): ?>
+    <p class="availability in-stock">
+        <span class="label">
+        
+        <?php echo $this->helper('catalog')->__('Availability:') ?>
+        
+        </span>
+        <span class="value"><?php echo $this->helper('catalog')->__('In stock') ?>
+        </span>
+    </p>
+<?php else: ?>
+    <p class="availability out-of-stock">
+        <span class="label"><?php echo $this->helper('catalog')->__('Availability:') ?>
+        </span>
+        <span class="value"><?php echo $this->helper('catalog')->__('Out of stock') ?>
+        </span>
+    </p>
+    <?php 
+        $countAssignProduct = Mage::helper ( 'marketplace/marketplace' )->outofstock ($_product->getId());
+        
+        if($countAssignProduct > 0){?>
+        	  	<div><a href="#seller_price_comparison_wrapper"><?php echo $this->helper('catalog')->__("(More sellers are Available)")?></a></div>     	
+        <?php }?>
+<?php endif; ?>
+<?php echo $this->getChildHtml('product_type_data_extra') ?>

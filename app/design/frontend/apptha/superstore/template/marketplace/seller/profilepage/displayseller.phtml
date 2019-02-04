@@ -1,0 +1,196 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+/**
+ * Get infromatin through posted values like
+ * id
+ * customer data
+ * vacation mode
+ * vacation status val
+ */
+$id = $this->getRequest()->getParam('id');
+$customerData = Mage::getModel('customer/customer')->load($id);
+$currentTimeStamp = strtotime(Mage::getModel('core/date')->date('Y-m-d H:i:s'));
+$vacationMode = Mage::getModel('marketplace/vacationmode')->load($id,'seller_id');
+$vacationStatusVal = $vacationMode->getVacationStatus();
+
+/**
+ * display product collection
+ * Get seller page
+ * current data
+ * current url
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+$currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+<?php  echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<div class="market_place_profile">
+   <div class="markeft_place_main_widget">               
+  <?php if ($vacationStatusVal==0 && $currentTimeStamp >= strtotime($vacationMode->getDateFrom()) && $currentTimeStamp <= strtotime($vacationMode->getDateTo())){
+      /**
+       * If vation status value is equal to 0
+       * then get the vacation message data
+       */
+  $vacationMessageData = $vacationMode->getVacationMessage();
+  /**
+   * Check the vation message data is not empty
+   * if so then display the vacation message
+   */
+  if (!empty($vacationMessageData)){
+  ?>      
+  <h1><marquee><?php echo $vacationMessageData; ?></marquee></h1> 
+  <?php }
+  } ?>     
+<?php 
+/**
+ * Face book Like Button Script
+ */  ?>
+        <div id="fb-root"></div>           
+        <!--display seller logo-->
+        <div class="mp_profiles_container"> 
+        <div class="seller_store_banner" >
+         <p class="mp_profiles_banner">
+                    <?php if (strpos($sellerPage->getStoreBanner(), '.')) { ?>
+                        <img src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $sellerPage->getStoreBanner(); ?>" alt="store banner" class="market_place_store_img_banner" width="1100" height="232" />                        
+                    <?php } else { ?>
+                    <img src="<?php echo $this->getSkinUrl('images/no-banner-image.png'); ?>" alt="store banner" class="market_place_store_img_banner" /> 
+                   <?php  } ?>
+                </p> 
+                </div>         
+               <div class="mp_profiles-info-wrapper"> <p class="mp_profiles_logo">
+                    <?php if (strpos($sellerPage->getStoreLogo(), '.')) { ?>
+                        <img src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $sellerPage->getStoreLogo(); ?>" alt="store logo" class="market_place_store_img" />                        
+                    <?php } else { ?>
+                      <img src="<?php echo $this->getSkinUrl('images/no-store-logo.png'); ?>" alt="store logo" class="market_place_store_img" />                          
+                        <?php } ?>
+                </p>
+                <div class="sellers_store_info">
+                 <?php $enablecontactSeller = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/display_contact_seller');?>
+ <?php if($enablecontactSeller == 1){ ?>
+                     <div class="contact-wrapper">
+                 <span class="contact-number"><a><?php
+                  echo $sellerPage->getContact();?></a></span>
+                 <span class="contact-mail"><a href="mailto:<?php echo $customerData->getEmail();?>"><?php
+                  echo $customerData->getEmail();?></a></span>
+                 </div>
+                 <?php } ?>
+                <?php 
+                /**
+                 * Display Seller address information like
+                 * seller store title
+                 * seller store state
+                 * seller store country
+                 */?>                          
+                 <h2><?php echo $sellerPage->getStoreTitle();?></h2>
+                <address>
+                 <?php echo $sellerPage->getStoreState();?>
+                 <?php echo $sellerPage->getStoreCountry();?>
+                 </address> 
+                 <?php 
+                 /**
+                  * Display Ratings
+                  * if the review count is greater than zero
+                  * then calcualte the ratings average
+                  * and display the ratings average
+                  */
+                 ?>
+                <span class="all_review_container_wr"> 
+                                <h3><?php echo $this->__('Average Ratings'); ?></h3> 
+                                <?php $reviewCount = $this->reviewCount($id);?>
+                                 <?php if($reviewCount>0){?>
+                                <span class="all_reviews_details_wr"> 
+                                    <p class="all_reviews_block">                                    
+                                        <?php
+                                        $ratingCollection = $this->averageRatings($id);
+                                        ?>  
+                                        <label class="all_review_rating" style="width:<?php echo round($ratingCollection,1) * 20; ?>%;"></label>                                                           
+                                    </p>                                                                        
+                                </span>
+                                <p class="rating_s"><?php echo round($ratingCollection,1);?><?php
+                                 echo $this->__(' based on ');?><?php
+                                  echo $reviewCount; ?><?php
+                                   echo $this->__(' rating[s]');?></p> 
+                                <?php }
+                                 else { ?>
+                                
+                                <span class="all_reviews_details_wr"> 
+                                    <p class="all_reviews_block"> 
+                                     <label class="all_review_rating" style="width:0%;"></label>
+                                        </p>                                                                        
+                                </span>   
+                                </span>      
+                            <?php } ?>
+                </div>
+                  <?php 
+                /**
+                 * Facebook, Twitter, Google Plus, Linked In Page link
+                 */?>
+                 <div class="social-media-wrapper">
+                <?php 
+                /**
+                 * Check the id is not empty of the social sharings like
+                 * linked in
+                 * Facebook
+                 * Twitter
+                 * Google Plus
+                 * if they are not empty display their title with links
+                 */
+                if($sellerPage->getLinkedId() != ''){?>
+                <a href="<?php echo $sellerPage->getLinkedId(); ?>" target="_blank" title="<?php
+                 echo $this->__('LinkedIn') ?>" class="linked-in">&nbsp;</a>
+                <?php } ?> 
+                <?php if($sellerPage->getFacebookId() != ''){?>
+                <a href="<?php echo $sellerPage->getFacebookId(); ?>" target="_blank" title="<?php
+                 echo $this->__('Facebook') ?>" class="facebook">&nbsp;</a>
+                <?php } ?>
+                <?php if($sellerPage->getTwitterId() != ''){?>
+                <a href="<?php echo $sellerPage->getTwitterId();?>" target="_blank" title="<?php
+                 echo $this->__('twitter') ?>" class="twitter">&nbsp;</a>
+                <?php } ?>
+                <?php if($sellerPage->getGoogleId() != ''){?>
+                <a href="<?php echo $sellerPage->getGoogleId();?>" target="_blank" title="<?php
+                 echo $this->__('GooglePlus') ?>" class="gplus">&nbsp;</a>
+                <?php } ?>
+                </div>
+                </div>
+                
+    </div>
+   </div>
+   </div>
+    <div class="clear"></div>
+    <div class="mp_profiles_desc">
+    <p class="mp_profiles_desc"><?php echo $sellerPage->getDescription(); ?></p>
+    </div>
+   <?php 
+/**
+ * Two column block
+ */
+?>

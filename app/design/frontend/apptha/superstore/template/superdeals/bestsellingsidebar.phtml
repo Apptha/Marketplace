@@ -1,0 +1,96 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to display Best Selling Side bar
+ */
+$products = $this->getProductCollection();
+$coreHelper = $this->helper('core');
+$StoreConfigDealsEnabled = Mage::getStoreConfig('superdeals/superdeals_group/deals_enable');
+$dealsEnable = intval(Mage::helper('core/data')->isModuleEnabled('Apptha_Superdeals'));
+$advanceOption = intval(Mage::getStoreConfig('advanced/modules_disable_output/Apptha_Superdeals'));
+if (($StoreConfigDealsEnabled == 1) && ( $dealsEnable == 1) && ( $advanceOption == 0)):
+    ?>
+    <div class="block block-dealtopselling">
+        <div class="block-title">
+            <strong>
+                <span><?php echo $this->__('Top Selling Deals') ?></span>
+            </strong>
+        </div>
+        <div class="block-content">        
+            <?php if (count($products) > 0): ?>
+                <ol class="mini-products-list" id="topselling-sidebar">
+
+                    <?php foreach ($products as $item): ?>
+                        <?php
+                        $originalPrice = $item->getPrice(); 
+                        $discountPrice = $item->getSpecialPrice(); 
+                        $savings = $originalPrice - $discountPrice; 
+                        $savingsPercentage = round(($savings / $originalPrice) * 100, 0);
+                        ?>
+                        <?php for ($increment = 0; $increment < 1; $increment++) {
+                            ?>
+                            <li class="item">
+                                <a class="product-image" href="<?php echo $item->getProductUrl() ?>" style="overflow: hidden; height: 50px">
+                                    <img src="<?php echo $this->helper('catalog/image')->init($item, 'thumbnail') ?>" width="60px" alt="<?php
+                                     echo $this->htmlEscape($item->getName()) ?>"  />
+                                </a>
+                                <div class="product-details">
+                                    <p class="product-name">
+                                        <a href="<?php echo $item->getProductUrl() ?>"><?php
+                                         echo $this->htmlEscape($item->getName()) ?></a>
+                                    </p>
+                                    
+                                    <span class="offer_price"> 
+                                        <?php echo $coreHelper->currency($item->getSpecialPrice(), true, false); ?>
+                                    </span>
+                                    
+                                    <span class="original_price" > 
+                                        <?php echo $coreHelper->currency($item->getPrice(), true, false); ?>
+                                    </span>
+                                    
+                                    <span class="discount_label" > <?php echo $this->__('Discount:') ?> </span> 
+                                    <span class="discount_price" <?php echo $this->getIdSuffix() ?>> 
+                                         <?php echo $savingsPercentage, '%';
+                                               echo ' '.$this->__('Off'); ?>
+                                    </span>
+                                </div>
+                            </li>        
+                        <?php } endforeach ?>
+                </ol>
+                <script type="text/javascript">decorateList('topselling-sidebar');</script>
+            <?php else: ?>
+                <div class="empty">
+                    <?php echo $this->__('Currently no deals available') ?>
+                </div>
+            <?php endif ?>
+        </div>
+    </div> 
+    <?php
+ endif ?>

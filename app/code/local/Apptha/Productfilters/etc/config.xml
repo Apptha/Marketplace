@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Advancedfilters
+ * @version    	1.0.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+ -->
+<config>
+    <modules>
+        <Apptha_Productfilters>
+            <version>1.0.0</version>
+        </Apptha_Productfilters>
+    </modules>
+    <frontend>
+    	<events>
+            <controller_action_layout_render_before>
+                <observers>
+                    <productfilters_get_result>
+                        <class>productfilters/observer</class>
+                        <method>getResult</method>
+                    </productfilters_get_result>
+                </observers>
+            </controller_action_layout_render_before>
+            <controller_response_redirect>
+                <observers>
+                    <productfilters_get_result>
+                        <class>productfilters/observer</class>
+                        <method>getResult</method>
+                    </productfilters_get_result>
+                </observers>
+            </controller_response_redirect>
+            <http_response_send_before>
+                <observers>
+                    <productfilters_get_result>
+                        <class>productfilters/observer</class>
+                        <method>getResult</method>
+                    </productfilters_get_result>
+                </observers>
+            </http_response_send_before>
+        </events>
+        <layout>
+            <updates>
+                <productfilters module="Apptha_Productfilters">
+                    <file>productfilters.xml</file>
+                </productfilters>
+            </updates>
+        </layout>
+       	<routers>
+            <productfilters>
+                <use>standard</use>
+                <args>
+                    <module>Apptha_Productfilters</module>
+                    <frontName>productfilters</frontName>
+                </args>
+            </productfilters>
+        </routers>       
+  </frontend> 
+    <global>
+        <models>
+        	 <catalog>
+                <rewrite>
+                    <layer>Apptha_Productfilters_Model_Catalog_Layer</layer>
+                    <layer_filter_item>Apptha_Productfilters_Model_Catalog_Layer_Filter_Item</layer_filter_item>
+                    <layer_filter_category>Apptha_Productfilters_Model_Catalog_Layer_Filter_Category</layer_filter_category>
+                    <layer_filter_attribute>Apptha_Productfilters_Model_Catalog_Layer_Filter_Attribute</layer_filter_attribute>
+                    <layer_filter_price>Apptha_Productfilters_Model_Catalog_Layer_Filter_Price</layer_filter_price>
+                </rewrite>
+            </catalog>
+            <catalogsearch>
+                <rewrite>
+                    <layer>Apptha_Productfilters_Model_CatalogSearch_Layer</layer>
+                    <layer_filter_attribute>Apptha_Productfilters_Model_CatalogSearch_Layer_Filter_Attribute</layer_filter_attribute>
+                </rewrite>
+            </catalogsearch>
+            <catalog_resource>
+                <rewrite>
+                    <layer_filter_attribute>Apptha_Productfilters_Model_Catalog_Resource_Layer_Filter_Attribute</layer_filter_attribute>
+                </rewrite>
+            </catalog_resource>
+            <productfilters>
+	              <class>Apptha_Productfilters_Model</class>
+	              <resourceModel>productfilters_resource</resourceModel>
+            </productfilters>
+            <productfilters_resource>
+                <class>Apptha_Productfilters_Model_Resource</class>
+                <entities>
+                    <attribute_url_key>
+                        <table>productfilters_attribute_url_key</table>
+                    </attribute_url_key>
+                </entities>
+            </productfilters_resource>
+       </models>
+       <helpers>
+           <productfilters>
+               <class>Apptha_Productfilters_Helper</class>
+           </productfilters>
+       <configurableswatches>
+       		<rewrite>
+					<productlist>Apptha_Productfilters_Helper_Productlist</productlist>
+			</rewrite>
+		</configurableswatches>
+		</helpers> 
+       <blocks>
+            <catalog>
+                <rewrite>
+                    <layer_view>Apptha_Productfilters_Block_Catalog_Layer_View</layer_view> 
+                    <layer_state>Apptha_Productfilters_Block_Catalog_Layer_State</layer_state>
+                    <product_list_toolbar>Apptha_Productfilters_Block_Catalog_Product_List_Toolbar</product_list_toolbar>
+                    <layer_filter_attribute>Apptha_Productfilters_Block_Catalog_Layer_Filter_Attribute</layer_filter_attribute>
+                    <layer_filter_price>Apptha_Productfilters_Block_Catalog_Layer_Filter_Price</layer_filter_price>
+                </rewrite>
+            </catalog>
+            <catalogsearch>
+                <rewrite>
+                    <layer_filter_attribute>Apptha_Productfilters_Block_CatalogSearch_Layer_Filter_Attribute</layer_filter_attribute>
+                </rewrite>
+            </catalogsearch>
+            <productfilters>
+                <class>Apptha_Productfilters_Block</class>
+            </productfilters>
+        </blocks>
+        <resources>
+            <productfilters_setup>
+                <setup>
+                    <module>Apptha_Productfilters</module>
+                </setup>
+            </productfilters_setup>
+        </resources>
+   </global>
+   <default>
+        <advancedproductfilters>
+            <catalog>
+                <enabled>0</enabled>
+                <ajax_enabled>1</ajax_enabled>
+                <price_slider>1</price_slider>
+            </catalog>
+        </advancedproductfilters>
+         <web>
+            <routers>
+                <json>
+                    <area>frontend</area>
+                    <class>Apptha_Productfilters_Controller_Varien_Router_Json</class>
+                </json>
+            </routers>
+        </web>
+    </default>
+</config>

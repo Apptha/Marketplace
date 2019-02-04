@@ -1,0 +1,187 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+ ?> 
+<?php 
+/**
+ * get seller id
+ */
+$id = $this->getRequest()->getParam('id');
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+
+/**
+ * display product collection
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+?>
+  <div id="bestsellingproducts" class="bestsellingproducts">
+  <?php $bestSellingCollection = $this->bestSellerCollection ($id);
+$categoryCount = count ( $bestSellingCollection );
+if ($categoryCount >= 1) { ?>
+   <h2 class="bsp_name subtitle"><span>
+<span><?php echo $this->__('Best Selling');?></span> <?php
+ echo $this->__('Products');?></span></h2>
+<div class="products-grid <?php if($categoryCount>3){
+    echo 'slider-carousel'; 
+} 
+else {
+    echo 'no-slider'; 
+} ?>">
+<?php $increment = 1; 
+ foreach($bestSellingCollection as $_bestSellingCollection) {
+    $_compareUrl = Mage::helper('catalog/product_compare')->getAddUrl($_bestSellingCollection);
+ ?>
+<?php 
+                    	
+                    	 $productData=Mage::helper('marketplace/outofstock')->getProductObject($_bestSellingCollection->getId());
+                    	$isAssignedProduct=$productData->getIsAssignProduct();
+                    	if($isAssignedProduct){
+                    		$assignProductId=$productData->getAssignProductId();
+                    		$productDetail=Mage::helper('marketplace/outofstock')->getProductObject($assignProductId);
+                    		$productUrl=$productDetail->getProductUrl();
+                    		$productSku=$productDetail->getSku();
+                    	}else{
+                    		$productUrl=$_bestSellingCollection->getProductUrl();
+                    		$productSku=$_bestSellingCollection->getSku();
+                    	}
+                    	?>
+                    	
+   <?php if(!empty($productSku)){?>
+
+<div class="slider">
+
+<div class="product_image_div">
+ <?php 
+ /**
+ * Display product image
+ */
+?>
+ <a href="<?php echo $_bestSellingCollection->getProductUrl() ?>" title="<?php
+  echo $this->escapeHtml($_bestSellingCollection->getName()) ?>" class="product-image">
+                    <?php $_imgSize = 260; ?>
+                    <img src="<?php echo $this->helper('catalog/image')->init($_bestSellingCollection, 'small_image')->resize($_imgSize); ?>" alt="<?php
+                     echo $this->stripTags($this->getImageLabel($_bestSellingCollection, 'small_image'), null, true) ?>" />
+</a>
+<h3 class="product-name">
+<a href="<?php echo $_bestSellingCollection->getProductUrl(); ?>">
+                       <?php echo $_bestSellingCollection->getName (); ?>
+                    </a>
+</h3>
+<div class="products_gridview_page">
+<div class="price-box">
+<span class="regular-price"> 
+<span class="price">
+<?php
+/**
+ * Display Product Price
+ */
+$newproductPrice = $_bestSellingCollection->getPrice ();
+$newSpecialPrice = $_bestSellingCollection->getSpecialPrice ();
+$newDealExpireDate = $_bestSellingCollection->getspecial_to_date ();
+if (! empty ( $newSpecialPrice ) && ($newDealExpireDate != '') && ($newDealExpireDate >= $currentDate)) {
+echo Mage::helper ( 'core' )->currency ( $newSpecialPrice, true, false );
+} else {
+echo Mage::helper ( 'core' )->currency ( $newproductPrice, true, false );
+}
+/**
+ * Quick view of the product
+ * If quickview has been enabled in admin section show quick view
+ */
+if(Mage::getStoreConfig('quickview/general/enabled')){ ?>
+<input type="hidden" name="appthaAjaxLoading" id="appthaAjaxLoading" value="<?php echo $this->getSkinUrl('facebox/loading.gif') ?>" />
+<input type="hidden" name="appthaAjaxClose" id="appthaAjaxClose" value="<?php echo $this->getSkinUrl('facebox/closelabel.png') ?>" />
+<a rel="facebox" href="<?php echo Mage::helper('quickview')->getQuickViewUrl($_bestSellingCollection->getId());?>">
+  <span class="quickview"><span class="btn-quickview"><?php echo $this->__('Quick View')?></span></span>
+</a>
+<?php } ?>
+                                   </span>
+                               </span>
+</div>
+</div>
+<?php
+/**
+ * Display Add to cart, add to wishlist and compare
+ */
+?>
+                            <div class="actions">
+                            
+                            <?php if($_bestSellingCollection->isSaleable()){ ?>
+                        <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart animated fadeIn" onclick="setLocation('<?php
+                         echo Mage::helper('checkout/cart')->getAddUrl($_bestSellingCollection); ?>')">
+<span>
+<span><?php echo $this->__('Add to Cart') ?>
+</span></span>
+</button>
+                    <?php } else {?>
+              <p class="availability out-of-stock animated fadeIn">
+<span><?php echo $this->__('Out of stock') ?></span>
+</p>
+                    <?php } ?>
+                            
+<ul class="add-to-links">
+<li>
+<a href="<?php echo $this->helper('wishlist')->getAddUrl($_bestSellingCollection) ?>"title="<?php
+ echo $this->__('Add to Wishlist') ?>"class="link-wishlist <?php
+   ?> animated fadeIn">
+<?php echo $this->__('Add to Wishlist') ?>
+</a>
+</li>
+<li>
+<span class="separator">|</span> 
+
+<a href="<?php echo $_compareUrl ?>" class="link-compare animated fadeIn" title="<?php
+ echo $this->__('Add to Compare') ?>">
+
+<?php echo $this->__('Add to Compare') ?>
+</a>
+</li>
+</ul> 
+
+<a class="button-action"><span class="plus"></span></a>
+                       
+                    </div>                  
+<?php echo $this->helper('marketplace/marketplace')->getLabel($_bestSellingCollection);  ?>
+                     </div></div><?php }?>
+<?php $increment++; 
+} ?>
+</div>
+<?php } ?>
+</div>
+<script type="text/javascript">
+  $mp = jQuery.noConflict();
+  $mp(document).ready(function(){
+  $mp('.slider-carousel').bxSlider({ 
+	  infiniteLoop: false,
+	  hideControlOnEnd: true,
+	      minSlides: 1,
+	      moveSlides: 1,
+	      slideMargin: 10
+  });
+});
+</script>

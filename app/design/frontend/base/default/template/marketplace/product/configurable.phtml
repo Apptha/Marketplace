@@ -1,0 +1,892 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<?php
+
+/**
+ *  Initilize product types
+ */
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+    $sellerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+}
+
+/**
+ * Check seller enable vacation mode or not
+ */
+$vacationMode = Mage::getModel('marketplace/vacationmode')->load($sellerId,'seller_id'); 
+
+
+/**
+ * Get the Shippping type
+ */
+$shippingtypeId = Mage::helper('marketplace/marketplace')->getSellerShipping();
+$sellerShippingAttribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $shippingtypeId);
+$sellerShipping = array();
+$selectShipping = '';
+foreach ($sellerShippingAttribute->getSource()->getAllOptions() as $option) {
+    $value = $option['value'];
+    if ($value != '') {
+        $sellerShipping[$value] = $option['label'];
+        $selectShipping .= "<option value='" . $option['value'] . "'>" . $option['label'] . "</option>";
+    }
+}
+
+/**
+ *  Initilize product approval disabled
+ */
+$productApproval = 2;
+$vacationStatus = $vacationMode->getVacationStatus();
+$disableProducts = $vacationMode->getProductDisabled();
+
+if (Mage::helper('marketplace')->getProductApproval() == 1 || $vacationStatus == '1' && $disableProducts == '1' ) {
+    $productApproval = Mage::helper('marketplace')->getProductApproval();
+} else {
+    /**
+     *  Initilise product approval disabled
+     */
+    $productApproval = 2;
+}
+/**
+ *  Check Request Parameter has been set
+ */
+if($this->getRequest()->getParam('set')){
+    $set = $this->getRequest()->getParam('set');
+}else{
+    $set = $this->getAttributeSetId();
+}
+/**
+ *  Get Id of simple product
+ */
+$simpleProductId = $this->getRequest()->getParam('sp');
+$autoFlag = $this->getRequest()->getParam('auto');
+/**
+ *  Define empty variables like
+ *  simpleName
+ *  simpleSku
+ *  simplePrice
+ *  simpleWeight
+ *  simpleQty
+ *  simpleIsInStock
+ */
+$simpleName = $simpleSku = $simplePrice = $simpleWeight = $simpleQty = $simpleIsInStock = '';
+/**
+ *  Check simple product id is not empty
+ */
+if(!empty($simpleProductId)){
+$simpleProduct = Mage::getModel('catalog/product')->load($simpleProductId);
+/**
+ *  Get Name of simple product
+ */
+$simpleName = $simpleProduct->getName();
+/**
+ *  Get SKU of simple product
+ */
+$simpleSku = $simpleProduct->getSku();
+/**
+ *  Get Weight of the simple product
+ */
+$simpleWeight = $simpleProduct->getWeight();
+$simpleProductStockData = Mage::getModel('cataloginventory/stock_item')->loadByProduct($simpleProductId);
+/**
+ *  Get Quantity of simple product
+ */
+$simpleQty = round($simpleProductStockData->getQty(),2);
+/**
+ *  Get the in stock information of the simple product
+ */
+$simpleIsInStock = $simpleProductStockData->getIsInStock();
+}
+
+$superProductAttributeFlag = 0;
+?>
+
+<!-- Marketplace wrapper -->
+<div class="marketplace-wrapper" id="marketplace-wrapper">     
+    <div class="page-title">
+    <h2><?php echo $this->__('Quick simple product creation'); ?></h2>         
+    </div>
+    <?php 
+    /**
+     *  Hidden value for check price attrbiute option
+     */
+    ?>
+    <input type="hidden" name="validate_config_price_all_attr" id="validate_config_price_all_attr"  value="<?php if(empty($simpleProductId) || !empty($simpleProductId) && $autoFlag != ''){
+        echo '1'; 
+    }
+    else{
+        echo '0'; 
+    } ?>">  
+    <?php
+    /**
+     *  Form for configurable associated product
+     */
+    ?>
+    <form action="<?php
+    /**
+     *  Check id of simple product is not empty or auto flag value is not equal to empty
+     */
+     if(empty($simpleProductId) || $autoFlag != ''){
+        echo Mage::helper('marketplace/url')->getQuickCreateSimpleProductUrl(); 
+    }
+    else{
+        echo Mage::helper('marketplace/url')->getUpdateSimpleProductUrl(); 
+} 
+?>" method="post" class="configurable_associated_product_form" id="configurable_associated_product_form" enctype="multipart/form-data">    
+    <?php 
+    $productId = $this->getRequest()->getParam('id');
+    $product = Mage::getModel('catalog/product')->load($productId);        
+    ?>
+    <input type="hidden" name="simple_product_id" value="<?php echo $simpleProductId; ?>">       
+    <input type="hidden" id="product_id" name="product_id" value="<?php echo $productId; ?>">
+     <input type="hidden" id="type" name="type" value="simple">
+    <input type="hidden" name="simple_product[website_ids][]" value="<?php echo $this->getWebsiteId(); ?>" id="product_website_1">    
+    <input type="hidden" id="attribute_set_id" name="set"  value="<?php echo $set; ?>">
+    <input type="hidden" id="status" name="simple_product[status]" value="<?php
+            /**
+            *  check product Approval has been set
+            */
+            if (isset($productApproval)) {
+                echo $productApproval;
+            }
+            ?>">
+            <input type="hidden" id="tax_class_id" name="product[tax_class_id]"  value="0">
+            <input type="hidden" id="store" name="store"  value="<?php echo $this->getStoreId(); ?>">
+            
+            <div class="fieldset marketplace-general">        
+            <ul class="form-list">
+                <li class="fields wide">
+                    <div class="field">
+                        <label for="name" class="required"> <em>*</em> <?php echo $this->__('Name'); ?></label>
+                        <div class="input-box">
+                            <input id="name" name="simple_product[name]" value="<?php $nameFlag = 0;
+                            /**
+                             *  Check simple product id is not empty 
+                             *  or autoflage is equal to name 
+                             *  or autoflag is equal to both
+                             */
+                             if(empty($simpleProductId) || $autoFlag == 'name' || $autoFlag == 'both'){
+                                echo $product->getName(); 
+                                $nameFlag = 1; 
+                            }?><?php
+                            /**
+                             * Check simple product name is not empty
+                             * and name flag is equal to zero
+                             */
+                             if(!empty($simpleName) && $nameFlag == 0){
+                                 echo $simpleName; 
+                             } ?>" class="required-entry input-text" type="text" <?php
+                             /**
+                              *  Check simple product id is empty
+                              *  or auto flag is equal to 'name'
+                              *  or auto flag is equal to 'both'
+                              */
+                              if(empty($simpleProductId) || $autoFlag == 'name' || $autoFlag == 'both'){
+                                  echo 'disabled="disabled";'; 
+                              }?>>
+                            <?php 
+                            /**
+                             *  Check id of the simple product is empty
+                             *  or autoflag value is not equal to empty value
+                             */
+                            if(empty($simpleProductId) || $autoFlag != ''){ ?>
+                            <input type="checkbox" id="simple_product_name_autogenerate" name="simple_product[name_autogenerate]" value="1" onclick="autogenerateNameValueForCheckbox()" <?php
+                            /**
+                             *  Check nameflag is equal to 1
+                             */
+                             if($nameFlag == 1){
+                                 ?> checked="checked" <?php 
+                              } ?>>
+                            <div><a href="javascript:void(0);" onclick="autogenerateNameValueForSimple()"><?php echo $this->__('Autogenerate'); ?></a></div>
+                            <?php } ?>
+                        </div>
+                    </div>                    
+                </li>
+                <li class="wide fields marketplace_addnew_sku">
+                    <div class="field">
+                        <label for="sku" class="required"> <em>*</em> <?php echo $this->__('SKU'); ?> </label>    
+                        <div class="input-box">
+                       
+                       
+                            <input id="sku" name="simple_product[sku]" value="<?php $skuFlag = 0; 
+                            /**
+                             * confirm the id of the simple product is empty
+                             * or autoflag value is equal to 'sku'
+                             * or autoflag value is equal to 'both'
+                             */
+                            if(empty($simpleProductId) || $autoFlag == 'sku' || $autoFlag == 'both'){
+                                echo $product->getSku(); 
+                                $skuFlag = 1; 
+                            }?><?php 
+                            /**
+                             * Check simple sku value is not empty
+                             * and skyflag value is equal to zero
+                             */
+                            if(!empty($simpleSku) && $skuFlag == 0){
+                                echo $simpleSku; 
+                            } ?>" class="input-text required-entry" type="text"/ <?php
+                            /**
+                             *  Check id of simple product is empty
+                             *  or autoflag is 'sku'
+                             *  or autoflag is 'both'
+                             */
+                                 if(empty($simpleProductId) || $autoFlag == 'sku' || $autoFlag == 'both'){
+                                     echo 'disabled="disabled";'; 
+                                 }?>>
+                            <?php 
+                            /**
+                             * Check id of simple product is empty value
+                             * or autoflag value is not equal to empty
+                             */
+                            if(empty($simpleProductId) || $autoFlag != ''){ ?>
+                            <input type="checkbox" id="simple_product_sku_autogenerate" name="simple_product[sku_autogenerate]" value="1" onclick="autogenerateSkuValueForCheckbox()" <?php if($skuFlag == 1){
+                                ?> checked="checked" <?php 
+                                 } ?>>
+                            <div><a href="javascript:void(0);" onclick="autogenerateSkuValueForSimple()"><?php echo $this->__('Autogenerate'); ?></a></div>
+                            <?php } ?>
+                             <div id="category-loading" style="display: none">
+                    <img src="<?php echo Mage::getBaseUrl('skin') . 'frontend/apptha/marketplace/marketplace/images/bx_loader.gif'; ?>" />
+                </div>
+                            <span id="empty-text" style="display:none;color: red;margin-top: 3px;clear: both;font-size: 13px;"></span>
+                            <span id="available" style="display:none;color: green;margin-top: 3px;"><?php echo $this->__('SKU Available'); ?></span >
+                            <span id="not-available" style="display:none;color: red;margin-top: 3px;"><?php echo $this->__('SKU Not Available'); ?></span >
+                        </div>
+                    </div>
+                </li>         
+                <li class="wide fields"> <div class="field" id="marketplace_weight_div">
+                <label for="weight" class="required"> <em>*</em> <?php echo $this->__('Weight'); ?></label>
+                <div class="input-box">
+                <input id="weight" name="simple_product[weight]" value="<?php if(!empty($simpleWeight)){
+                    echo round($simpleWeight,2); 
+                } ?>" class="required-entry validate-number validate-zero-or-greater validate-number-range number-range-0-99999999.9999 input-text" type="text">
+                </div>
+                </div>
+                </li>               
+                <!-- Configurable attributes -->
+                <li class="fields">
+                    <?php
+                    /**
+                     * Get the configurable atributes
+                     */
+    $attributes = $product->getTypeInstance()->getConfigurableAttributesAsArray();    
+    $attributeValueForPrice = array();
+    foreach ($attributes as $attribute){
+    /**
+    *  Check the attribute values are not empty
+    */
+    if(!empty($attribute['values'])){
+    foreach($attribute['values'] as $attributesValue){  
+    $valueIndex = $attributesValue['value_index'];
+    /**
+     *  Get percentage option of atribute price value
+     */
+    $attributeValueForPrice[$valueIndex]['is_percent'] = $attributesValue['is_percent'];
+    /**
+     *  Check pricing value of atributes value
+     *  is not empty
+     */
+    if(!empty($attributesValue['pricing_value'])){
+    $attributeValueForPrice[$valueIndex]['pricing_value'] = $attributesValue['pricing_value'];
+    }else{
+    $attributeValueForPrice[$valueIndex]['pricing_value'] = '-';
+    }
+    $superProductAttributeFlag = 1;
+    }
+    }
+    }
+      
+    foreach($attributes as $attribute){
+    /**
+    *  check attribute code has been set for attribute
+    */
+    if(isset($attribute['attribute_code'])){
+    ?>
+     <div class="field">  
+     <input type="hidden" name="attributes[<?php echo $attribute['attribute_code']; ?>]" value="<?php
+      echo $attribute['attribute_id']; ?>">            
+     <label for="<?php echo $attribute['attribute_code']; ?>" class="required"> <em>*</em> <?php
+      echo $attribute['store_label']; ?></label>
+     <div class="input-box marketplace_configurable_price_value">
+     <select onchange="showHidePriceContainer(this.value,'<?php echo $attribute['attribute_code']; ?>')" id="attr_<?php
+      echo $attribute['attribute_code']; ?>" name="simple_product[<?php
+       echo $attribute['attribute_code']; ?>]" class="select required-entry select-config-attribute-validate">
+     <option value="" selected="selected">-- <?php echo $this->__('Please Select'); ?> --</option>
+     <?php 
+     $attributeDetails = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute['attribute_code']);
+     $options = $attributeDetails->getSource()->getAllOptions(false);
+     foreach($options as $option){
+    /**
+    *  Get option value
+    */
+     $optionValue = $option['value'];
+     ?>
+     <option <?php 
+     /**
+      *  Check simple product id has not been empty
+      *  and auto flag is empty
+      *  and simple product attribute code is equal to option value
+      */
+     if(!empty($simpleProductId) && empty($autoFlag) && $simpleProduct->getData($attribute['attribute_code']) == $optionValue){   
+     echo 'selected="selected"';    
+     }
+     ?>     
+     value="<?php echo $optionValue; ?>"><?php
+      echo $option['label']; ?> 
+         
+      </option>
+     <?php } ?>   
+     </select>   
+     
+     <?php 
+     /**
+      * Option value for update product attrbiute validation
+      */
+     foreach($options as $option){
+     $optionValue = $option['value'];
+     /**
+      *  Check id  of simple product has not been empty
+      *  and value of auto flag is empty
+      *  and option value is equal to  simple product attribute code
+      */
+     if(!empty($simpleProductId) && empty($autoFlag) && $simpleProduct->getData($attribute['attribute_code']) == $optionValue){ 
+     ?>
+     <input type="hidden" value="<?php echo $optionValue; ?>" class="config_attribute_selected_option" />
+     <?php 
+     }
+     } 
+     ?>        
+     <?php  
+     foreach($options as $option){ 
+     /**
+     * Initialising option value as empty
+     */
+     $optionValue = '';
+     /**
+      * Get the option value
+      */
+     $optionValue = $option['value']; 
+     /**
+      * Checking the pricing value of attribute option value has been set
+      */
+     if(isset($attributeValueForPrice[$optionValue]['pricing_value'])){
+    /**
+    * Get Attribute value for price value
+    */
+     $attributeValueForPriceValue = $attributeValueForPrice[$optionValue]['pricing_value'];   
+     /**
+      * Check attribute value for price value is not equal to '-'
+      */
+     if($attributeValueForPriceValue != '-'){ ?>
+     <div class="option_value_content_for_configurable_product_<?php echo $attribute['attribute_code']; ?>" id="option_value_<?php
+      echo $optionValue;  ?>"
+     <?php 
+     /**
+      * Checking simple product value is not equal to empty value
+      * and autoflag value has been empty
+      */
+     if(!empty($simpleProductId) && $autoFlag == ''){
+         /**
+          * Check simple product attribute code is equal to the option value
+          */
+        if($simpleProduct->getData($attribute['attribute_code']) == $optionValue){
+            echo 'style="display:block;"';
+        }
+        else{ 
+            echo 'style="display:none;"'; 
+        }
+     }
+     else{
+        echo 'style="display:none;"';
+        }
+     ?>     
+     >
+     <?php echo $this->__('Price').' +'.round($attributeValueForPrice[$optionValue]['pricing_value'],2);
+     /**
+      * Check attribute price value percent has been set
+      */
+     if(isset($attributeValueForPrice[$optionValue]['is_percent'])){
+     $attributeValueForPricePercent = $attributeValueForPrice[$optionValue]['is_percent'];
+     /**
+      * Check atribute price percent option is equal to 1
+      */
+     if($attributeValueForPricePercent == 1){
+         echo '%'; 
+     }
+     }    
+     ?>
+     [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+     </div>
+     <?php
+     }    
+     }else{
+     ?>
+     <div  class="option_value_content_for_configurable_product_<?php echo $attribute['attribute_code']; ?>" id="option_value_<?php
+      echo $optionValue;  ?>"
+     <?php
+     /**
+      * Check id of the simple product is not equal to empty value
+      * and auto flag value is empty value
+      */
+     if(!empty($simpleProductId) && $autoFlag == ''){
+     if($simpleProduct->getData($attribute['attribute_code']) == $optionValue){
+     echo 'style="display: block;"';
+     }
+     else{
+     echo 'style="display: none;"';
+     }   
+     }
+     else{
+     echo 'style="display: none;"';
+     }
+     ?>
+      >   
+     <label for="price_<?php echo $optionValue; ?>"><?php
+      echo $this->__('Price'); ?></label>     
+     <input disabled="disabled" class="validate-zero-or-greater input-text price_validation_for_config_avail price_value_content_for_configurable_product_<?php echo $attribute['attribute_code']; ?>" type="text" value="" name="simple_product[option_price][<?php
+      echo $optionValue; ?>]" id="price_option_<?php
+       echo $optionValue; ?>">    
+     <select disabled="disabled" class="select price_value_content_for_configurable_product_<?php
+      echo $attribute['attribute_code']; ?>" id="price_option_mode_<?php
+       echo $optionValue; ?>" name="simple_product[option_price_mode][<?php
+        echo $optionValue; ?>]">
+     <option value="fixed"><?php echo $this->__('Fixed'); ?></option>
+     <option value="percentage"><?php echo $this->__('Percentage'); ?></option>
+     </select>
+     [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]                 
+     </div>     
+     <?php 
+     }
+     ?>
+     <input type="hidden" name="simple_product[label][<?php echo $optionValue; ?>]" value="<?php
+      echo $option['label']; ?>">
+     <?php     
+     }
+     ?>       
+    </div>    
+    </div> 
+    <?php   
+    }
+    }
+    ?>    
+    </li>
+                
+                      <li class="fields">
+                    <div class="field">
+                        <label for="inventory_qty" class="required"><em>*</em> <?php echo $this->__('Qty'); ?></label>    
+                        <div class="input-box"><input type="text" class="input-text required-entry validate-number" id="inventory_qty" name="simple_product[stock_data][qty]" value="<?php 
+                        /**
+                         * Check simple prodcut quantity is not empty
+                         */
+                        if(!empty($simpleQty)){
+                            echo $simpleQty; 
+                        } ?>"> </div>
+                    </div>
+                    <div class="field">  
+                        <label for="inventory_stock_availability"><?php echo $this->__('Stock Availability'); ?></label>
+                        <div class="input-box"><select id="inventory_stock_availability" name="simple_product[stock_data][is_in_stock]" class="select">
+                                <option value="1" <?php 
+                                /**
+                                 * Check id value of simple product is not empty
+                                 * and stock availablity of simple product is equal to 1
+                                 */
+                                if(!empty($simpleProductId) && $simpleIsInStock == 1){                                  
+                                    echo 'selected="selected"';                                     
+                                } 
+                                /**
+                                 * Check id value of simple product is empty
+                                 */
+                                    if(empty($simpleProductId)){
+                                        echo 'selected="selected"'; 
+                                    } ?> ><?php 
+                                    echo $this->__('In Stock'); ?></option>
+                                <option value="0" <?php 
+                                /**
+                                 * Checking id value of simple product is not equal to empty
+                                 * and stock availablity of simple product is equalt to zero
+                                 */
+                                if(!empty($simpleProductId) && $simpleIsInStock == 0){                                
+                                        echo 'selected="selected"';                                  
+                                } ?> ><?php
+                                     echo $this->__('Out of Stock'); ?></option>
+                            </select></div>
+                    </div> 
+                </li>                
+               <li class="fields" style="display: none;">
+                    <label for="seller_shipping"><?php echo $this->__('Select Shipping'); ?></label>
+                    <div class="input-box">
+                        <select id="seller_shipping" name="simple_product[seller_shipping_option]"  class="select select input-text required-entry input-text_pro">
+                            <?php echo $selectShipping; ?>
+                        </select>                      
+                    </div>
+                </li>
+                                    
+            </ul>
+        </div>
+    <button class="button" id="continue_button" type="submit" title="<?php if(empty($simpleProductId) || $autoFlag != ''){
+        echo $this->__('Quick Create'); 
+    }else{
+        echo $this->__('Update'); 
+    } ?>" class="button"><span><span><?php
+     if(empty($simpleProductId) || $autoFlag != ''){
+            echo $this->__('Quick Create'); 
+        }else{
+            echo $this->__('Update'); 
+        } ?></span></span></button>    
+    <?php if(!empty($simpleProductId) && $autoFlag == ''){ ?>
+    <a class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $this->getRequest()->getParam('id'),'set'=>$set)); ?>"><?php
+     echo $this->__('Cancel');  ?></a>
+    <?php } ?>
+<input type="hidden" name="page" value="<?php echo $this->getRequest()->getParam('p'); ?>">
+<input type="hidden" name="limit" value="<?php echo $this->getRequest()->getParam('limit'); ?>">
+</form>   
+<form name="multiple_select" id="configurable_associated_products_table_form" method="post" action="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $this->getRequest()->getParam('id'),'set'=>$set)).'#associate_table'; ?>">
+<input type="hidden" id="configurable_product_id_for_save" name="product_id" value="<?php echo $productId; ?>">
+<input type="hidden" id="configurable_attribute_set_id_for_save" name="set"  value="<?php echo $set; ?>">
+<?php if($superProductAttributeFlag == 1){ ?>
+<div class="marketplace_super_product_attribute">
+<h2><?php echo $this->__('Super product attributes configuration'); ?></h2>  
+    <?php 
+    foreach($attributes as $attribute){
+    if(isset($attribute['attribute_code'])){
+    ?>
+     <div class="marketplace_super_product_container"> 
+     <b>     
+     <?php echo $this->__('Attribute Name').':'; ?>
+     </b>           
+     <?php echo $attribute['store_label']; ?>
+     <div>
+     <ul class="marketplace_super_product_configuration">    
+     <?php  
+     $attributeDetails = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute['attribute_code']);
+     $options = $attributeDetails->getSource()->getAllOptions(false);
+     foreach($options as $option){ 
+     $optionValue = $option['value']; 
+     if(isset($attributeValueForPrice[$optionValue]['pricing_value'])){ ?>
+     <li>
+     <div>  
+     <b><?php echo $this->__('Option').': '; ?></b><?php
+      echo $option['label'];  ?>
+     </div>
+     <div>
+     <b><?php echo $this->__('Price').': '; ?></b>     
+     <input class="validate-zero-or-greater input-text" type="text" value="<?php if($attributeValueForPrice[$optionValue]['pricing_value'] != '-'){
+         echo round($attributeValueForPrice[$optionValue]['pricing_value'],2); 
+     } ?>" name="simple_product[option_price][<?php
+          echo $optionValue; ?>]" id="super_price_option_<?php
+           echo $optionValue; ?>">    
+     <select class="select" id="super_price_option_mode_<?php echo $optionValue; ?>" name="simple_product[option_price_mode][<?php
+      echo $optionValue; ?>]">
+     <option value="fixed"><?php echo $this->__('Fixed'); ?></option>
+     <option value="percentage" <?php if(isset($attributeValueForPrice[$optionValue]['is_percent'])){
+     $attributeValueForPriceIsPercent = $attributeValueForPrice[$optionValue]['is_percent'];
+         if($attributeValueForPriceIsPercent == 1){
+             echo 'selected="selected"'; 
+         }
+     } ?>><?php
+          echo $this->__('Percentage'); ?></option>
+     </select>     
+     [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+     <input type="hidden" name="simple_product[label][<?php echo $optionValue; ?>]" value="<?php
+      echo $option['label']; ?>">
+     </div>
+     <input type="hidden" name="attributes[<?php echo $optionValue; ?>]" value="<?php
+      echo $attribute['attribute_id']; ?>">
+     </li>
+     <?php      
+     }   
+     }
+     ?> 
+     </ul>     
+    </div>
+     </div> 
+    <?php   
+    }
+    }
+    ?>
+</div>
+<?php } ?>
+
+<?php     
+/**
+ * Associated Products list
+ */
+$childProductIds = $product->getTypeInstance()->getUsedProductIds();
+?>
+<div class="account-login market_place_configurable_products market_place_manage_products" id="market_place_manage_products"> 
+<div class="my-account-wrapper" id="associate_table">
+
+<?php 
+$_products = $this->getCollection(); 
+/**
+ * set sno in collection
+ */
+ $rowno = 1;
+ /**
+  * Get the current page
+  */
+ 
+ $current_page = Mage::getBlockSingleton('page/html_pager')->getCurrentPage();
+ /**
+  * Get Page Size
+  */
+ $getPageSize = $_products->getPageSize();
+ /**
+  * Check current page is greatert than or equal to 2
+  */
+if ($current_page >= 2) {
+    $cal_page = ceil($_products->getSize() / $getPageSize);
+    if ($current_page <= $cal_page) {
+        $rowno = abs(($current_page * $getPageSize) - $getPageSize) + 1;
+    } else {
+        $rowno = abs(($cal_page * $getPageSize) - $getPageSize) + 1;
+    }
+} else {
+    $rowno = 1;
+}
+ ?>
+ <h2><?php echo $this->__('Associated Products'); ?></h2> 
+ 
+<div class="mp_action"><b><?php echo $this->__('Action'); ?> </b>
+<select name="associate_table">
+        <option name="" value="Select an option"><?php echo $this->__('Select an option'); ?></option>
+        <option name="delete" value="delete"><?php echo $this->__('Delete'); ?></option>      
+    </select>        
+<a class="button" title="<?php echo $this->__('Submit');  ?>" href="javascript:void(0);" class="button" onclick="deleteSimpleProductForConfigurable()" name="delete_simple_product" id="delete_simple_product" >
+<span><span><?php echo $this->__('Submit') ?></span></span></button>   
+<a class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $this->getRequest()->getParam('id'),'set'=>$set,'reset'=>1)).'#associate_table'; ?>" title="<?php
+ echo $this->__('Reset Filter');  ?>"><?php
+  echo $this->__('Reset Filter');  ?></a>  
+</div>
+
+<div class="marketplace_associated_product">
+ <table class="data-table my-product-table market_place_manage_products_table" id="my-product-table">
+    <col width="1" />
+    <col width="1" />
+    <col />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <thead>
+        <tr>
+            <th><?php echo $this->__('#') ?></th>            
+            <th class="mtext_left"><?php echo $this->__('Id') ?></th>
+            <th width="33%" class="mtext_left"><?php echo $this->__('Product Name') ?></th>
+            <?php 
+            foreach ($attributes as $attribute){
+            /**
+            * Check attribute code has been set already
+            */
+            if(isset($attribute['attribute_code'])){
+            ?>
+            <th><?php echo $attribute['store_label']; ?></th>
+            <?php 
+            }
+            }
+            ?>                               
+            <th class="no-border-right"><?php echo $this->__('Action') ?></th>
+        </tr> 
+          <tr>
+            <th>
+            <select id="configurable_option_filter" name="configurable_option_filter" onchange="this.form.submit();">
+            <option value="any" <?php 
+            /**
+             * Check posted values
+             * configurable option filter is equal to 'any'
+             * or test is equal to 1
+             */
+            if($this->getRequest()->getParam('configurable_option_filter') == 'any' || $this->getRequest()->getParam('reset') == 1){
+                echo 'selected="selected"'; 
+            } ?>><?php
+             echo $this->__('Any'); ?></option> 
+            <option value="yes" <?php
+            /**
+             * Check values of post
+             * configurable option filter is equal to 'yes' and reset is not equal to 1
+             * or configurable option filter is equal to empty and reset is not equal to 
+             */
+             if($this->getRequest()->getParam('configurable_option_filter') == 'yes' && $this->getRequest()->getParam('reset') != 1 || $this->getRequest()->getParam('configurable_option_filter') == '' && $this->getRequest()->getParam('reset') != 1){
+                echo 'selected="selected"'; 
+            } ?>><?php
+             echo $this->__('Yes'); ?></option> 
+            <option value="no" <?php 
+            /**
+             * Check values of post
+             * configurable option filter is equal to 'no'
+             */
+            if($this->getRequest()->getParam('configurable_option_filter') == 'no'){
+                echo 'selected="selected"'; 
+            } ?>><?php
+                 echo $this->__('No'); ?></option> 
+            </select>           
+            </th>            
+            <th class="mtext_left">
+            <input type="text" name="filter_id" value="<?php echo $this->getRequest()->getParam('filter_id') ?>">            
+            </th>
+            <th width="33%" class="mtext_left">
+            <input type="text" name="filter_name" value="<?php echo $this->getRequest()->getParam('filter_name') ?>">
+            </th>
+            <?php
+            $attributeFilters = $this->getRequest()->getParam('attribute_filter');
+            foreach ($attributes as $attribute){
+            if(isset($attribute['attribute_code'])){
+            $attributeDetails = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute['attribute_code']);
+            $options = $attributeDetails->getSource()->getAllOptions(false);
+            ?>
+            <th>
+              <select id="attribute_filter_<?php echo $attribute['attribute_code']; ?>" name="attribute_filter[<?php
+               echo $attribute['attribute_code']; ?>]" onchange="this.form.submit();">
+     <option value="" selected="selected"></option>
+     <?php     
+     /**
+      * Get atribute code for filter
+      */
+     $attributeCodeForFilter = $attribute['attribute_code'];
+     $attributeCodeForFilterValue = '';
+     if(isset($attributeFilters[$attributeCodeForFilter])){
+     $attributeFilterCodeForFilter = $attributeFilters[$attributeCodeForFilter];
+     /**
+      * Check atribute filter code for filter is not equal to empty
+      */
+     if($attributeFilterCodeForFilter != ''){
+     $attributeCodeForFilterValue = $attributeFilters[$attributeCodeForFilter];
+     }
+     }
+     $attributeDetails = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attribute['attribute_code']);
+     $options = $attributeDetails->getSource()->getAllOptions(false);
+     foreach($options as $option){
+     $optionValue = $option['value'];
+     ?>
+     <option value="<?php echo $optionValue; ?>" <?php
+     /**
+      * Check atribute code for filter value and option value are equal
+      */
+      if($attributeCodeForFilterValue == $optionValue){
+          echo 'selected="selected"'; 
+      } ?>><?php
+           echo $option['label']; ?></option>
+     <?php } ?>   
+     </select>         
+            
+            </th>
+            <?php        
+            }
+}
+            ?>                               
+            <th class="no-border-right">            
+            </th>
+        </tr>   
+    </thead>
+    <tbody>
+        <?php 
+        /**
+         * Check prodcut size has been there
+         */
+        if($_products->getSize()): 
+        foreach ($_products as $_product){ ?>
+        <tr>            
+           <td><input type="checkbox" name="selected_simple_product_ids[]" id="simple_product_id_<?php echo $_product->getId(); ?>" value="<?php
+            echo $_product->getId(); ?>"           
+           <?php 
+           /**
+            * Check product id is in the list of chile product ids
+            */
+           if(in_array($_product->getId(),$childProductIds)){
+           echo 'checked="checked"';
+           }
+           ?>           
+           />
+           <input type="hidden" value="<?php echo $_product->getId(); ?>" name="unselected_associate_product_ids[]" />
+           </td>
+           <td class="mtext_left"><em><?php echo $_product->getId(); ?></em></td>           
+            <td class="mtext_left">
+            <?php 
+            /**
+             * Check product status is equal to 1
+             * and product visibility is equal to both
+             */
+            if($_product->getStatus() == 1 && $_product->getVisibility() == Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH){ ?>
+            <a href="<?php echo $_product->getProductUrl();  ?>" class="get_pdct_name manage_get_pdct_name" ><?php
+             echo $_product->getName(); ?>            
+            </a>
+            <?php }else{ ?>
+            <span class="get_pdct_name"><?php echo $_product->getName(); ?></span>
+            <?php } ?>    
+            </td>             
+            <?php 
+            foreach ($attributes as $attribute){
+            /**
+            * Check atribute code is available
+            */
+            if(isset($attribute['attribute_code'])){
+            ?>
+            <td><?php echo $_product->getAttributeText($attribute['attribute_code']); ?></td>
+            <?php 
+            }
+            }
+            ?>  
+            
+            <td>
+                <em>
+                <span class="nobr"><a href="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $productId,'sp'=>$_product->getId(),'set'=>$set)); ?>" > <img src="<?php
+                 echo $this->getSkinUrl('marketplace/images/edit.png') ?>" alt="" title="<?php
+                  echo $this->__('Edit') ?>"/> </a>               
+               <a href="<?php echo Mage::getUrl('marketplace/product/delete/',array('id' => $_product->getId(),'set'=>$set,'pid'=>$this->getRequest()->getParam('id'))); ?>" onclick="return confirm('<?php
+                echo $this->__('Are you sure want to delete?'); ?>');" > <img src="<?php
+                 echo $this->getSkinUrl('marketplace/images/delete.png') ?>" alt="" title="<?php
+                  echo $this->__('Delete') ?>"/> </a>
+                </span>
+                </em>
+            </td>
+        </tr>         
+      
+        <?php $rowno++; 
+} ?>
+    </tbody>
+    <?php else: ?>
+    <p><tr class="mtext_center"><td colspan="9" class="no_product_content"><?php echo $this->__('You have no product.'); ?></td></tr></p>
+ <?php endif ?>
+</table>   
+</div>
+
+<script type="text/javascript">decorateTable('my-product-table');</script>
+   <?php echo $this->getPagerHtml(); ?>
+</div></div>
+<input type="hidden" name="page" value="<?php echo $this->getRequest()->getParam('p'); ?>">
+<input type="hidden" name="limit" value="<?php echo $this->getRequest()->getParam('limit'); ?>">
+<a class="button" title="<?php echo $this->__('Save'); ?>" href="javascript:void(0);" onclick="saveAssociativeProductsForConfig()"><?php
+ echo $this->__('Save Associated Products');  ?></a>
+<input type="hidden" value="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $this->getRequest()->getParam('id'),'set'=>$set)); ?>" id="configurable_associated_products_table_form_action_url" />
+<input type="hidden" value="<?php echo Mage::getUrl('marketplace/sellerproduct/deleteconfigurable/',array('id' => $this->getRequest()->getParam('id'),'set'=>$set)); ?>" id="delete_configurable_associated_products_table_form_action_url" />
+<input type="hidden" value="<?php echo $this->saveconfigurabletUrl(); ?>" id="save_configurable_associated_products_table_form_action_url" />
+<button style="display: none;" type="submit" class="button" title="<?php echo $this->__('Submit') ?>" name="form_submit_button" id="form_submit_button" >
+<span><span><?php echo $this->__('Submit') ?></span></span></button>
+</form>
+</div>
+<?php echo $this->getChildHtml('marketplace_productconfigurable_js'); ?>

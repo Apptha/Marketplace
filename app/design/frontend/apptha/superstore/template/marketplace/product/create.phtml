@@ -1,0 +1,93 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.6
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt 
+ */
+?>
+<?php 
+$selectedType = '';
+$selectedProductType = array();
+/**
+ *  Initilize product types from admin
+*/
+$selectedType = Mage::helper('marketplace')->getSelectedPrdouctType();
+/**
+ *  Assigning product types to array variale
+*/
+$selectedProductType = explode(",", $selectedType);
+?>
+<!-- Marketplace wrapper -->
+<div class="marketplace-wrapper" id="marketplace-wrapper">     
+    <div class="page-title">
+        <h1><?php echo $this->__('New Product'); ?></h1>
+       
+    </div>
+    <form action="<?php echo Mage::helper('marketplace/url')->getProductTypeUrl(); ?>" method="post" id="create_product_form" enctype="multipart/form-data">    
+        <!-- Marketplace product type container -->
+        <div class="fieldset marketplace-product-type">
+         <h4 class="legend"><?php echo $this->__('Create Product Settings'); ?></h4>          
+            <ul class="form-list">
+                <li class="fields">
+                    <div class="field">
+                        <label for="attribute_set_id"><?php echo $this->__('Attribute Set'); ?></label>
+                         <div class="input-box">
+                            <select id="attribute_set_id" name="attribute_set_id" title="<?php echo $this->__('Attribute Set'); ?>" class="select validate-select">
+                                <?php 
+                                $entityType = Mage::getModel('catalog/product')->getResource()->getTypeId();
+                                $attributeSetCollection = Mage::getResourceModel('eav/entity_attribute_set_collection')->setEntityTypeFilter($entityType)->setOrder('attribute_set_id','asc');
+                                foreach ($attributeSetCollection as $attributeSet) { ?>
+                                    <option value="<?php echo $attributeSet->getAttributeSetId(); ?>"><?php
+                                        $attributeSetName = $this->__($attributeSet->getAttributeSetName());
+                                        echo ucfirst($attributeSetName);
+                                        ?></option>    
+                                <?php } ?>  
+                            </select> 
+                        </div>                       
+                   
+                    </div>
+                </li>
+                 <li class="fields">
+                    <div class="field">
+                        <label for="product_type"><?php echo $this->__('Product Type'); ?></label>
+                        <div class="input-box">
+                            <select id="product_type" name="type" title="<?php echo $this->__('Product Type'); ?>" class="select validate-select">
+                                <?php foreach ($selectedProductType as $value) { ?>
+                                    <option value="<?php echo $value; ?>"><?php
+                                        $productTypeCaps = $this->__($value);
+                                        echo ucfirst($productTypeCaps);
+                                        ?></option>    
+                                <?php } ?>  
+                            </select> 
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <button class="button" id="continue_button" type="submit" title="<?php echo $this->__('Continue') ?>" class="button">
+        <span><span><?php echo $this->__('Continue') ?></span></span></button>        
+</form>
+</div>
+   

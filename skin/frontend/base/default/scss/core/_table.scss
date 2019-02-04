@@ -1,0 +1,230 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/* ============================================ *
+ * Table Helpers
+ * ============================================ */
+
+.hide-th {
+    text-indent: -9999px;
+}
+
+/* ============================================ *
+ * Data Table
+ * ============================================ */
+
+.data-table {
+    width: 100%;
+}
+
+.data-table td,
+.data-table th {
+    padding: 10px;
+    vertical-align: top;
+}
+
+.data-table th {
+    background: $c-table-background;
+    text-transform: uppercase;
+    font-family: $f-stack-special;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.data-table thead th,
+.data-table tbody td {
+    border-bottom: 1px solid $c-table-border;
+}
+
+.data-table tbody td,
+.data-table tfoot td {
+    font-family: $f-stack-serif;
+}
+
+.data-table tfoot tr {
+    background: $c-table-background;
+}
+
+.data-table tbody td .item-options {
+    margin-left: 20px;
+    margin-top: 10px;
+
+    dt:after {
+        content: ':';
+    }
+}
+
+/* ============================================ *
+ * Zebra-Stripe Table
+ * ============================================ */
+
+.zebra-table {
+    tr:first-child,
+    th:first-child {
+        border-top: 1px solid $c-table-border;
+    }
+
+    td,
+    th {
+        border-bottom: 1px solid $c-table-border;
+        padding: 6px;
+        background-color: transparent;
+    }
+
+    tr {
+        background-color: $c-table-zebra-even;
+    }
+
+    tr:nth-child(odd) {
+        background-color: $c-table-zebra-odd;
+    }
+}
+
+/* ============================================ *
+ * Linearize Table
+ * ============================================ */
+
+@mixin linearize-table {
+
+    tr,
+    th,
+    td {
+        display: block;
+    }
+
+    thead th {
+        border-right: 0;
+        border-left: 0;
+    }
+
+    thead th.lin-hide {
+        display: none;
+    }
+
+    thead th:nth-child(1n+2) {
+        display: none;
+    }
+
+    tbody tr {
+        position: relative;
+        border-bottom: 1px solid $c-module-border;
+    }
+
+    tbody td {
+        padding: 0 10px 4px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    tbody td.lin-hide {
+        display: none;
+    }
+
+    tbody td:first-child {
+        padding-top: 10px;
+    }
+
+    tbody td:first-child,
+    tbody td:first-child h3 {
+        font-weight: bold;
+    }
+
+    tbody td[data-rwd-label] {
+        text-align: left;
+        padding-left: 30px;
+    }
+
+    tbody td[data-rwd-label]:before {
+        content: attr(data-rwd-label) ":";
+        font-size: $f-size-xs;
+        font-family: $f-stack-special;
+        padding-right: 5px;
+        text-transform: uppercase;
+    }
+
+    tfoot tr {
+        display: block;
+        text-align: right;
+    }
+
+    tfoot tr:after {
+        @include clearfix();
+    }
+
+    tfoot td {
+        display: block;
+        float: left;
+    }
+
+    tfoot td.lin-hide {
+        display: none;
+    }
+
+    tfoot td:nth-child(odd) {
+        clear: left;
+        width: percentage(3/5);
+    }
+
+    tfoot td:nth-child(even) {
+        text-align: left;
+        width: percentage(2/5);
+    }
+
+    /* Helpers */
+
+    .linearize-hide {
+        display: none;
+    }
+
+    .linearize-unpad {
+        padding: 0;
+    }
+
+    .linearize-show {
+        display: block;
+    }
+}
+
+@include bp(max-width, $bp-xsmall) {
+    .linearize-table {
+        @include linearize-table;
+    }
+}
+
+@include bp(max-width, $bp-small) {
+    .linearize-table-large {
+        @include linearize-table;
+    }
+}
+
+@include bp(min-width, $bp-small + 1) {
+    .linearize-table .linearize-collapse {
+        display: none;
+    }
+}

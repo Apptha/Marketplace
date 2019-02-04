@@ -1,0 +1,141 @@
+<?php 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php $catId = $this->getRequest()->getParam('id');?>
+<?php $categoryCollection = $this->getCategory($catId);?>
+<?php 
+/**
+ * Category details with image
+ */?>
+<h2 class="product-category-title"><span>
+<?php echo $categoryCollection->getName();?></span>
+</h2>
+<div class="product-category-banner">
+<?php $catImage = $categoryCollection->getImage();?>
+<a href="<?php  echo Mage::getBaseUrl().$categoryCollection->getUrlPath();?>" >
+<?php if($catImage != ''){?>
+<?php $catImageUrl = Mage::helper('marketplace/marketplace')->getResizedImage($catImage,$width=1100, $height=null, $quality = 100); ?>
+<img src="<?php echo $catImageUrl; ?>" />
+<?php } else {?>
+<?php $noImage = 'no-image.png';
+$resizedNoImage = Mage::helper('marketplace/marketplace')->getNormalResizedImage($noImage,1100, $height = null, $quality = 100);?>
+<img src="<?php echo $resizedNoImage; ?>" />
+<?php }?>
+</a>
+<?php 
+/**
+ * Display trends 
+ */
+?></div>
+<h2 class="offer-title"><?php echo $this->__('What\'s in <span>Trend</span>');?></h2>
+<div class="sub-category-offer">
+<ul>
+<?php $trends = $this->getDiscountedCategory($catId);?>
+
+<?php foreach($trends as $_trends){
+    $trendData = $this->getCategory($_trends);?>
+  <li> 
+ <a href="<?php echo Mage::getBaseUrl().$trendData->getUrlPath();?>">
+  <span class="offers-des"><?php  echo $trendData->getDisplayDiscountHeading();
+   echo $trendData->getDisplayDiscount();?></span>
+    <?php $catImage = $trendData->getImage();?>
+    <?php $catImageUrl = Mage::helper('marketplace/marketplace')->getResizedImage($catImage,350, $height=null, $quality = 100); ?>
+    <?php if($catImage != ''){ ?>
+    <img src="<?php echo $catImageUrl; ?>"  />
+    <?php } else {?>
+    <?php $noImage = 'no-image.png';
+$resizedNoImage = Mage::helper('marketplace/marketplace')->getNormalResizedImage($noImage,350, $height = null, $quality = 100);?>
+<img src="<?php echo $resizedNoImage; ?>" />
+<?php } ?>
+    <span class="offers-btn"><?php echo $this->__('Shop Now');?><i></i></span>
+ </a></li>
+
+<?php } ?>
+</ul>
+</div>
+<?php 
+/**
+ * sub category details
+ */
+?>
+<?php $noDiscountId = array();?>
+<?php $subCategoryCollection = $this->getSubCategories($catId);?>
+<?php foreach($subCategoryCollection as $_subCategoryCollection){ 
+$catCollection = $this->getCategory($_subCategoryCollection);
+if($catCollection->getDiscountedCategoryListings() != 1){ ?>
+<?php $noDiscountId[] = $catCollection->getId();?>
+<?php ?>
+<?php } ?>
+<?php } ?>
+<div class="sub-category-banner">
+<ul>
+<?php 
+$iteration=1;
+foreach($noDiscountId as $_noDiscountId){?>
+<?php $iteraryNo = $iteration % 4;?>
+<li class="<?php if ($iteration == 1 || $iteraryNo == 1){
+echo 'first'; }
+elseif($iteraryNo == 2){
+echo 'second';}
+elseif($iteraryNo==3){
+echo 'three';}
+elseif($iteraryNo == 0){
+echo 'four'; ?>">
+<?php $dataNoDiscount = $this->getCategory($_noDiscountId);?>
+<a href="<?php echo Mage::getBaseUrl().$dataNoDiscount->getUrlPath(); ?>">
+<span class="sub-category-name"><?php echo $dataNoDiscount->getName();?></span>
+<?php $image = $dataNoDiscount->getImage(); ?>
+
+<?php if($iteraryNo == 1 || $iteraryNo == 0){ 
+$catImageUrl = Mage::helper('marketplace/marketplace')->getResizedImage($image,314, 446, $quality = 100);
+if($catImageUrl != ''){?> 
+<img src="<?php echo $catImageUrl; ?>" width="314" height="446"/>
+<?php } else {
+$noImage = 'no-image.png';
+$resizedNoImage = Mage::helper('marketplace/marketplace')->getNormalResizedImage($noImage,314, 446, $quality = 100);?>
+<img src="<?php echo $resizedNoImage; ?>" width="314" height="446"/>
+<?php } ?>
+<?php }  elseif($iteraryNo == 2 || $iteraryNo == 3) {
+$catImageUrl = Mage::helper('marketplace/marketplace')->getResizedImage($image,423, 210, $quality = 100);
+if($catImageUrl != ''){?>
+
+<img src="<?php echo $catImageUrl; ?>" width="423" height="210"/>
+<?php } else {
+$noImage = 'no-image.png';
+$resizedNoImage = Mage::helper('marketplace/marketplace')->getNormalResizedImage($noImage,423, 210, $quality = 100);?>
+<img src="<?php echo $resizedNoImage; ?>" width="423" height="210"/>
+<?php } 
+} ?>
+</a>
+<?php  $iteration++;?>
+</li>
+<?php } ?>
+</ul>
+</div>

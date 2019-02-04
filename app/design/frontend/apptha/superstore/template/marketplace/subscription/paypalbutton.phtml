@@ -1,0 +1,120 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+
+/**
+ * Retrive and display all the subscription plans
+ */
+$sandbox = Mage::getStoreConfig('marketplace/subscription/live_sandbox_mode');
+/**
+ * Get paypal action url
+ */
+if($sandbox == 1){
+	$actionUrl = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+} else {
+	$actionUrl = 'https://www.paypal.com/cgi-bin/webscr';
+}
+
+/**
+ * Get admin paypal id
+ * Get customer id
+ */
+$adminPaypalId 		= Mage::getStoreConfig('marketplace/subscription/merchant_paypal_id');
+$customerId 		= Mage::getSingleton('customer/session')->getId();
+$planId 			= $this->getRequest()->getParam('planid');
+$subscriptionPlans 	= $this->retriveplaninfo($planId);
+/**
+ * Get currency code
+ */
+$currencyType		= Mage::app()->getStore()->getCurrentCurrencyCode();
+$baseCurrencyCode 	= Mage::app()->getStore()->getBaseCurrencyCode();
+$currencySymbol 	= Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
+/**
+ * Get yearly fee
+ */
+$feeInBaseCurrency	= $subscriptionPlans->getYearlyFee ();
+
+/**
+ * Changes for upgrade subscription plan.
+ */
+
+$getData 					= Mage::helper ( 'marketplace/subscription' )->checkSubscribed ( $customerId );
+
+
+
+/**
+ * Convert current currency into base currency
+ */
+$paymentFees= Mage::helper('core')->currency($feeInBaseCurrency,true,false);
+?>
+<div class="redirect-paypal">
+	<h1><?php echo $this->__('You are redirecting to paypal payment gateway')?></h1>
+	<h1><?php echo $this->__('Your payment amount is '.$paymentFees)?></h1>
+	<img
+		src="<?php echo Mage::getBaseUrl('skin') . 'frontend/apptha/superstore/marketplace/images/bx_loader.gif';?>"
+		width="" height="" alt="loading" />
+</div>
+<?php 
+/**
+ * Get invoiceid
+ * Get validity period
+ * Get subscription period
+ */
+$invoiceId 			= $this->getRequest()->getParam('invoice'); 
+$validityPeriod 	= $subscriptionPlans->getValidityPeriod();
+$subscriptionPeriod = $subscriptionPlans->getSubscriptionPeriod();
+if($subscriptionPeriod==1){
+	$value = 'M';
+} else {
+    $value ='Y';
+ }
+ 
+/**
+ * Get subscription success url.
+ */
+$subscriptionSuccessUrl = Mage::getUrl('marketplace/subscription/subscriptionsuccess',array('customerid'=>$customerId,'invoice'=> $invoiceId,'planid'=>$planId,'planamount'=>$feeInBaseCurrency));
+$paymentSuccessUrl = Mage::getUrl('marketplace/subscription/paymentsuccess');
+ echo '<form action="'.$actionUrl.'" method="post" name="subscribe" id="subscribe">		
+			<input type="hidden" name="business" value="'.$adminPaypalId.'" />		
+			<input type="hidden" name="cmd" value="_xclick-subscriptions" />			
+			<input type="hidden" name="item_name" value="'.$subscriptionPlans->getPlanName().'" />
+			<input type="hidden" name="item_number" value="'.$planId.'" />
+			<input type="hidden" name="customer_id" value="'.$customerId.'" />
+			<input type="hidden" name="invoice" value="'.$invoiceId.'" />
+			<input type="hidden" name="return" value="'.$subscriptionSuccessUrl.'" />
+			<input type="hidden" name="notify_url" value="'.$paymentSuccessUrl.'" />			
+			<input type="hidden" name="currency_code" value="'.$baseCurrencyCode.'" />
+			<input name="bn" value="Contus_Subscribe_SP_IN" type="hidden" />
+			<input type="hidden" name="a3" value="'.$feeInBaseCurrency.'" />
+			<input type="hidden" name="p3" value="'.$validityPeriod.'" />
+			<input type="hidden" name="t3" value="'.$value.'" />			
+			<input type="hidden" value="" name="image_url">
+</form>'; 
+echo '<script type="text/javascript">document.subscribe.submit()</script>';
+?>

@@ -1,0 +1,115 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$wishListByCustomer= Mage::getSingleton('wishlist/wishlist')->loadByCustomer($customer);
+$wishListItemCollection = $wishListByCustomer->getItemCollection();
+$arrProductIds = array();
+if (count($wishListItemCollection)) {
+foreach ($wishListItemCollection as $item) {
+$product = $item->getProduct();
+$arrProductIds[] = $product->getId();
+}
+}
+
+?>
+<?php if (($_products = $this->getPopular()) && $_products->getSize()): ?>
+<h2 class="subtitle"><span><span><?php echo $this->__('Popular') ?></span>
+<?php echo $this->__(' Products') ?></span></h2>
+<?php $_columnCount = $this->getColumnCount(); ?>
+    <ul class="products-grid products-grid--max-<?php echo $_columnCount; ?>-col">
+    <?php $i=0; 
+    $increment = 0;
+     foreach ($_products->getItems() as $_product): ?>
+        <?php /*if ($i++%$_columnCount==0): ?>
+        <ul class="products-grid">
+        <?php endif*/ ?>
+        <?php if($increment<4){?>
+            <li class="item<?php if(($i-1)%$_columnCount==0){ ?> first
+            <?php }else{ if($i%$_columnCount==0){ ?> last<?php }} ?>">
+                <a href="<?php echo $_product->getProductUrl() ?>" 
+                title="<?php echo $this->escapeHtml($_product->getName()) ?>" class="product-image">
+                    <?php $_imgSize = 260; ?>
+                    <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($_imgSize); ?>" 
+                    alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" />
+                </a>
+        <div class="actions"><ul class="add-to-links">
+                        <?php if ($this->helper('wishlist')->isAllow()) : ?>
+                        <?php if(in_array($_product->getId(),$arrProductIds)){
+                        $class =  'added'; 
+                        }
+                        else{
+                        $class = ''; 
+                        } ?>
+                            <li>
+                            <a href="<?php echo $this->getAddToWishlistUrl($_product) ?>" 
+                            title="<?php echo $this->__('Add to Wishlist') ?>" 
+                             class="link-wishlist <?php echo $class; ?>">
+                            <?php echo $this->__('Add to Wishlist') ?></a></li>
+                        <?php endif; ?>
+                        <?php if ($compUrl = $this->getAddToCompareUrl($_product)): ?>
+                            <li><span class="separator">|</span> <a href="<?php echo $compUrl ?>" 
+                            title="<?php echo $this->__('Add to Compare') ?>" class="link-compare">
+                            <?php echo $this->__('Add to Compare') ?></a></li>
+                        <?php endif; ?>
+                    </ul>
+                    <?php if($_product->isSaleable()): ?>
+                        <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" 
+                        onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')">
+                        <span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+                    <?php else: ?>
+                        <p title="<?php echo $this->__('Out of stock') ?>" class="availability out-of-stock">
+                        <span><?php echo $this->__('Out of stock') ?></span></p>
+                    <?php endif; ?>
+                </div>
+                <h3 class="product-name"><a href="<?php echo $_product->getProductUrl(); ?>">
+                                                <?php
+                                                $prName = $_product->getName();
+                                                $lenPrName = strlen($_product->getName());
+                                                $subPrName = substr($prName, 0, 26);
+                                                if ($lenPrName >= 26) {
+                                                    $prNameFix = $subPrName . "...";
+                                                } else {
+                                                    $prNameFix = $prName;
+                                                }
+                                                echo $prNameFix;
+                                                ?>
+                                            </a></h3>
+                <?php echo $this->getReviewsSummaryHtml($_product, 'short') ?>
+                <?php echo $this->getPriceHtml($_product, true, '-new') ?>
+            </li>
+            <?php } $increment++;?>
+        <?php /*if ($i%$_columnCount==0 || $i==count($_products)): ?>
+        </ul>
+        <?php endif*/ ?>
+    <?php endforeach; ?>
+    </ul>
+<?php endif; ?>

@@ -1,0 +1,58 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/** @var $this Mage_Paypal_Block_Express_Review */
+?>
+<div class="fieldset" id="shipping-method-container">
+<?php if ($this->getCanEditShippingMethod() || !$this->getCurrentShippingRate()):?>
+        <?php if ($groups = $this->getShippingRateGroups()):?>
+            <?php $currentRate = $this->getCurrentShippingRate(); ?>
+            <select name="shipping_method" id="shipping_method" style="width:250px;" class="required-entry">
+            <?php if (!$currentRate):?>
+                <option value=""><?php echo $this->__('Please select a shipping method...') ?></option>
+            <?php endif;?>
+            <?php foreach ($groups as $code => $rates):?>
+                <optgroup label="<?php echo $this->escapeHtml($this->getCarrierName($code)) ?>" style="font-style:normal;">
+                <?php foreach ($rates as $rate):?>
+                    <option value="<?php echo $this->renderShippingRateValue($rate)?>"<?php
+                     echo ($currentRate === $rate) ? ' selected="selected"' : '' ;?>>
+                        <?php echo $this->renderShippingRateOption($rate)?>
+                    </option>
+                <?php endforeach;?>
+                </optgroup>
+            <?php endforeach;?>
+            </select>
+        <?php else: ?>
+            <p><strong><?php echo $this->__('Sorry, no quotes are available for this order at this time.') ?></strong></p>
+        <?php endif;?>
+<?php else: ?>
+    <p><strong><?php echo $this->renderShippingRateOption($this->getCurrentShippingRate())?></strong></p>
+<?php endif; ?>
+</div>
+<div style="display:none" id="shipping_method_update"><p><?php echo $this->__('Please update order data to get shipping methods and rates') ?></p></div>

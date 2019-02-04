@@ -1,0 +1,154 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * Product media data template
+ *
+ * @see Mage_Catalog_Block_Product_View_Media
+ */
+
+/* @var $this Mage_Catalog_Block_Product_View_Media */
+?>
+<?php
+    $_product = $this->getProduct();
+    $_helper = $this->helper('catalog/output');
+?>
+<div class="product-image product-image-zoom">
+    <div class="product-image-gallery" id="product-image">
+        <img id="image-main"
+             class="gallery-image visible"
+             src="<?php echo $this->helper('catalog/image')->init($_product, 'image') ?>"
+             alt="<?php echo $this->escapeHtml($this->getImageLabel()) ?>"
+             title="<?php echo $this->escapeHtml($this->getImageLabel()); ?>" />
+
+        <?php
+            $i=0;
+            foreach ($this->getGalleryImages() as $_image):
+                $_imageUrl = $this->helper('catalog/image')
+                                  ->init($_product, 'image', $_image->getFile())
+                                  ->keepFrame(false)
+                                  ->constrainOnly(true)
+                                  ->resize(1200);
+        ?>
+            <img id="image-<?php echo $i; ?>"
+                 class="gallery-image"
+                 src="<?php echo $_imageUrl; ?>"
+                 data-zoom-image="<?php echo  $_imageUrl; ?>" />
+        <?php
+            $i++;
+            endforeach;
+        ?>
+    </div>
+</div>
+
+
+<div class="more-views">
+    <h2><?php echo $this->__('More Views') ?></h2>
+    
+    <?php if (count($this->getGalleryImages()) > 0): ?>
+    <ul class="product-image-thumbs">
+    <?php $i=0; foreach ($this->getGalleryImages() as $_image): ?>
+        <?php
+        if (($filterClass = $this->getGalleryFilterHelper()) && ($filterMethod = $this->getGalleryFilterMethod()) && !Mage::helper($filterClass)->$filterMethod($_product, $_image)):
+            continue;
+        endif;
+        ?>
+        <li>
+            <a class="thumb-link" onclick="hideProductVideo('image-<?php echo $i; ?>')" href="#" title="<?php echo $this->escapeHtml($_image->getLabel()) ?>" data-image-index="<?php echo $i; ?>">
+                <img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(75); ?>"
+                     width="75" height="75" alt="<?php echo $this->escapeHtml($_image->getLabel()) ?>" />
+            </a>
+        </li>
+    <?php $i++; endforeach; ?>
+    <?php endif; ?>
+        <?php 
+    /**
+     * If checking whether current product having video or not
+     */
+    ?>
+    <?php 
+    $videoUrl = $_product->getAppthaProductVideoUrl();
+    if(!empty($videoUrl) && Mage::getStoreConfig ('marketplace/product/video')){ ?>
+    <li>
+    <?php   
+    $youtubeLink = $videoUrl;
+    $youtubeRegex = preg_replace("/(https?)?+(:\/\/?)?+(www.?)?+[a-zA-Z]+(.com|.be)+(\/)+(watch?)?+[(?)]?+(v=?|V=?)?|(&)+(.*)/", "", $youtubeLink);
+    $youtubeId = $youtubeRegex;
+   	$videoImagePath = "http://img.youtube.com/vi/".$youtubeId."/1.jpg"; 
+    $videoUrlPath = "//www.youtube.com/embed/".$youtubeId;
+    ?>
+    <a href='javascript:void(0);' style="background: url('<?php echo $videoImagePath; ?>');" class="videoLink">
+    <img onclick="showProductVideo(this)" src="<?php echo $this->getSkinUrl("images/media-mask.png"); ?>" id="video_id" width="77" height="77" />
+    <input type="hidden" value="<?php echo $videoUrlPath; ?>" />
+    </a>  
+    </li>
+      </ul>
+    <?php } ?> 
+    
+  
+</div>
+
+
+<?php echo $this->getChildHtml('after'); ?>
+<script type="text/javascript">
+    
+function showProductVideo(image){
+	$$('.product-image .product-image-gallery img').invoke('removeClassName','visible');
+    if($$('.zoomContainer')){
+	$$('.zoomContainer').invoke('hide');
+    } 	       
+    if($('product-image').down("iframe"))
+        $('product-image').down("iframe").remove();
+    var iframe = '<iframe width="100%" height="315" src="' + image.up('li').down('input').value+ '?autoplay=0&showinfo=1&controls=1' + '" frameborder="0" allowfullscreen></iframe>';
+    $('product-image').insert(iframe); 	   
+} 
+
+function hideProductVideo(imageid) {	
+	$$('.product-image .product-image-gallery img').invoke('removeClassName','visible');	
+$(imageid).addClassName('visible');
+if($('product-image').down("iframe")){
+$('product-image').down("iframe").remove();  
+}
+} 
+
+    
+  $mp = jQuery.noConflict();
+  $mp(document).ready(function(){
+	$mp('.product-image-thumbs').bxSlider({
+	infiniteLoop:false,
+	hideControlOnEnd:true,
+    slideWidth: 300,
+    minSlides: 1,
+    maxSlides: 4,
+    moveSlides: 1,
+    slideMargin: 10
+  });
+});
+</script>

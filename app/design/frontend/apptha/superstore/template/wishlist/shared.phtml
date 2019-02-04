@@ -1,0 +1,98 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/* @var $this Mage_Wishlist_Block_Share_Wishlist */
+?>
+<div class="my-wishlist">
+    <div class="page-title">
+        <h1><?php echo $this->escapeHtml($this->getHeader()) ?></h1>
+    </div>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <?php if ($this->hasWishlistItems()): ?>
+    <form action="<?php echo $this->getUrl('*/*/update') ?>" method="post">
+        <div class="fieldset">
+            <table class="data-table" id="wishlist-table">
+            <col width="1" />
+            <col />
+            <col width="1" />
+            <thead>
+                <tr>
+                    <th><?php echo $this->__('Product') ?></th>
+                    <th><?php echo $this->__('Comment') ?></th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach($this->getWishlistItems() as $item): ?>
+                <?php
+                    $product = $item->getProduct();
+                    $isVisibleProduct = $product->isVisibleInSiteVisibility();
+                ?>
+                <tr>
+                    <td>
+                        <a class="product-image" href="<?php echo $this->getProductUrl($item) ?>" title="<?php
+                         echo $this->escapeHtml($product->getName()) ?>">
+                         <img src="<?php echo $this->helper('catalog/image')->init($product, 'small_image')->resize(113, 113); ?>" width="113" height="113" alt="<?php
+                          echo $this->escapeHtml($product->getName()) ?>" /></a>
+                        <h2 class="product-name"><a href="<?php echo $this->getProductUrl($item) ?>"><?php
+                         echo $this->escapeHtml($product->getName()) ?></a></h2>
+                        <?php echo $this->getPriceHtml($product) ?>
+                        <?php echo $this->getDetailsHtml($item) ?>
+                    </td>
+                    <td><?php echo $this->getEscapedDescription($item) ?></td>
+                    <td class="a-center">
+                    <?php if ($product->isSaleable() && $isVisibleProduct): ?>
+                       <button type="button" title="<?php echo $this->__('Add to Cart') ?>" onclick="setLocation('<?php
+                             echo $this->getSharedItemAddToCartUrl($item) ?>')" class="button btn-cart">
+                             <span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+                      
+                    <?php endif; ?>
+                        <p><a href="<?php echo $this->getAddToWishlistUrl($item) ?>" onclick="setLocation(this.href); return false;" class="link-wishlist"><?php
+                         echo $this->__('Add to Wishlist') ?></a></p>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+            </tbody>
+            </table>
+            <script type="text/javascript">decorateTable('wishlist-table');</script>
+        </div>
+        <div class="buttons-set">
+            <p class="back-link"><a href="<?php echo $this->escapeUrl($this->getBackUrl()) ?>"><small>&laquo; </small><?php
+             echo $this->__('Back') ?></a></p>
+            <?php if($this->isSaleable()):?>
+                <button type="button" title="<?php echo $this->__('Add All to Cart') ?>" onclick="setLocation('<?php
+                 echo $this->getUrl('*/*/allcart', array('_current'=>true)) ?>')" class="button">
+                 <span><span><?php echo $this->__('Add All to Cart') ?></span></span></button>
+            <?php endif;?>
+        </div>
+    </form>
+    <?php else: ?>
+        <p><?php echo $this->__('Wishlist is empty now.') ?></p>
+    <?php endif ?>
+</div>

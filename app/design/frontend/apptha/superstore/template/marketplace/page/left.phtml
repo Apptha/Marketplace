@@ -1,0 +1,256 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * This file is used to display navigation links in "Seller My Account"
+ * 
+ * Links displayed are Seller Dashboard, Manage Products, Orders, Transaction History,
+ * My Profile, Contact Admin and Vacation Mode
+ */
+
+$loginId = Mage::getSingleton('customer/session')->isLoggedIn();
+$groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+$getGroupId = Mage::helper('marketplace')->getGroupId();
+$customer = Mage::getSingleton("customer/session")->getCustomer();
+ $customerStatus = $customer->getCustomerstatus();
+?>
+<div class="block block-account">
+    <div class="block-title">
+        <strong><span><?php echo Mage::helper('marketplace')->__('Market Place') ?></span></strong>
+    </div>
+    <div class="block-content">
+        <?php      
+        if ($groupId == $getGroupId && $loginId && $customerStatus != 2 && $customerStatus != 0) { ?>
+            <ul>
+                <?php 
+                /*              
+                * For sellers               
+                */                
+                ?>
+                <?php 
+                /**
+                 * Link for seller dash board.
+                 */
+                ?>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/dashboard')->dashboardUrl()) { ?>active<?php } ?>">
+                <a href="<?php echo Mage::helper('marketplace/dashboard')->dashboardUrl(); ?>">
+                <?php echo $this->__('Seller Dashboard'); ?></a></li>
+                  <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/general')->getSubscriptionUrl()) { ?>active
+                <?php 
+				} ?>">
+				<?php 
+				/**
+				 * Link for subscription url.
+				 */
+				?>
+				<?php 
+				$subscriptionEnabled = Mage::getStoreConfigFlag('marketplace/subscription/enablesubscription');
+				if($subscriptionEnabled) {
+				?>
+				<a href="<?php echo Mage::helper('marketplace/general')->getSubscriptionUrl(); ?>">
+				<?php echo $this->__('Subscription'); ?></a></li>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getManageProductUrl() || Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getNewProductUrl()) {
+                    ?>active<?php 
+        } ?>">
+        				<?php }?>
+        
+        <?php 
+        /**
+         * Link for manage products.
+         */
+        ?>
+        <a href="<?php echo Mage::helper('marketplace/url')->getManageProductUrl() ?>"> 
+        <?php echo $this->__('Manage Products') ?> </a></li>
+                <?php if (Mage::getStoreConfig('marketplace/product/assign_product') == 1) { ?>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getAssignProductUrl()) {
+                    ?>active<?php 
+        } ?>">
+        <?php 
+        /**
+         * Link for assign products.
+         */
+        ?>
+        <a href="<?php echo Mage::helper('marketplace/url')->getAssignProductUrl(); ?>"> <?php
+         echo $this->__('Assign Products') ?> </a></li>
+                <?php } ?>             
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getManageOrderUrl()) {
+                    ?>active<?php 
+        } ?>">
+        <?php 
+        /**
+         * Link for orders.
+         */
+        ?>
+        <a href="<?php echo Mage::helper('marketplace/url')->getManageOrderUrl(); ?>"> <?php
+         echo $this->__('Orders') ?> </a></li>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/transaction')->getViewtransaction()) {
+                    ?>active<?php 
+        } ?>">
+        <?php 
+        /**
+         * Link for transaction history.
+         */
+        ?>
+        <a href="<?php echo Mage::helper('marketplace/transaction')->getViewtransaction(); ?>"> <?php
+         echo $this->__('Transaction History') ?> </a></li>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->addprofileUrl()) {
+                    ?>active<?php 
+        } ?>">
+        <?php 
+        /**
+         * Link for my profile.
+         */
+        ?>
+        <a href="<?php echo Mage::helper('marketplace/url')->addprofileUrl(); ?>"><?php
+         echo $this->__('My Profile') ?></a></li>
+                <?php if (Mage::getStoreConfig('marketplace/admin_approval_seller_registration/contact_admin') == 1) {
+                     ?>
+                    <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/common')->getContactFormUrl()) {
+                        ?>active<?php 
+                } ?>">
+                <?php 
+                /**
+                 * Link for contact admin.
+                 */
+                ?>
+                <a href="<?php echo Mage::helper('marketplace/common')->getContactFormUrl(); ?>"> <?php
+                 echo $this->__('Contact Admin') ?> </a></li>
+                <?php } ?>
+                <?php if (Mage::getStoreConfig('superdeals/superdeals_group/deals_enable') == 1) {
+                     ?>
+                    <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getManageDealsUrl()) {
+                        ?>active<?php 
+                } ?>">
+                <?php 
+                /**
+                 * Link for manage deals.
+                 */
+                ?>
+                <a href="<?php echo Mage::helper('marketplace/url')->getManageDealsUrl(); ?>"> <?php
+                 echo $this->__('Manage Deals') ?> </a></li>
+                <?php } ?>
+                <?php if (Mage::getStoreConfig('marketplace/admin_approval_seller_registration/vacation_mode') == 1) { ?>
+                    <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->getVacationModeUrl()) {
+                        ?>active<?php 
+                 } ?> last">
+                 <?php 
+                 /**
+                  * Link for vacation mode.
+                  */?>
+                 <a href="<?php echo Mage::helper('marketplace/url')->getVacationModeUrl(); ?>"> <?php
+                  echo $this->__('Vacation Mode') ?> </a></li>
+                <?php } ?>
+                <?php if (Mage::getStoreConfig('facebookstore/faceconnect/enabled') == 1) { ?>
+                <?php 
+                /**
+                 * Link for Facebook store
+                 * 
+                 */
+                ?>
+               <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/outofstock')->getFacebookStoreUrl()) { ?>active<?php } ?> last">
+                	<a href="<?php echo Mage::helper('marketplace/outofstock')->getFacebookStoreUrl(); ?>"> <?php
+                 	echo $this->__('Facebook Store') ?> </a>
+              </li>
+               <?php } ?>
+            </ul>
+        <?php } 
+        elseif($customerStatus==2){?>
+        	<ul>
+               <?php 
+                /*
+                * For Disapproved Sellers               
+                */?>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/outofstock')->sellerUrl()) {
+                    ?>active<?php 
+                  } ?>">
+                  <?php 
+                  /**
+                   * Link for become a seller.
+                   */
+                  ?>
+                  <a href="<?php echo Mage::helper('marketplace/outofstock')->sellerUrl(); ?>"> <?php
+                   echo $this->__('Seller Account') ?> </a></li>
+                   
+                   
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/common')->customerreviewUrl()) {
+                    ?>active<?php 
+                  } ?> last">
+                  <?php 
+                  /**
+                   * Link for seller review.
+                   */?>
+                  <a href="<?php echo Mage::helper('marketplace/common')->customerreviewUrl(); ?>"> <?php
+                   echo $this->__('Seller Reviews') ?> </a></li>
+                   
+                   <?php if (Mage::getStoreConfig('marketplace/admin_approval_seller_registration/contact_admin') == 1) {
+                     ?>
+                    <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/common')->getContactFormUrl()) {
+                        ?>active<?php 
+                } ?>">
+                <?php 
+                /**
+                 * Link for contact admin.
+                 */
+                ?>
+                <a href="<?php echo Mage::helper('marketplace/common')->getContactFormUrl(); ?>"> <?php
+                 echo $this->__('Contact Admin') ?> </a></li>
+                <?php } ?>
+            </ul>
+        	
+        	
+        <?php } else { ?>
+            <ul>
+               <?php 
+                /*
+                * For Buyers               
+                */?>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/url')->becomemerchantUrl()) {
+                    ?>active<?php 
+                  } ?>">
+                  <?php 
+                  /**
+                   * Link for become a seller.
+                   */
+                  ?>
+                  <a href="<?php echo Mage::helper('marketplace/url')->becomemerchantUrl(); ?>"> <?php
+                   echo $this->__('Become a Seller') ?> </a></li>
+                <li class="<?php if (Mage::helper('core/url')->getCurrentUrl() == Mage::helper('marketplace/common')->customerreviewUrl()) {
+                    ?>active<?php 
+                  } ?> last">
+                  <?php 
+                  /**
+                   * Link for seller review.
+                   */?>
+                  <a href="<?php echo Mage::helper('marketplace/common')->customerreviewUrl(); ?>"> <?php
+                   echo $this->__('Seller Reviews') ?> </a></li>
+            </ul>
+        <?php } ?>
+    </div>
+</div>

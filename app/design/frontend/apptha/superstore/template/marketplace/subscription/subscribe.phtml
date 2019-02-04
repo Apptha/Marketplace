@@ -1,0 +1,316 @@
+<?php 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+/**
+ * Retrive and display all the subscription plans
+ */
+$planId = null;
+$customerId = Mage::getSingleton ( 'customer/session' )->getId ();
+$getData = Mage::helper ( 'marketplace/subscription' )->checkSubscribed ( $customerId );
+/**
+ * Get subscribed plan information.
+ */
+$subscribedPlanInfo = Mage::helper ( 'marketplace/subscription' )->getPlanInfo ( $customerId );
+if ($getData == 1 || $getData == 3) {
+	$planId = $subscribedPlanInfo->getPlanId ();
+	$planStatus = $subscribedPlanInfo->getStatus ();
+	if($getData == 3){  
+		/**
+		 * Get upgrade to
+		 * Get status
+		 */   
+		$planIdtoUpgrade	= $subscribedPlanInfo->getUpgradeTo();
+		$planStatusExpire	= $subscribedPlanInfo->getStatus();
+		$getPlanInfoUpgrade = Mage::getModel ( 'marketplace/subscriptionplans' )->load ( $planIdtoUpgrade, 'plan_id' );
+		$UpgradePlanName	= $getPlanInfoUpgrade-> getPlanName();
+	}
+}
+/**
+ * Get subscribed plan information.
+ * Status
+ * paid date
+ * subscription period
+ * validity period
+ */
+$status = $subscribedPlanInfo->getStatus ();
+$subscriptionStartDate = $subscribedPlanInfo->getPaidDate ();
+$getPlanInfo = Mage::getModel ( 'marketplace/subscriptionplans' )->load ( $planId, 'plan_id' );
+$subscriptionPeriod = $getPlanInfo->getSubscriptionPeriod ();
+$validityPeriod = $getPlanInfo->getValidityPeriod ();
+
+if ($getPlanInfo->getOfferPeriod () != '' && $getPlanInfo->getOfferValidityPeriod () != '') {
+	/**
+	 * Get offer period.
+	 * Get offer validity period.
+	 */
+	$offerPeriod = $getPlanInfo->getOfferPeriod ();
+	$offerValidityPeriod = $getPlanInfo->getOfferValidityPeriod ();
+}
+
+
+/**
+ * Get the subscription plan period.
+ */
+if($subscriptionPeriod==1 && $offerPeriod==1){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$validityPeriod+$offerValidityPeriod.' months',strtotime($subscriptionStartDate)));			
+}elseif($subscriptionPeriod==2 && $offerPeriod==2){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$validityPeriod+$offerValidityPeriod.' years',strtotime($subscriptionStartDate)));
+}elseif($subscriptionPeriod==1 && $offerPeriod==2){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$offerValidityPeriod.' years '.$validityPeriod.' months',strtotime($subscriptionStartDate)));
+}elseif($subscriptionPeriod==2 && $offerPeriod==1){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$validityPeriod.' years '.$offerValidityPeriod.' months',strtotime($subscriptionStartDate)));
+}elseif($subscriptionPeriod==2 && $offerPeriod==0){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$validityPeriod.' years ',strtotime($subscriptionStartDate)));
+}elseif($subscriptionPeriod==1 && $offerPeriod==0){
+	$subscriptionEndDate = date('Y-m-d', strtotime('+'.$validityPeriod.' months',strtotime($subscriptionStartDate)));
+} 
+/**
+ * Get currnet date.
+ */
+$currentDate = Mage::getModel ( 'core/date' )->date ( 'Y-m-d' );
+$subscribedPlanInfo = Mage::helper ( 'marketplace/subscription' )->getSubscriptionPlanInfo ( $planId );
+$subscribedPlanInfoFee = $subscribedPlanInfo->getYearlyFee ()
+
+?>
+<div class="page-title">
+<h1><?php echo $this->__('Subscription Plans');?></h1>
+</div>
+<?php
+$subscriptionPlans = $this->subscriptionPlans ();
+
+
+
+$count = $subscriptionPlans->getSize ();
+if ($count > 0) {
+	if ($getData == 1 || $getData == 3) {
+		?>
+		<p class="subscriptionDetails">
+		<?php
+			if($getData == 3){ 
+				if($planStatusExpire =='expire'){
+					/**
+					 * Expire subscribe plan information.
+					 */
+					echo $this->__('Your '.$subscribedPlanInfo->getPlanName ().' has been expired Please Upgrade your plan');
+				}else{
+					/**
+					 * Upgrade plan information.
+					 */
+					echo $this->__('Your request to upgrade your plan from '.$subscribedPlanInfo->getPlanName ().' to '.$UpgradePlanName.' will be active once approve by admin');
+				}
+			 }else{
+				echo $this->__ ( 'You have subscribed for ' );
+				echo '`' . $subscribedPlanInfo->getPlanName () . '`' . 'plan' . ',';
+				echo $this->__ ( ' You have paid ' );
+				echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();
+				echo $subscribedPlanInfo->getYearlyFee ();
+				echo $this->__ ( ' as subscription fee.' );
+				echo $this->__ ( ' Your plan start date is ' );
+				echo date ( 'jS F Y', strtotime ( $subscriptionStartDate ) );
+				echo $this->__ ( ' and it will expire on ' );
+				echo date ( 'jS F Y', strtotime ( $subscriptionEndDate ) ) . '.';
+				}
+				?>
+			</p>
+		<h2 class="sbscription-title"><?php echo $this->__('You can choose other subscription plans from below');?> </h2>
+		<?php } else {  ?>
+		<div class="subscription-plans">
+		<?php	
+				/**
+				 * Subscribe plan information.
+				 */
+				foreach ( $subscriptionPlans as $_subscriptionPlans ) { 
+					
+					/**
+					 * Invoice Generation
+					 */
+					$invoiceFirst = $customerId;
+					/**
+					 * Get plan name.
+					 */
+					$subscriptionPlanTrim = $_subscriptionPlans->getPlanName ();
+					$invoiceSecond = substr ( $subscriptionPlanTrim, 0, 4 );
+					$invoiceThird = rand ( 1, 100000000000 );
+					$invoiceId = $invoiceFirst . $invoiceSecond . $invoiceThird;
+					if (($planId != $_subscriptionPlans->getPlanId () || $status == 'expire') && ($status != '')  ) {
+						?>
+				
+				<div class="subscribe-plane">
+				<h1><?php echo $_subscriptionPlans->getPlanName();?></h1>
+				<?php 
+				/**
+				 * Subscription price.
+				 */
+				?>
+				<div class="subscribe-price subscribe-price-div">
+					<span class="rupies subscribe-price-span"><?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();?></span>
+					<span class="price subscribe-price-span"><?php  echo   Mage::helper('core')->currency($_subscriptionPlans->getYearlyFee(),true,false); ?></span>
+					<p>
+					<?php
+					 if($_subscriptionPlans->getSubscriptionPeriod() == 1) {
+						echo $_subscriptionPlans->getValidityPeriod().' Month[s]';
+					} 
+					else {
+						 echo $_subscriptionPlans->getValidityPeriod().' Year[s]'; 
+					} 
+					?>
+					<?php
+					 if($_subscriptionPlans->getOfferPeriod()!= 0 && $_subscriptionPlans->getOfferValidityPeriod() != 0) { ?>
+					<?php 
+					echo ' + '; ?>
+					<?php  
+					/**
+					 * Months/years of subscription plan.
+					 */
+					if($_subscriptionPlans->getOfferPeriod()==1) { 
+						echo $_subscriptionPlans->getOfferValidityPeriod().' Months[s] Free Subscription';
+					} else { 
+						echo $_subscriptionPlans->getOfferValidityPeriod().' Year[s] Free Subscription'; 
+					}?>
+					<?php } ?></p>
+					<?php 
+					/**
+					 * Number of products allowed for subscription plan.
+					 */
+					?>
+					<?php if($_subscriptionPlans->getProductType() == 2 ){ $productCount = 'Unlimited'; }else{ $productCount = $_subscriptionPlans->getProductCount(); } ?>
+					<p><?php echo "Number of Product[s] Allowed is ". $productCount ?></p>			
+					<a href="<?php echo Mage::getUrl('marketplace/subscription/insertsubscribe',array('invoice'=>$invoiceId,'planid' => $_subscriptionPlans->getPlanId()));?>">
+					<?php echo $this->__('Subscribe')?></a>			
+				</div>
+			</div>	
+			<?php } ?>	
+			<?php  }?>
+			</div>
+		<?php } ?>
+		<p class="subscriptionDowngrade"><?php echo $this->__('Upgrade plan can be done anytime and effective once approved by admin. For downgrade, You have to wait till the current subscription is over.');?></p>
+		<div class="subscription-plans">
+		
+						<div class="subscribe-plane">
+				<h1><?php echo $this->__('Plan')?></h1>
+				<div class="subscribe-price">
+					<span><?php echo $this->__('Subscription Fee')?></span>
+					<p><?php echo $this->__('Monthly/Yearly')?></p>
+					<p><?php echo $this->__('Product Count');?></p>
+				</div>				
+	   </div>
+		<?php
+			foreach ( $subscriptionPlans as $_subscriptionPlans ) {  
+				/**
+				 * Invoice Generation
+				 * 
+				 * Get plan id
+				 * Get plan name
+				 * Get plan status
+				 */
+				$invoiceFirst = $customerId;
+				$subscriptionPlanId = $_subscriptionPlans->getPlanId ();
+				$subscriptionPlanTrim = $_subscriptionPlans->getPlanName ();
+				$subscriptionPlanStatus = $_subscriptionPlans->getStatus ();
+				$invoiceSecond = substr ( $subscriptionPlanTrim, 0, 4 );
+				$invoiceThird = rand ( 1, 100000000000 );
+				$invoiceId = $invoiceFirst . $invoiceSecond . $invoiceThird;
+				$subscriptionText = 'Subscribe';
+				if((!empty($planId)) && ($planId == $subscriptionPlanId) && ($planStatus != 'expire')){
+					$subscriptionText = 'Subscribed';
+				}
+				
+				if ((($status != '')) || (empty($planIdtoUpgrade))  ) { 
+					?>
+				<div class="subscribe-plane">
+				<h1><?php echo $_subscriptionPlans->getPlanName();?></h1>
+		
+				<div class="subscribe-price">
+					
+					<span class="price"><?php echo  Mage::helper('core')->currency($_subscriptionPlans->getYearlyFee(),true,false);?>	</span>
+					<p><?php if($_subscriptionPlans->getSubscriptionPeriod()==1) { 
+						/**
+						 * Get subscription validity period from months.
+						 */
+						echo $_subscriptionPlans->getValidityPeriod().' Month[s]';
+					} else { 
+						/**
+						 * Get subscription validity period from years.
+						 */
+						echo $_subscriptionPlans->getValidityPeriod().' Year[s]'; 
+					} ?>
+					<?php if($_subscriptionPlans->getOfferPeriod() != 0 && $_subscriptionPlans->getOfferValidityPeriod() != 0){?>
+					<?php echo ' + '; ?>
+					<?php  if($_subscriptionPlans->getOfferPeriod()==1) { 
+						/**
+						 * Get free subscription period monthly
+						 */
+						echo $_subscriptionPlans->getOfferValidityPeriod().' Months[s] Free Subscription';
+					} else { 
+						/**
+						 * Get free subscription period yearly.
+						 */
+						echo $_subscriptionPlans->getOfferValidityPeriod().' Year[s] Free Subscription'; 
+					}?>
+					<?php } ?></p>
+					<?php if($_subscriptionPlans->getProductType() == 2 ){ $productCount = 'Unlimited'; }else{ $productCount = $_subscriptionPlans->getProductCount(); } ?>
+					<p><?php echo  $productCount ?></p>
+					<?php 
+					/**
+					 * Subscription text.
+					 */
+					if((empty($planIdtoUpgrade))){ 
+						if( ($subscribedPlanInfoFee < $_subscriptionPlans->getYearlyFee() ) || ($status == 'expire') && $subscribedPlanInfoFee !=0){ 
+						?>
+						<a href="<?php echo Mage::getUrl('marketplace/subscription/insertsubscribe',array('invoice'=>$invoiceId,'planid' => $_subscriptionPlans->getPlanId()));?>">
+						<?php echo $this->__($subscriptionText)?></a>
+						<?php
+						 }else{ 
+						?>
+						<a class="disableMode"><?php echo $this->__($subscriptionText)?></a>
+						<?php 	
+					 	}
+					 }else{ 
+						?>
+					 	 <a class="disableMode"><?php echo $this->__($subscriptionText)?></a>			 	 			 	
+					 	<?php
+					 } 
+					 
+					?>
+				</div>
+			</div>
+			
+			<?php } ?>
+			
+			<?php } ?>
+			
+			</div>
+			<?php
+} else {
+	/**
+	 * Display message if subscription plan is not active or activated.
+	 */
+	echo $this->__ ( 'There is no subscription plans available to show' );
+}
+	

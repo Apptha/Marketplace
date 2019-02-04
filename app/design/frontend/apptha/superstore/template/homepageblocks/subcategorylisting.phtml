@@ -1,0 +1,104 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+ 
+/**
+ * Sub category listing
+ */
+   $subCategoryCollection = $this->getSubCategoryListings ();
+
+ $categoryCount = count ( $subCategoryCollection );
+if ($categoryCount >= 0) { ?>
+     
+<?php foreach ( $subCategoryCollection as $_subCategoryCollection ) {?>
+
+<?php $categoryId = $_subCategoryCollection->getId();?>
+<?php $subCategoryData = $this->getSubCategories($categoryId); ?>
+<?php if(count($subCategoryData)>0){?>
+<div class="subcategory-block">
+<div class="category-description">
+<span class="icon">icon</span>
+<h2><?php echo $_subCategoryCollection->getName(); ?></h2>
+<?php 
+$prName = $_subCategoryCollection->getSubCategoryListingsContent();
+$lenPrName = strlen($_subCategoryCollection->getSubCategoryListingsContent());
+$subPrName = substr($prName, 0, 36);
+if ($lenPrName >= 36) {
+$prNameFix = $subPrName . "...";
+} else {
+$prNameFix = $prName;
+}
+
+?>
+<p><?php echo $prNameFix;?></p>
+</div>     
+<div class="<?php if($categoryCount>5){
+echo 'slider-carousel-mini'; 
+} 
+else {
+echo 'no-slider'; 
+} ?>">
+
+             <?php foreach($subCategoryData as $_subCategoryData){ ?>
+             <div class="slider"> 
+
+<?php $categoryInfo = $this->loadCategoryInfo($_subCategoryData);
+$imagePath = $categoryInfo->getThumbnail();
+$resizeImage = Mage::helper('marketplace/marketplace')->getResizedImage($imagePath,123, 70, $quality = 100);
+$noImage = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN)."frontend/apptha/superstore/images/no-image-thumbnail.png";
+if ($categoryInfo->getThumbnail() != ''){?>
+<img src="<?php echo $resizeImage;?>" 
+alt="<?php echo $categoryInfo->getName(); ?>" />
+<?php } else {?>
+<img src="<?php echo $noImage;?>" 
+alt="<?php echo $categoryInfo->getName(); ?>" />
+<?php  } ?>
+ <a href="<?php echo Mage::getBaseUrl().$categoryInfo->getUrlPath();?>" 
+ title="<?php echo $categoryInfo->getName(); ?>">
+ <?php echo $categoryInfo->getName(); ?></a>
+</div>
+
+<?php } ?>
+</div>
+</div>
+<?php } ?>
+<?php } ?>
+<?php } ?>
+  <script type="text/javascript">
+  $mp = jQuery.noConflict();
+  $mp(document).ready(function(){
+  $mp('.slider-carousel-mini').bxSlider({
+infiniteLoop: false,
+hideControlOnEnd: true,
+    minSlides: 1,
+    moveSlides: 1,
+    slideMargin: 10
+  });
+});
+</script>

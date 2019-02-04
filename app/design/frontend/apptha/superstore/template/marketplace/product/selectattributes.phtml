@@ -1,0 +1,91 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<!-- Marketplace wrapper -->
+<div class="marketplace-wrapper" id="marketplace-wrapper">     
+    <div class="page-title">
+    <h2><?php 
+    $attributeSetDetails = Mage::getModel("eav/entity_attribute_set")->load($this->getRequest()->getParam('set'));
+    echo $this->__('New Product').' ('.$attributeSetDetails->getAttributeSetName().')'; ?></h2>     
+    </div>
+    <form action="<?php echo Mage::helper('marketplace/url')->getNewProductUrl(); ?>" method="post" class="product_attribute_form" id="product_attribute_form" enctype="multipart/form-data">    
+        <!-- Marketplace product type container -->
+        <div class="fieldset marketplace-product-type">
+         <h3 class="legend"><?php echo $this->__('Select Configurable Attributes'); ?></h3>
+         <input type="hidden" name="type" id="type" value="configurable">
+              <input type="hidden" name="set" id="attribute_set_id" value="<?php echo $this->getRequest()->getParam('set'); ?>">
+         <ul>
+         <?php 
+         $attributeFlag = 0;
+         $product = Mage::getSingleton("catalog/product")->setTypeId('configurable')->setAttributeSetId($attributeSetDetails->getAttributeSetId());
+         $attributes = $product->getTypeInstance(true)->getSetAttributes($product);
+         foreach($attributes as $attribute){
+         if (($attribute->getIsConfigurable()) && ($attribute->getIsVisible()) && ($attribute->usesSource()) && ($attribute->getIsGlobal() == Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL)){
+         $attributeCodeValueForPrint = $attribute->getAttributeCode();
+         if($attribute->getName() != 'setbanner' && $attribute->getName() != 'default_country' && $attribute->getName() != 'seller_shipping_option' && $attribute->getName() != 'productstatus'){ 
+         $attributeFlag = 1; 
+         ?>
+         <li>         
+         <input id="attribute_<?php echo $attributeCodeValueForPrint; ?>" name="attributes[]" value="<?php
+          echo $attribute->getAttributeId(); ?>" title="<?php
+           echo $attribute->getName(); ?>" class="attribute-checkbox validate-one-required-by-name" type="checkbox">
+         <label for="attribute_<?php echo $attributeCodeValueForPrint; ?>"><?php
+          echo $attribute->getName(); ?></label>                 
+         </li>
+         <?php }
+}
+} ?>
+         <?php 
+         if($attributeFlag == 0){
+         ?>
+         <?php echo $this->__('No configurable attribute available for').' "'.$attributeSetDetails->getAttributeSetName().'".'; ?>
+         <?php 
+         }
+         ?>
+         </ul>                  
+        </div>
+        <?php 
+        if($attributeFlag != 0){
+        ?>
+        <button class="button" id="continue_button" type="submit" title="<?php echo $this->__('Continue') ?>" class="button">
+        <span><span><?php echo $this->__('Continue') ?></span></span></button>
+        <?php 
+        }
+        ?>
+        <a  class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/create/'); ?>" ><?php
+         echo $this->__('Back'); ?></a>       
+       
+</form>
+
+<script type="text/javascript">
+    var theForm = new VarienForm('product_attribute_form', true);
+</script>
+</div>
+   

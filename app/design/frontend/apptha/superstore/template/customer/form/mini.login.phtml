@@ -1,0 +1,44 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<div class="block block-login">
+    <div class="block-title">
+        <strong><span><?php echo $this->__('Login') ?></span></strong>
+    </div>
+    <form action="<?php echo $this->getPostActionUrl() ?>" method="post">
+        <div class="block-content">
+            <label for="mini-login"><?php echo $this->__('Email:') ?></label><input type="email" autocapitalize="off" autocorrect="off" spellcheck="false" name="login[username]" id="mini-login" class="input-text" />
+            <label for="mini-password"><?php echo $this->__('Password:') ?></label><input type="password" name="login[password]" id="mini-password" class="input-text" />
+            <div class="actions">
+                <button type="submit" class="button"><span><span><?php echo $this->__('Login') ?></span></span></button>
+            </div>
+        </div>
+    </form>
+</div>

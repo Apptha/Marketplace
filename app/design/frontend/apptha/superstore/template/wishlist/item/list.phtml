@@ -1,0 +1,82 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+    $columns = $this->getColumns();
+?>
+<table class="clean-table linearize-table" id="wishlist-table">
+    <thead>
+        <tr>
+            <?php foreach ($columns as $column):
+                $_blockName = str_replace('.','-',strtolower($column->getNameInLayout()));
+            ?>
+  <th class="<?php echo $_blockName; ?>"><?php
+                 echo $column->getTitle();?></th>
+            <?php endforeach; ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (count($this->getItems())): ?>
+            <?php foreach ($this->getItems() as $item): ?>
+                <tr id="item_<?php echo $item->getId();?>">
+                    <?php
+                        foreach ($columns as $key => $column):
+                            $_blockName = str_replace('.','-',strtolower($column->getNameInLayout()));
+                            $false = false;
+                            $_rwdLabel = ($column->getTitle()) ? $column->getTitle() : $false;
+                    ?>
+                        <td class="<?php echo 'wishlist-cell'.$key; ?> <?php
+                         echo $_blockName; ?>"<?php
+                          if($_rwdLabel): ?> data-rwd-label="<?php
+                          echo $_rwdLabel; ?>"<?php
+                           endif; ?>><?php
+                            $column->setItem($item);
+                             echo $column->toHtml($item);?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach ?>
+        <?php else: ?>
+            <td colspan="<?php echo count($columns);?>" class="wishlist-empty"><?php
+             echo $this->__('This Wishlist has no Items');?></td>
+        <?php endif; ?>
+    </tbody>
+</table>
+<?php foreach ($columns as $column): ?>
+    <?php echo $column->getAdditionalHtml();?>
+<?php endforeach; ?>
+<script type="text/javascript">
+//<![CDATA[
+    decorateTable('wishlist-table');
+
+<?php foreach ($columns as $column): ?>
+    <?php echo $column->getJs();?>
+<?php endforeach; ?>
+//]]>
+</script>

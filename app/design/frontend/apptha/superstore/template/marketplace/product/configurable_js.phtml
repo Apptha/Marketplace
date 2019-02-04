@@ -1,0 +1,189 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+/**
+ * Checking Product SKU is available or not
+ */
+?>
+<script type="text/javascript">
+var addProductForm = new VarienForm('configurable_associated_product_form', true);
+    $('sku').observe('keyup', function(event) {
+        checkSkuValiationForProduct();      
+    });
+    $('sku').observe('blur', function(event) {
+        checkSkuValiationForProduct();      
+    });
+    function checkSkuValiationForProduct(){
+        var inputskuValue = $('sku').getValue();
+        var emptycheck = inputskuValue.replace(/^\s+/, '').replace(/\s+$/, '');
+        var sku = inputskuValue.trim().length;
+        if (sku === 0 && emptycheck === '') {
+            $('empty-text').setStyle({display: 'block'});         
+            $('not-available').setStyle({display: 'none'});
+            $('available').setStyle({display: 'none'});
+        } else {
+               $('available').setStyle({display: 'none'});
+               $('not-available').setStyle({display: 'none'});
+               $('empty-text').setStyle({display: 'none'});            
+               $('category-loading').setStyle({display:'block'});
+            new Ajax.Request("<?php echo Mage::getBaseUrl(); ?>marketplace/product/checksku/", {
+                method: "get",
+                parameters: {sku: inputskuValue},
+                onSuccess: successFunc
+            });
+        }
+      
+    }
+    
+    function successFunc(response) {
+          $('category-loading').hide(); 
+      if(!$('simple_product_sku_autogenerate').checked){    
+            var inputskuValue = $('sku').getValue();
+      var sku = inputskuValue.length;     
+      
+      if (sku === 0) {
+          $('empty-text').setStyle({display: 'block'});
+          $('not-available').setStyle({display: 'none'});
+          $('available').setStyle({display: 'none'});
+          return;
+      }else{       
+      var content = response.responseText;
+        if (content == 0) {
+        blockAvailableForSku();   
+        } else {
+            $('category-loading').setStyle({display:'none'});
+            $('available').setStyle({display: 'none'});
+            $('not-available').setStyle({display: 'block'});
+            $('empty-text').setStyle({display: 'none'});
+        }
+        }
+        }
+    }
+
+    function blockAvailableForSku(){
+        $('category-loading').setStyle({display:'none'});
+        $('available').setStyle({display: 'block'});
+        $('not-available').setStyle({display: 'none'});
+        $('empty-text').setStyle({display: 'none'});
+    }   
+
+    // Show/Hide price option for configurable products
+    function showHidePriceContainer(value,attr_code){ 
+ 
+    $$('.option_value_content_for_configurable_product_'+attr_code).each(
+               function (e) {
+                          e.hide(); 
+                             } 
+    );
+    
+    $$('.price_value_content_for_configurable_product_'+attr_code).each(
+    function (e) {
+    e.setAttribute('disabled', 'disabled'); 
+    } 
+    );
+
+    if($('option_value_'+value)){      
+    $('option_value_'+value).show();
+    } 
+   
+    if($('price_option_'+value)){     
+    $('price_option_'+value).removeAttribute('disabled');
+    } 
+
+    if($('price_option_mode_'+value)){
+    $('price_option_mode_'+value).removeAttribute('disabled');
+    }    
+    }
+
+    function filterByFieldForConfigAttributes(){     
+    document.getElementById("configurable_associated_products_table_form").action = document.getElementById("configurable_associated_products_table_form_action_url").value+'#associate_table';    
+    document.getElementById("configurable_associated_products_table_form").submit();
+    }  
+
+    function deleteSimpleProductForConfigurable(){   
+    document.getElementById("configurable_associated_products_table_form").action = document.getElementById("delete_configurable_associated_products_table_form_action_url").value;
+    document.getElementById("configurable_associated_products_table_form").submit();
+    }   
+
+    function saveAssociativeProductsForConfig(){
+    document.getElementById("configurable_associated_products_table_form").action = document.getElementById("save_configurable_associated_products_table_form_action_url").value;     
+    document.getElementById("configurable_associated_products_table_form").submit();    
+    }
+
+    function autogenerateNameValueForSimple(){   
+            if ( $('simple_product_name_autogenerate').checked){
+                    $('simple_product_name_autogenerate').checked = false;
+                        }else{
+                            $('simple_product_name_autogenerate').checked = true;  
+                                }
+        autogenerateNameValueForCheckbox();
+    }
+
+    function autogenerateNameValueForCheckbox(){
+    if ( $('simple_product_name_autogenerate').checked){
+    $('name').setAttribute('disabled', 'disabled');
+    }else{
+    $('name').removeAttribute('disabled'); 
+    }    
+    }
+
+    function autogenerateSkuValueForSimple(){   
+            if ( $('simple_product_sku_autogenerate').checked){
+                    $('simple_product_sku_autogenerate').checked = false;
+                        }else{
+                            $('simple_product_sku_autogenerate').checked = true;  
+                                }
+                autogenerateSkuValueForCheckbox();
+}
+
+function autogenerateSkuValueForCheckbox(){
+if ( $('simple_product_sku_autogenerate').checked){
+$('sku').setAttribute('disabled', 'disabled'); 
+$('available').setStyle({display: 'none'});
+$('not-available').setStyle({display: 'none'});
+$('empty-text').setStyle({display: 'none'});
+}else{
+    $('sku').removeAttribute('disabled');     
+}  
+$('sku').focus()
+}
+
+document.observe("dom:loaded", function() {
+if($('sku')){
+$('sku').focus();   
+}   
+if($('name')){
+$('name').focus();  
+}
+});
+
+</script>
+

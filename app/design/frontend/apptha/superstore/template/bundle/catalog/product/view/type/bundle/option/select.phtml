@@ -1,0 +1,104 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<?php /* @var $this Mage_Bundle_Block_Catalog_Product_View_Type_Bundle_Option_Select */ ?>
+<?php $_option      = $this->getOption(); ?>
+<?php $_selections  = $_option->getSelections(); ?>
+<?php $_default     = $_option->getDefaultSelection(); ?>
+<?php list($_defaultQty, $_canChangeQty) = $this->_getDefaultValues(); ?>
+<?php $tierPriceHtml = ''; ?>
+
+<dt>
+    <label<?php if ($_option->getRequired()){ ?>
+    <?php echo ' class="required"'; 
+    } 
+    ?>>
+    <?php echo $this->escapeHtml($_option->getTitle()) ?>
+    <?php if ($_option->getRequired()){?>
+    <?php echo '<em>*</em>' ;
+    }
+     ?></label>
+</dt>
+<dd<?php if ($_option->decoratedIsLast){?> class="last"<?php }?>>
+    <div class="input-box">
+    <?php /** @var $_selection Mage_Catalog_Model_Product*/ ?>
+    <?php if ($this->_showSingle()): ?>
+        <?php echo $this->getSelectionTitlePrice($_selections[0]); ?>
+        <?php if ($_selections[0]->getSelectionCanChangeQty()): ?>
+            <?php $tierPriceHtml = $this->getTierPriceHtml($_selections[0]); ?>
+        <?php endif; ?>
+        <input type="hidden" name="bundle_option[<?php echo $_option->getId() ?>]" 
+        value="<?php echo $_selections[0]->getSelectionId() ?>"/>
+    <?php else:?>
+        <select onchange="bundle.changeSelection(this)" id="bundle-option-<?php echo $_option->getId() ?>" 
+        name="bundle_option[<?php echo $_option->getId() ?>]" 
+        class="bundle-option-<?php echo $_option->getId() ?>
+        <?php if ($_option->getRequired()){ ?>
+        <?php echo ' required-entry'; } ?> bundle-option-select change-container-classname">
+            <option value=""><?php echo $this->__('Choose a selection...') ?></option>
+        <?php foreach ($_selections as $_selection): ?>
+            <?php if ($_selection->getSelectionCanChangeQty() && $this->_isSelected($_selection)): ?>
+                <?php $tierPriceHtml = $this->getTierPriceHtml($_selection); ?>
+            <?php endif; ?>
+            <option value="<?php echo $_selection->getSelectionId() ?>"
+            <?php if ($this->_isSelected($_selection)){ 
+            	 echo ' selected="selected"'; 
+            } 
+            ?>
+            <?php if (!$_selection->isSaleable()){ 
+            ?>
+            <?php echo ' disabled="disabled"' ;
+            } 
+            ?>>
+            <?php echo $this->getSelectionTitlePrice($_selection, false) ?></option>
+        <?php endforeach; ?>
+        </select>
+    <?php endif; ?>
+    </div>
+    <span id="bundle-option-<?php echo $_option->getId().'-tier-prices"> '.$tierPriceHtml; ?></span>
+    <span class="qty-holder">
+        <label for="bundle-option-<?php echo $_option->getId() ?>-qty-input">
+        <?php echo $this->__('Qty:') ?>&nbsp;</label>
+        <input onkeyup="bundle.changeOptionQty(this, event)" onblur="bundle.changeOptionQty(this, event)" <?php if (!$_canChangeQty){ 
+        ?>
+        <?php echo ' disabled="disabled"'; 
+        }
+        ?> 
+        id="bundle-option-<?php echo $_option->getId() ?>-qty-input" 
+        class="input-text qty<?php if (!$_canChangeQty){ 
+        ?>
+        <?php echo ' qty-disabled'; 
+        }
+        ?>" type="text" pattern="\d*" 
+        name="bundle_option_qty[<?php echo $_option->getId() ?>]" 
+        value="<?php echo $_defaultQty ?>"/>
+    </span>
+</dd>

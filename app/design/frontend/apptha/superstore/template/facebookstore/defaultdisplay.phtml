@@ -1,0 +1,230 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_FacebookStore
+ * @version    	0.1.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ * */
+?>
+
+<?php $appId          = Mage::getStoreConfig('facebookstore/faceconnect/facebook_app_id'); ?>
+<div id="fb-root"></div>
+<script type="text/javascript" src="https://connect.facebook.net/en_US/all.js"></script>
+<script>
+FB.init({
+appId : '<?php $appId ;?>',
+status : true, // check login status
+cookie : true, // enable cookies to allow the server to access the session
+xfbml : true // parse XFBML
+});
+FB.Canvas.setSize({height:1200});
+</script>
+<?php //Get App Id, Product Id,Current Url and Base Url 
+
+$productId      = $this->getRequest()->getParam('pid');
+if(is_numeric($productId)){
+$link           = Mage::helper("core/url")->getCurrentUrl();
+ $getBase        = Mage::app()->getStore()->getBaseUrl(); 
+ $sellerId = $this->getRequest()->getParam('sellerid');
+ $baseUrl            = $getBase.'facebookstore/index/productdisplay/sellerid/'.$sellerId  ;
+//$baseUrl        = Mage::getUrl('facebookstore/index/productdisplay/',array('_secure'=>true));
+
+//Get product collection from block function 
+$_product       = $this->displayProduct($productId);
+
+ //Get Product Name 
+$productName    = $_product->getName(); 
+
+//Get Product Image 
+$productImage   = $_product->getImageUrl();
+
+//Get special Price 
+$splPrice       = $_product->getSpecialPrice();
+
+//Get Product Price 
+$productPrice   = $_product->getPrice(); 
+
+//Get Product Short Description 
+$productShort   = $_product->getShortDescription();
+
+//Get Product Url to redirect the page from facebook
+$productUrl     = $_product->getProductUrl();
+
+//Get Face book share image and Google plus share image
+$fbImage        =  $this->getSkinUrl('facebookstore/images/share.jpg');
+$googleImage    = $this->getSkinUrl('facebookstore/images/gplus.png');
+
+//Display Product Details ?>
+<div id="page_app">
+    <div class="product_view">
+        <div class="top_breadcrumbs">
+            
+<?php //Display Breadcrumbs ?>
+            <ul>
+                <li><a href="<?php echo $baseUrl;?>"><i class="home_icon"></i></a></li>
+                <li><span class="bcrumb-arrow"></span></li>
+                <li><?php echo $productName;?></li>
+             </ul>
+            
+<?php //Search text term ?>
+            <div class="searchouter">
+        <form id="search" action="<?php echo $baseUrl; ?>">  
+            <input type="text" class="" placeholder="<?php echo $this->__('Search'); ?>" id="breadcrumb_search" name="searchTerm" value="">
+             <div class="search-icon">
+                <img src="<?php echo $this->getSkinUrl('facebookstore/images/search_icon.png');?>" alt=""/>
+            </div>  
+            <div class="clear"></div>
+                    </form>
+            </div>
+                </div>    
+        <div class="clear"></div>
+        
+<?php //Display Product Image ?>
+        <div class="image_layer">
+                   <img src="<?php echo $productImage; ?>" <?php echo $productName;?>> 
+                    
+                </div>
+        
+<?php //Display product Name ?>
+        <div class="product_right_view">
+            <h4><?php echo $productName;?></h4>
+                <div class="price_row">
+         
+<?php //Display Special Special price if available otherwise display Product price?>
+<span class="price">
+   <?php if(!empty($splPrice)) { ?>                    
+<span class="price">
+    <del><?php echo Mage::helper('core')->currency($productPrice, true, false);?></del>
+    <?php echo Mage::helper('core')->currency($splPrice, true, false);?>
+   <?php } else  { ?>
+   <?php echo Mage::helper('core')->currency($productPrice, true, false);}?>
+ </span>   
+</span>
+                    
+<?php //Display Buy Now Button?>
+ <a href="<?php echo $productUrl; ?>" target="_blank" class="buy_now_button"><?php echo $this->__('Buy Now');?></a>
+ <div class="clear"></div>
+ </div>
+<div class="social_links">
+    
+<?php //Facebook Share button ?>
+
+<?php $fbUrl = 'http://www.facebook.com/dialog/feed?app_id=' .$appId.'&amp;description='.$productShort.'&amp;picture='.$productImage.'&amp;name='.$productName.'&amp;message=&amp;redirect_uri=' .$link . '&amp;link=' . $link;;?>
+<a title="<?php echo $this->__('Share with Facebook'); ?>" href="<?php echo $fbUrl; ?>" target="_blank">
+<img src="<?php echo $fbImage ?>" alt="<?php echo $this->__('Share with Facebook'); ?>" /> </a>
+
+<?php //Face book Like Button Script ?>
+
+<script type="text/javascript">
+ (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) return;
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<?php //Face book Like Button ?>
+<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo $productUrl;?>&amp;layout=button_count&amp;show_faces=false&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border: none; overflow: hidden; width: 71px; height: 25px;" allowTransparency = "true" > </iframe>
+
+<?php //Google Share Button ?>
+<a href="https://plus.google.com/share?url=<?php echo $link; ?>" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" title="<?php echo $this->__('Share with Google+'); ?>">
+<img src="<?php echo $googleImage; ?>" alt="<?php echo $this->__('Share with Google+'); ?>" /> </a>
+
+<?php //Pin it Button ?>
+<script type="text/javascript" src="http://assets.pinterest.com/js/pinit.js"></script>
+<?php $pinit = 'http://pinterest.com/pin/create/button/?url='.urlencode($link).'&media='.urlencode($productImage).'&description='.urlencode(substr($productShort, 0, 115)); ?>
+<a href="javascript:void(0);" class="pin-it-button" count-layout="horizontal" onclick="myRef = window.open('<?php echo $pinit; ?>','',
+'left=320,top=300,width=620,height=300,toolbar=1,resizable=0');
+myRef.focus();"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>
+
+<?php //Twitter Share Button ?>
+<a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+</div>
+                    
+<p><?php //Display Short Description ?>
+<?php echo $productShort.'</br>';?> </p>
+                  
+<?php //Display Face Book comments Box ?>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_IN/all.js#xfbml=1&appId=".<?php echo $appId; ?>;
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-href="<?php echo $link; ?>" data-width="470"></div>
+</div>
+<div class="clear"></div>
+
+<?php //Related Product collection ?>
+<?php $collection           = $this->displayRelatedproducts($productId);?>
+<?php $relatedProducts      =array(); ?>
+<?php foreach($collection as $related){ ?>
+<?php  $relatedProducts[]   =  $related->getLinkedProductId();?>
+<?php }?>
+
+<?php //Display Tab Title for Related Products ?>
+<div class="shopping_grid">
+    <div class="tab_menu">
+        <ul class="tab">
+            <li>
+               <a class="related_tab"><?php echo $this->__('Related Products'); ?></a>
+            </li>
+        </ul>
+    </div>
+ <div class="clear"></div>
+<div class="tab-content">
+    
+<?php //Checking Related Products Count ?>    
+<?php if(count($relatedProducts)>0){ ?>                     
+<?php foreach($relatedProducts as $value){ ?>
+ 
+<?php //Display Related Product Details ?>
+<?php $_product  =  $this->relatedCollection($value); ?> 
+    
+<?php //Display Product Image ?>
+<div class="shopping_tab">                                                       
+<a href="<?php echo $getBase.'facebookstore/index/defaultdisplay?pid='.$value;?>"> <img src="<?php echo $_product->getImageUrl(); ?>" alt=""></a>
+
+<?php //Display Product Name ?>
+<span class="shopping_text">
+     <?php echo $_product->getName();?>
+   
+<?php //Display Product Price ?>    
+     <span class="shop_price"><?php echo Mage::helper('core')->currency($_product->getPrice(), true, false);?></span>
+</span>
+</div> 
+ <?php } ?>
+ <?php } else { ?>
+ <?php  echo '<h5>'.$this->__('There is no related products to show').'</h5>'; 
+ }?>
+ </div> </div><div class="clear"></div></div><div class="clear"></div>
+</div>
+<?php } ?>  

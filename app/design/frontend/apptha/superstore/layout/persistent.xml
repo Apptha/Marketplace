@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<layout version="0.1.0">
+    <customer_account_login>
+        <reference name="customer_form_login">
+            <action method="setTemplate"><template>persistent/customer/form/login.phtml</template></action>
+            <block type="persistent/form_remember" name="persistent.remember.me" template="persistent/remember_me.phtml" />
+            <block type="core/template" name="persistent.remember.me.tooltip" template="persistent/remember_me_tooltip.phtml" />
+        </reference>
+    </customer_account_login>
+
+    <customer_account_create>
+        <reference name="customer_form_register">
+            <action method="setTemplate"><template>persistent/customer/form/register.phtml</template></action>
+            <block type="persistent/form_remember" name="persistent.remember.me" template="persistent/remember_me.phtml" />
+            <block type="core/template" name="persistent.remember.me.tooltip" template="persistent/remember_me_tooltip.phtml" />
+        </reference>
+    </customer_account_create>
+
+    <checkout_onepage_index>
+        <reference name="checkout.onepage.login">
+            <action method="setTemplate"><template>persistent/checkout/onepage/login.phtml</template></action>
+            <block type="persistent/form_remember" name="persistent.remember.me" template="persistent/remember_me.phtml" />
+            <block type="core/template" name="persistent.remember.me.tooltip" template="persistent/remember_me_tooltip.phtml" />
+        </reference>
+        <reference name="checkout.onepage.billing">
+            <action method="setTemplate"><template>persistent/checkout/onepage/billing.phtml</template></action>
+            <block type="persistent/form_remember" name="persistent.remember.me" template="persistent/remember_me.phtml" />
+            <block type="core/template" name="persistent.remember.me.tooltip" template="persistent/remember_me_tooltip.phtml" />
+        </reference>
+    </checkout_onepage_index>
+    <customer_logged_out>
+        <reference name="right">
+            <block type="sales/reorder_sidebar" name="sale.reorder.sidebar" as="reorder" template="sales/reorder/sidebar.phtml"/>
+        </reference>
+    </customer_logged_out>
+</layout>

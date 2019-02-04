@@ -1,0 +1,59 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/* @var Mage_Wishlist_Model_Item $item */
+$item = $this->getItem();
+$product = $item->getProduct();
+?>
+<h3 class="product-name">
+    <a href="<?php echo $this->getProductUrl($item) ?>" title="<?php
+     echo $this->escapeHtml($product->getName()) ?>"><?php
+      echo $this->escapeHtml($product->getName()) ?></a>
+</h3>
+
+<div class="wishlist-sku">
+    <span>SKU <?php echo $this->escapeHtml($product->getSku()) ?></span>
+</div>
+
+<textarea name="description[<?php echo $item->getWishlistItemId() ?>]" rows="3" cols="5" title="<?php
+ echo $this->__('Comment') ?>" placeholder="<?php
+  echo $this->helper('wishlist')->defaultCommentString(); ?>"><?php
+  if($item->getDescription()){
+  echo $this->escapeHtml($item->getDescription());
+  } 
+  ?></textarea>
+
+<?php if($this->getSortedChildren()): ?>
+    <div class="item-manage">
+    <?php foreach($this->getSortedChildren() as $childName):?>
+        <?php echo $this->getChildHtml($childName, false);?>
+    <?php endforeach;?>
+    </div>
+<?php endif; ?>

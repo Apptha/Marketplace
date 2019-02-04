@@ -1,0 +1,434 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+/**
+ *  @var $this Mage_Checkout_Block_Multishipping_Overview 
+*/ 
+?>
+<div class="multiple-checkout">
+    <div class="page-title">
+    <?php 
+    /**
+    * Display Review and order titles
+    */
+    ?>
+        <h1><?php echo $this->__('Review ') ?>
+        <?php echo $this->__('Order') ?></h1>
+    </div>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <form id="review-order-form" action="<?php echo $this->getPostActionUrl() ?>" method="post" onsubmit="return showLoader();">
+        <?php echo $this->getBlockHtml('formkey'); ?>
+        <div class="col2-set">
+            <h2 class="legend"><?php echo $this->__('Billing Information') ?></h2>
+            <div class="col-1">
+                <div class="box">
+                    <?php 
+                    /**
+                     * Get customer billing address
+                    */
+                    $_address=$this->getBillingAddress() ?>
+                    <div class="box-title">
+                        <h3><?php echo $this->__('Billing Address') ?> <span class="separator">|</span> 
+                        <a href="<?php echo $this->getEditBillingAddressUrl($_address) ?>">
+                        <?php 
+                        /**
+                         * Display address change option
+                        */
+                        echo $this->__('Change') ?></a></h3>
+                    </div>
+                    <div class="box-content">
+                        <address>
+                            <?php echo $_address->format('html') ?>
+                        </address>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="box">
+                    <div class="box-title">
+                        <h3><?php
+                        /**
+                         * Display payment  method
+                        */
+                        echo $this->__('Payment Method') ?> <span class="separator">|</span> 
+                        <a href="<?php echo $this->getEditBillingUrl() ?>">
+                        <?php echo $this->__('Change') ?></a></h3>
+                    </div>
+                    <div class="box-content">
+                        <input type="hidden" name="payment[cc_number]" value="<?php echo $this->escapeHtml($this->getPayment()->getCcNumber())?>" />
+                        <input type="hidden" name="payment[cc_cid]" value="<?php echo $this->escapeHtml($this->getPayment()->getCcCid())?>" />
+                        <?php echo $this->getPaymentHtml() ?>
+                    </div>
+                </div>
+            </div>
+         </div>
+        <?php 
+        /**
+         * Check display cart both price has been set
+         * if so assign 2 as mergess cells
+         * else assign 1 as merged cells
+         */
+        $mergedCells = ($this->helper('tax')->displayCartBothPrices() ? 2 : 1); ?>
+        <div class="col2-set">
+        <h2 class="legend"><?php
+        /**
+         * Display Shipping information
+         */
+        echo $this->__('Shipping Information') ?></h2>
+        <?php foreach ($this->getShippingAddresses() as $_index => $_address): ?>
+            <h3 class="legend"><?php echo $this->__('Address %s of %s', ($_index+1), $this->getShippingAddressCount()) ?></h3>
+                <div class="col-1 col-narrow">
+                    <div class="box">
+                        <div class="box-title">
+                            <h4><?php 
+                            /**
+                             * Display shipping to address
+                             */
+                            echo $this->__('Shipping To') ?> <span class="separator">|</span> 
+                            <a href="<?php echo $this->getEditShippingAddressUrl($_address) ?>">
+                            <?php 
+                            /**
+                             * Display shipping to address change option
+                             */
+                            echo $this->__('Change') ?></a></h4>
+                        </div>
+                        <div class="box-content">
+                            <address>
+                                <?php echo $_address->format('html') ?>
+                            </address>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-title">
+                            <h4><?php 
+                            /**
+                             * Display the shipping method
+                             */
+                            echo $this->__('Shipping Method') ?> <span class="separator">|</span> 
+                            <a href="<?php echo $this->getEditShippingUrl() ?>"><?php
+                            /**
+                             * Display the change option for shipping method
+                             */
+                             echo $this->__('Change') ?></a></h4>
+                        </div>
+                        <div class="box-content">
+                            <?php 
+                            /**
+                             * Check shiiping address rate has been set already
+                             */
+                            if($_rate=$this->getShippingAddressRate($_address)): ?>
+                            <p>
+                            <?php 
+                            /**
+                             * Display carrer title
+                             */
+                            echo $this->escapeHtml($_rate->getCarrierTitle()) ?> - 
+                            <?php 
+                            /**
+                             * Display payment method title
+                             */
+                            echo $this->escapeHtml($_rate->getMethodTitle()) ?>
+                            <?php 
+                            /**
+                             * Get shipping price exluding tax
+                             */
+                            $_excl = $this->getShippingPriceExclTax($_address); ?>
+                            <?php 
+                            /**
+                             * Get shipping price including tax
+                             */
+                            $_incl = $this->getShippingPriceInclTax($_address); ?>
+                            <?php 
+                            /**
+                             * Display shipping price excluding tax
+                             */
+                            echo $_excl; ?>
+                            <?php 
+                            /**
+                             * Check shiping both prices has been set
+                             * and shipping price including tax is not equal to shipping price excluding tax
+                             * if so display shipping price including tax
+                             */
+                            if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                                (<?php echo $this->__('Incl. Tax'); ?> 
+                                <?php echo $_incl; ?>)
+                            <?php endif; ?>
+                            </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 col-wide">
+                    <h4><?php 
+                    /**
+                     * Display Items
+                     */
+                    echo $this->__('Items') ?> <span class="separator">|</span> 
+                    <a href="<?php echo $this->getAddressesEditUrl() ?>">
+                    <?php 
+                    /**
+                     * Display edit option for items
+                     */
+                    echo $this->__('Edit Items') ?></a></h4>
+                    <table class="data-table" id="overview-table-<?php echo $_address->getId() ?>">
+                        <col />
+                        <col width="1" />
+                        <?php 
+                        /**
+                         * Check tax is set for both prices
+                         */
+                        if ($this->helper('tax')->displayCartBothPrices()): ?>
+                        <col width="1" />
+                        <?php endif; ?>
+                        <col width="1" />
+                        <col width="1" />
+                        <?php
+                        /**
+                         * Check both prices has been set for tax
+                         */
+                        if ($this->helper('tax')->displayCartBothPrices()): ?>
+                        <col width="1" />
+                        <?php endif; ?><thead>
+                            <tr><th rowspan="<?php echo $mergedCells; ?>">
+                                <?php 
+                                echo $this->__('Product Name') ?></th>
+                                <th colspan="<?php echo $mergedCells; ?>" class="a-center">
+                                <?php 
+                                echo $this->__('Price')
+                                /**
+                                 * Display Product price
+                                 */
+                                 ?></th>
+                                <th rowspan="<?php echo $mergedCells; ?>">
+                                <?php 
+                                echo $this->__('Qty')
+                                /**
+                                 * Display Product Quantity
+                                 */
+                                 ?></th>
+                                <th colspan="<?php echo $mergedCells; ?>" class="a-center">
+                                <?php 
+                                /**
+                                 * Display Product sub total
+                                 */
+                                echo $this->__('Subtotal') ?></th>
+                            </tr>
+                            <?php 
+                            /**
+                             * Confirming both the prices have been set for tax
+                             * if so disply the price including tax
+                             * and the price excluding tax
+                             */
+                            if ($this->helper('tax')->displayCartBothPrices()): ?>
+                            <tr>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                            </tr>
+                            <?php endif; ?>
+                        </thead>
+                        <tfoot>
+                            <?php echo $this->renderTotals($this->getShippingAddressTotals($_address)); ?>
+                        </tfoot>
+                        <tbody>
+                        <?php foreach ($this->getShippingAddressItems($_address) as $_item): ?>
+                            <?php echo $this->getRowItemHtml($_item); ?>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <script type="text/javascript">decorateTable('overview-table-<?php echo $_address->getId() ?>')</script>
+                </div>
+            <?php if($this->getShippingAddressCount()!=$_index+1): ?>
+                <div class="divider"></div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
+        <?php 
+        /**
+         * Check this has virtual products
+         * if so display their information
+         * and edit option of them
+         */
+        if ($this->getQuote()->hasVirtualItems()): ?>
+        <div class="col2-set">
+            <h2 class="legend"><?php echo $this->__('Other Items in Your Order') ?></h2>
+            <div class="col-1 col-narrow"></div>
+            <div class="col-2 col-wide">
+                <h3><?php echo $this->__('Items') ?> <span class="separator">|</span> 
+                <a href="<?php echo $this->getVirtualProductEditUrl() ?>">
+                <?php echo $this->__('Edit Items') ?></a></h3>
+                <?php $mergedCell = ($this->helper('tax')->displayCartBothPrices() ? 2 : 1); ?>
+                <table class="data-table" id="virtual-overview-table">
+                    <col />
+                    <col width="1" />
+                    <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                    <col width="1" />
+                    <?php endif; ?>
+                    <col width="1" />
+                    <col width="1" />
+                    <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                    <col width="70" />
+                    <?php endif; ?>
+                    <thead>
+                        <tr>
+                            <th rowspan="<?php echo $mergedCell; ?>">
+                            <?php 
+                            /**
+                             * Display the name of the product
+                             */
+                            echo $this->__('Product Name') ?></th>
+                            <th colspan="<?php echo $mergedCell; ?>" class="a-center">
+                            <?php 
+                            /**
+                             * Display the price of the product
+                             */
+                            echo $this->__('Price') ?></th>
+                            <th rowspan="<?php echo $mergedCell; ?>">
+                            <?php 
+                            /**
+                             * Display the quantity of the product 
+                             */
+                            echo $this->__('Qty') ?></th>
+                            <th colspan="<?php echo $mergedCell; ?>" class="a-center">
+                            <?php 
+                            /**
+                             * Display the sub total of the product
+                             */
+                            echo $this->__('Subtotal') ?></th>
+                        </tr>
+                        <?php 
+                        /**
+                         * Checking both of including tax price
+                         * and excluding tax price have been set
+                         * if so display both of them
+                         */
+                        if ($this->helper('tax')->displayCartBothPrices()): ?>
+                        <tr>
+                            <th class="a-right">
+                            <?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                            <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                            <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                            <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                        </tr>
+                        <?php endif; ?>
+                    </thead>
+                    <tfoot>
+                        <?php echo $this->renderTotals($this->getBillinAddressTotals()); ?>
+                    </tfoot>
+                    <tbody>
+                    <?php foreach ($this->getVirtualItems() as $_item): ?>
+                        <?php echo $this->getRowItemHtml($_item); ?>
+                    <?php endforeach; ?>
+                    </tbody>
+                    </table>
+                    <script type="text/javascript">decorateTable('virtual-overview-table')</script>
+                </div>
+        </div>
+        <?php endif; ?>
+
+           <?php echo $this->getChildHtml('items_after'); ?>
+
+            <div id="checkout-review-submit">
+                <?php echo $this->getChildHtml('agreements') ?>
+                <div class="place-order">
+                    <div class="grand-total">
+                        <div class="inner">
+                            <big><?php 
+                            /**
+                             * Display the full amount
+                             */
+                            echo $this->__('Grand Total:') ?> 
+                            <?php echo $this->helper('checkout')->formatPrice($this->getTotal()) ?></big>
+                            <div id="review-buttons-container">
+                                <button type="submit" title="<?php echo $this->__('Place Order') ?>" class="button btn-checkout" id="review-button">
+                                <span><span><?php 
+                                /**
+                                 * Display place order menu
+                                 */
+                                echo $this->__('Place Order') ?></span></span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php 
+                    /**
+                     * Display loading information when the order is in process
+                     */
+                    ?>
+                    <span class="please-wait" id="review-please-wait" style="display:none;">
+                        <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" 
+                        alt="<?php echo $this->__('Submitting order information...') ?>" 
+                        title="<?php echo $this->__('Submitting order information...') ?>" class="v-middle" /> 
+                        <?php echo $this->__('Submitting order information...') ?>
+                    </span>
+                </div>
+            </div>
+            <div class="buttons-set">
+            <?php 
+            /**
+             * Display Go back link to go to billing information
+             */
+            ?>
+                <p class="back-link"><a href="<?php echo $this->getBackUrl() ?>"><small>&laquo; </small>
+                <?php echo $this->__('Back to Billing Information') ?></a></p>
+            </div>
+        </form>
+        <script type="text/javascript">
+        //<![CDATA[
+            var submitted = false;
+
+            function showLoader()
+            {
+                if (submitted) {
+                    return false;
+                }
+                if ($('checkout-agreements')) {
+                    var checkboxes = $$('#checkout-agreements input');
+                    for (var i=0, l=checkboxes.length; i<l; i++) {
+                        if (!checkboxes[i].checked) {
+                            alert("<?php echo $this->__('Please agree to all Terms and Conditions before placing the orders.')?>");
+                            return false;
+                        }
+                    }
+                }
+
+                submitted = true;
+                var step='review';
+                Element.show(step+'-please-wait');
+                $(step+'-buttons-container').setStyle({opacity:.5});
+                $(step+'-buttons-container').descendants().each(function(s) {
+                      s.disabled = true;
+                });
+                return true;
+            }
+        //]]>
+        </script>
+</div>

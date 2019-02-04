@@ -1,0 +1,593 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Assign posted values in varibles like
+ * filter_id
+ * filter_name
+ * filter_price
+ * filter_quantity
+ * filter_status
+ * filterProductType
+ */
+$filter_id = $this->getRequest()->getParam('filter_id');
+$filter_name = $this->getRequest()->getParam('filter_name');
+$filter_price = $this->getRequest()->getParam('filter_price');
+$filter_quantity = $this->getRequest()->getParam('filter_quantity');
+$filter_status = $this->getRequest()->getParam('filter_status');
+$filterProductType =  $this->getRequest()->getParam('filter_product_type');
+?>
+<div class="account-login market_place_manage_products" id="market_place_manage_products">
+    <div class="page-title">
+        <h1 class="manage_products_head"><?php echo $this->__('Manage Products') ?></h1>
+      
+    </div>
+    <div class="my-account-wrapper">
+      <div class="response-text" style="display:none;"></div>
+        <div class="top_amount">
+        <span class="right_space">
+        <?php 
+        /**
+         * Display the reveived total amount
+         */
+        echo $this->__('Total Amount Received') ?> : <b><?php
+         echo Mage::helper('marketplace/marketplace')->getAmountReceived(); ?></b>
+    </span>   
+     <span>
+        <?php 
+        /**
+         * Display the remaining amount
+         */
+        echo $this->__('Amount Pending') ?> :  <b><?php 
+        echo Mage::helper('marketplace/marketplace')->getAmountRemaining(); ?>
+        </b>
+    </span> 
+    </div>
+    <div class="clear"></div>
+    <button onclick="window.location='<?php echo Mage::helper('marketplace/url')->getCreateProductUrl(); ?>';" title="<?php
+     echo $this->__('Add New Product'); ?>" class="button right mp_addnew_pdt"> <span><span><?php
+     /**
+      * Display add new product option
+      */
+     echo $this->__('Add New Product'); ?> </span></span></button>
+
+    <form name="multiple_select" id="multiple_select" class="multiple_select" method="post" action="<?php echo $this->getmultiselectUrl(); ?>">
+    <div class="mp_action"><b><?php echo $this->__('Action'); ?> </b>
+    <select name="multi">
+        <option name="" value="Select an option"><?php echo $this->__('Select an option'); ?></option>
+        <?php
+        /**
+        * Display delete option
+        */
+        ?>
+        <option name="delete" value="delete"><?php echo $this->__('Delete'); ?></option>      
+    </select>
+    
+    <button type="submit" class="button multi_submit" onclick="document.getElementById('multi_submit').value='1'; " title="<?php echo $this->__('Submit') ?>" name="multi_submit" id="multi_submit" >
+    <span><span><?php echo $this->__('Submit') ?></span></span></button> 
+    </div>
+    <div style="clear: both;"></div>       
+<?php echo $this->getMessagesBlock()->getGroupedHtml(); 
+$_products = $this->getCollection(); 
+
+/**
+ * Set sno in collection
+ */
+ $sNo = 1;
+ $current_page = Mage::getBlockSingleton('page/html_pager')->getCurrentPage();
+ $getPageSize = $_products->getPageSize();
+ /**
+  * Checking current page is greater than or equal to 2
+  */
+if ($current_page >= 2) {
+/**
+ * Checking current page is less than or equal to calculate page
+ */
+    $cal_page = ceil($_products->getSize() / $getPageSize); 
+    if ($current_page <= $cal_page) {
+        $sNo = abs(($current_page * $getPageSize) - $getPageSize) + 1;
+    } else {
+        $sNo = abs(($cal_page * $getPageSize) - $getPageSize) + 1;
+    }
+} else {
+    $sNo = 1;
+}
+ ?>
+   <table class="data-table my-product-table market_place_manage_products_table manage-products-datas-table" id="my-product-table">
+    <col width="1" />
+    <col width="1" />
+    <col />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <thead>
+        <tr>
+            <th><?php echo $this->__('#') ?></th>            
+            <th class="mtext_left"><?php echo $this->__('Id') ?></th>
+            <th colspan="2" width="33%" class="mtext_left"><?php
+            /**
+             * Display product Name, Quantity, Price, Type & Status
+             */
+            echo $this->__('Product Name') ?></th>
+            <th><?php         
+            echo $this->__('Quantity') ?></th>
+            <th><?php         
+            echo $this->__('Price') ?></th>
+            <th width="12%"><?php         
+            echo $this->__('Type') ?></th>
+            <th width="12%"><?php         
+            echo $this->__('Status') ?></th>
+            <th class="no-border-right"><?php echo $this->__('Action') ?></th>
+        </tr>
+        <tr class="mp_filter_function">
+            <th></th>
+            <th class="mtext_left"><input type="text" value="<?php echo $filter_id; ?>" 
+            name="filter_id" style="width:30px;" id="filter_id"/></th>
+             <th colspan="2" width="33%" class="mtext_left"><input type="text" value="<?php echo $filter_name; ?>" name="filter_name" id="filter_name"/></th>           
+             <th><input type="text" name="filter_quantity" id="filter_quantity" value="<?php echo $filter_quantity; ?>"/></th>
+             <th><input type="text" value="<?php echo $filter_price; ?>" 
+             name="filter_price" id="filter_price"/></th>
+               <?php 
+            /**
+             *  Load product types from admin
+             */
+            $selectedType = Mage::helper('marketplace')->getSelectedPrdouctType();
+            /**
+             *  Assigning all product types to array variale
+            */
+            $selectedProductType = explode(",", $selectedType);
+            ?>
+        
+           <th width="12%">                
+                <select name="filter_product_type"  onchange="this.form.submit();">
+                 <option name="select" value=""><?php echo $this->__('Select a type'); ?></option>
+                    <?php foreach ($selectedProductType as $value) { ?>
+                                    <option value="<?php echo $value; ?>" <?php
+                                    /**
+                                     * Check condition filter product type is equal to the retreived value                                  
+                                     */
+                                     if($filterProductType == $value){
+                                        echo 'selected="selected"'; 
+                                    } ?>>
+                                    <?php
+                                        $productTypeCaps = $this->__($value);
+                                        /**
+                                         * Display product type first letter in upper case
+                                         */
+                                        echo ucfirst($productTypeCaps);
+                                        ?></option>    
+                                <?php } ?>                    
+                </select>                
+            </th>              
+            <th width="12%">                
+                <select name="filter_status"  onchange="this.form.submit();">
+                    <option name="select" value="0"><?php echo $this->__('Select a status'); ?></option>
+                    <option name="enabled" value="1" <?php 
+                    /**
+                     * Check condition if filter type is equal to 1
+                     */
+                    if($filter_status==1){
+                        ?> selected="selected" <?php 
+} ?>><?php 
+echo $this->__('Enabled'); ?></option>  
+                    <option name="disabled" value="2"  <?php 
+                    /**
+                     * Checking filter status is equal to 2
+                     */
+                    if($filter_status == 2){
+                        ?> selected="selected" <?php 
+} ?>><?php 
+echo $this->__('Disabled'); ?></option> 
+                </select>                
+            </th>
+        <th class="a-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if($_products->getSize()): 
+        foreach ($_products as $_product): ?>
+        <tr>            
+            <td><input type="checkbox" name="id[]" id="id" value="<?php echo $_product->getId(); ?>"/></td>
+            <td class="mtext_left"><em><?php echo $_product->getId(); ?></em></td>
+           <td class="img_td">
+               <?php 
+               /**
+                * Check product status is equal to 1
+                */
+               if($_product->getStatus() == 1){ ?>
+               <a href="<?php echo $_product->getProductUrl() ?>" class="product-image">
+               <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(55,45); ?>" width="55" height="45" alt="<?php
+                echo $_product->getName(); ?>" />
+                   <div class="big_image">
+                <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(146,196); ?>" width="146" height="196" alt="<?php
+                 echo $_product->getName(); ?>" /><div><h5><?php
+                  echo $_product->getName(); ?></h5><p><?php
+                 echo Mage::helper('core/string')->truncate(strip_tags($_product->getShortDescription()), $length = 200, $etc = '...', $remainder = ''); ?></p></div></div>
+               </a>                
+               <?php }else{ ?>
+               <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(55,45); ?>" width="55" height="45" alt="<?php
+                echo $_product->getName(); ?>" title="<?php
+                 echo $_product->getName(); ?>" />
+               <?php } ?>            
+           </td>
+            <td class="mtext_left">
+            <?php 
+            /**
+             * Check the product status is equal to 1
+             */
+            if($_product->getStatus() == 1){ ?>
+            <a href="<?php echo $_product->getProductUrl();  ?>" class="get_pdct_name manage_get_pdct_name" ><?php
+             echo $_product->getName(); ?>            
+            </a>
+            <?php }else{ ?>
+            <span class="get_pdct_name"><?php echo $_product->getName(); ?></span>
+            <?php } ?>
+            <?php                        
+            $categoryIdsCollection = $_product->getCategoryIds();
+            $count = count($categoryIdsCollection);
+            $cat = Mage::getModel('catalog/category')->getCollection()->addAttributeToSelect('category_id');
+            $incCatagory = 1;
+            /**
+             * Check the count of category is greater than 0
+             */
+            if($count>0){
+            echo $this->__('(');
+            foreach($categoryIdsCollection as $_categoryIds){
+               $cat = Mage::getModel('catalog/category');
+               $cat->load($_categoryIds);               
+               ?>
+              <a href="<?php echo $cat->getUrl(); ?>"><?php
+              /**
+               * Display category name
+               */
+               echo $cat->getName(); ?></a> 
+               <?php               
+               if($incCatagory != $count){
+                   echo ' ,'; 
+               }
+               $incCatagory = $incCatagory + 1;               
+             }
+              echo $this->__(')');
+             } ?>   
+            </td>
+          
+             
+             	<td width="14%"> <em>
+             	<?php if($_product->isSaleable()):
+             ?>
+<?php echo $val = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($_product)->getQty();?>
+<?php else: ?><?php
+/**
+ * Display out of stock message
+ * If the product is nto available for sale
+ * or the product has been sold out fully
+ */
+	 $isInStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($_product)->getIsInStock();
+   if($isInStock==1){
+   echo  $val = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($_product)->getQty();
+	}
+	else{
+		echo $this->__('Out of Stock');
+	}
+  endif; ?>
+  <?php  //}?>
+  
+  </em></td>
+            <td><em><?php echo Mage::helper('core')->currency($_product->getPrice(),true,false); ?></em></td>
+            <td width="12%"><?php echo ucfirst($_product->getTypeId()); ?></td> 
+            <td width="12%"><em><span><?php 
+            /**
+             * Checking product status is 1
+             */
+            
+            if($_product->getStatus()==1):
+              echo $this->__('Enabled');
+             else:  
+             echo '<em>'.$this->__('Disabled').'</em>';
+              endif; ?></span></em></td>                   
+            <td><em>
+                <span class="nobr"><a href="<?php echo Mage::getUrl('marketplace/product/edit/',array('id' => $_product->getId())); ?>" > 
+                <img src="<?php echo $this->getSkinUrl('marketplace/images/edit.png') ?>" alt="" title="<?php
+                /**
+                 * Display edit Option
+                 */
+                echo $this->__('Edit') ?>"/></a>               
+               <a href="<?php echo Mage::getUrl('marketplace/product/delete/',array('id' => $_product->getId())); ?>" onclick="return confirm('<?php
+               /**
+                * confirming message before delete
+                */
+               echo $this->__('Are you sure want to delete?'); ?>');" > 
+                <img src="<?php echo $this->getSkinUrl('marketplace/images/delete.png') ?>" alt="" title="<?php
+                /**
+                 * Display delete option
+                 */
+                echo $this->__('Delete') ?>"/> </a>
+                </span>
+                </em>
+            </td>
+        </tr>
+        <?php $sNo++; 
+        endforeach; ?>
+    </tbody>
+    <?php else: ?>
+    <p><tr class="mtext_center"><td colspan="10" class="no_product_content"><?php echo $this->__('You have no product.'); ?></td></tr></p>
+ <?php endif ?>
+</table>   
+<script type="text/javascript">decorateTable('my-product-table');
+</script>
+   <?php echo $this->getPagerHtml(); ?>
+</div></form></div>
+<?php 
+/**
+ * Bulk product upload option for seller  
+ */
+?>
+<?php
+if (Mage::getSingleton ( 'customer/session' )->isLoggedIn ()) {
+
+    $sellerData = Mage::getSingleton ( 'customer/session' )->getCustomer ();
+    $sellerId = $sellerData->getId ();
+    $profileData =Mage::getBlockSingleton('marketplace/addprofile')->editprofile ( $sellerId );
+    $storeTitle= $profileData['store_title'];
+
+}
+
+if(Mage::getStoreConfig('marketplace/product/bulk_upload') == 1 && !empty($storeTitle)){ ?>
+<div class="bulk_order_options">
+    <h3>
+<?php echo Mage::helper('marketplace')->__('Bulk Product Upload'); ?>
+</h3>
+<?php 
+/**
+ * Bulk product upload form
+ */
+?>
+<form name="bulk-product-upload-form" id="bulk-product-upload-form" class="bulk-product-upload-form" onsubmit="return bulkProductUploadValidate(this);"
+        method="post" action="<?php echo $this->getBulkUploadUrl(); ?>" enctype="multipart/form-data">
+<label for="bulk-product-upload-csv-file" class="required"><?php echo Mage::helper('marketplace')->__('Upload CSV File'); ?></label> 
+<div class="input-box"><input
+type="file" class="required-file bulk-product-upload-file"
+id="bulk-product-upload-csv-file" name="bulk-product-upload-csv-file"
+accept=".csv" />
+</div>
+<label for="bulk-product-upload-image-file"><?php echo Mage::helper('marketplace')->__('Upload Image File'); ?></label> 
+<div class="input-box"><input
+type="file" class="bulk-product-upload-file"
+id="bulk-product-upload-image-file" name="bulk-product-upload-image-file"
+accept=".zip" />
+<div><small><?php echo Mage::helper('marketplace')->__('Upload .zip format'); ?></small></div>
+</div>
+<button type="submit" class="button"
+title="<?php echo Mage::helper('marketplace')->__('Upload') ?>" name="bulk-upload-submit"
+id="bulk-upload-submit">
+<span><span><?php echo Mage::helper('marketplace')->__('Upload') ?></span></span>
+</button>
+<h4><a href="<?php echo $this->getSkinUrl('export_all_products.csv')?>" download><?php echo Mage::helper('marketplace')->__('Link for sample CSV file of bulk upload products').'.'; ?></a></h4>
+
+<?php
+
+/**
+ *  Initilize product types from admin
+ */
+$selectedType = Mage::helper('marketplace')->getSelectedPrdouctType();
+/**
+ *  Assigning product types to array variale
+*/
+$selectedProductType = explode(",", $selectedType);
+/**
+ * Check configurable is exist in the selected product type array
+ * and selected type is not equal to empty
+ */
+if (in_array("configurable", $selectedProductType) && $selectedType != '') {
+$entityType = Mage::getModel('catalog/product')->getResource()->getTypeId();
+$attributeSetCollection = Mage::getResourceModel('eav/entity_attribute_set_collection')->setEntityTypeFilter($entityType)
+                          ->setOrder('attribute_set_id','asc');
+?>
+
+<h4><a href="javascript:void(0)" onclick="showConfigurablePorductAttributeList();"><?php echo Mage::helper('marketplace')->__('Click and refer the list of attributes for Importing the Configurable Product').'.'; ?></a></h4>
+<div id="configurable_product_attributes_list" class="configurable_product_attributes_list" style="display: none;">
+<?php 
+$configAttributeFlag = 0;
+foreach($attributeSetCollection as $attributeSet){
+$configAttributeFlag = 1;
+/**
+ * Get attribute set name
+ */
+$attributeSetName = $attributeSet->getAttributeSetName();
+/**
+ * Get attribute set id
+ */
+$attributeSetId = $attributeSet->getAttributeSetId();
+?>
+<?php 
+/**
+ * Get Product Details
+ */
+$product = Mage::getSingleton("catalog/product")->setTypeId('configurable')->setAttributeSetId($attributeSetId);
+/**
+ * Get attributes of the product
+ */
+$attributes = $product->getTypeInstance(true)->getSetAttributes($product);
+?>
+<div class="sample_data_for_configurable_product">
+<b class="attribute_heading"><?php echo Mage::helper('marketplace')->__('Attribute Set for').' "'.$attributeSetName.'" :'; ?></b>
+<ul> 
+<?php
+$attributeFlag = 0;
+foreach ($attributes as $attribute) {
+/**
+ * Checking attribute is configurable
+ * and attribute is visible
+ * and attribute uses source
+ * and atribute is set as global
+ * 
+ */
+if (($attribute->getIsConfigurable()) && ($attribute->getIsVisible()) && ($attribute->usesSource()) && ($attribute->getIsGlobal() == Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL)){
+/**
+ * Assigning attribute code in variable
+ */
+$attributeCodeValueForDisplay = $this->__('Attribute Code');
+/**
+ * Check attribute name is not equal to 'setbanner'
+ * and attribute name is not equal to 'default_country'
+ * and attribute name is not equal to 'seller_shipping_option'
+ * if so setting attribute flag as 1
+ */
+if($attribute->getName() != 'setbanner' && $attribute->getName() != 'default_country' && $attribute->getName() != 'seller_shipping_option' && $attribute->getName() != 'productstatus'){
+$attributeFlag = 1;
+?>
+<li><b><?php echo $attributeCodeValueForDisplay.' : '; ?></b><br/>
+<?php echo $attribute->getAttributeCode(); ?><br/>
+<b><?php echo $this->__('Options').' : '; ?></b>
+<?php  
+$attributeDetails = Mage::getSingleton("eav/config")->getAttribute("catalog_product", $attribute->getAttributeCode());
+$options = $attributeDetails->getSource()->getAllOptions(false);
+foreach($options as $option){
+echo '<br/>'.$option["label"].'';
+}
+/**
+ * Check options count is less than 1
+ * if so display 'no option available' message
+ */
+if(count($options) < 1){
+?>
+<?php echo '<br/>'.$this->__('No option available for').' "'.$attribute->getName().'".'; ?>
+<?php } ?>
+<input type="hidden" name="configurable_attribute[]" value="<?php echo $attribute->getAttributeCode(); ?>">
+</li>
+<?php 
+}
+}
+}
+/**
+ * Check attribute flag is equal to zero
+ * if so display 'no confugurable attribute available for' message
+ */
+if($attributeFlag == 0){ ?>
+<li><?php echo Mage::helper('marketplace')->__('No configurable attribute available for').' "'.$attributeSetName.'".'; ?>
+
+</li>
+</ul>
+
+<?php 
+} ?>
+</div>
+<?php 
+}
+?>
+
+<?php 
+/**
+ * Checking config attribute flag is equal to zero
+ * if so display 'no attribute set available' message
+ */
+if($configAttributeFlag == 0){ ?>
+<div>
+<?php echo Mage::helper('marketplace')->__('No attribute set available for configurable product').'.'; ?>
+</div>
+<?php }
+?>
+</div>
+<?php 
+} ?>
+</form>
+</div>
+
+<script type="text/javascript">
+    //< ![CDATA[
+        var bulkProductUploadForm = new VarienForm('bulk-product-upload-form');
+    //]]>
+
+// Upload file validation
+var validFileExtensionsCsv = [".csv"];
+var validFileExtensionsZip = [".zip"];
+
+        function bulkProductUploadValidate(oForm) {
+            var arrInputs = oForm.getElementsByTagName("input");
+            for (var i = 0; i < arrInputs.length; i++) {
+                var oInput = arrInputs[i];
+
+                if (oInput.type == "file" && oInput.id == 'bulk-product-upload-csv-file') {
+                    var sFileName = oInput.value;
+                    if (sFileName.length > 0) {
+                        var blnValid = false;
+                        for (var j = 0; j < validFileExtensionsCsv.length; j++) {
+                            var sCurExtension = validFileExtensionsCsv[j];
+                            if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                                blnValid = true;
+                                break;
+                            }
+                        }
+
+                        if (!blnValid) {
+                            alert("<?php echo Mage::helper('marketplace')->__('Sorry'); ?>, " + sFileName + " <?php
+                             echo Mage::helper('marketplace')->__('is invalid, allowed extensions are'); ?>: " + validFileExtensionsCsv.join(", "));
+                            return false;
+                        }
+                    }
+                }
+                
+                if (oInput.type == "file" && oInput.id == 'bulk-product-upload-image-file') {
+                    var sFileName = oInput.value;
+                    if (sFileName.length > 0) {
+                        var blnValid = false;
+                        for (var j = 0; j < validFileExtensionsZip.length; j++) {
+                            var sCurExtension = validFileExtensionsZip[j];
+                            if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                                blnValid = true;
+                                break;
+                            }
+                        }
+
+                        if (!blnValid) {
+                            alert("<?php echo Mage::helper('marketplace')->__('Sorry'); ?>, " + sFileName + " <?php
+                             echo Mage::helper('marketplace')->__('is invalid, allowed extensions are'); ?>: " + validFileExtensionsZip.join(", "));
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+ function showConfigurablePorductAttributeList(){
+ if($('configurable_product_attributes_list').visible()){
+ Effect.Fade('configurable_product_attributes_list', { duration: 0.5 }); 
+ }else{
+ Effect.Appear('configurable_product_attributes_list', { duration: 0.5 });
+ }  
+ }     
+        
+</script>
+
+<?php } ?>

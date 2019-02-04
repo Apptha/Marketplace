@@ -1,0 +1,87 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+// =============================================
+// Mixin - If-Resolution
+// =============================================
+
+// From http://blog.14islands.com/post/37259603246/sass-resolution-mixin
+
+@mixin if-min-resolution($dppx) {
+    @include if-resolution(min, $dppx) {
+        @content;
+    }
+}
+
+@mixin if-max-resolution($dppx) {
+    @include if-resolution(max, $dppx) {
+        @content;
+    }
+}
+
+@mixin if-resolution($prefix, $dppx) {
+    // 1px = 96dpi
+    $dpi: $dppx * 96;
+    @media
+    (-webkit-#{$prefix}-device-pixel-ratio: #{$dppx}),
+    (   #{$prefix}--moz-device-pixel-ratio: #{$dppx}),
+    (     -o-#{$prefix}-device-pixel-ratio: #{$dppx*2}/2),
+    (        #{$prefix}-device-pixel-ratio: #{$dppx}),
+    (                #{$prefix}-resolution: #{$dpi}dpi),
+    (                #{$prefix}-resolution: #{$dppx}dppx) {
+        @content;
+    }
+}
+
+// ----------------------------------------------
+// Usage example:
+// ----------------------------------------------
+
+//// Renders on screens with >= 2 resolution
+//@include if-min-resolution (2) {
+//    div { color:#000; }
+//}
+//
+//// Renders on screens with >= 1.5 resolution
+//@include if-min-resolution (1.5) {
+//    div { color:#000; }
+//}
+//
+//// Renders on screens with <= 1.5 resolution
+//@include if-max-resolution (1.5) {
+//    div { color:#000; }
+//}
+//
+//// Renders on screens with <= 2 resolution
+//@include if-max-resolution (2) {
+//    div { color:#000; }
+//}
+
+// ----------------------------------------------
+

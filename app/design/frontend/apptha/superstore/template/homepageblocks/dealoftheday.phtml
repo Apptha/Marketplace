@@ -1,0 +1,171 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+$products = $this->getProductCollection();
+$categoryCount = count ( $products );
+$coreHelper = $this->helper('core');
+ if ($categoryCount > 0){ ?> 
+  <h2 class="subtitle"><span><span><?php echo $this->__('Deals') ?></span>
+ <?php echo $this->__(' of the day') ?></span></h2>
+<?php
+
+/**
+ * Check the category count is greater than or equal to 1
+ */
+?>
+
+<div class="products-grid <?php 
+/**
+ * check the category count is greater than 4
+ * if so display as slider
+ * if not no slider will be displayed
+ */
+if($categoryCount>4){
+echo 'slider-carousel'; 
+} 
+else {
+echo 'no-slider'; 
+} ?>">
+<?php $increment =1; 
+foreach ( $products as $item ) {
+
+    			    $originalPrice = $item->getPrice(); 
+                    $discountPrice = $item->getSpecialPrice(); 
+                    $savings = $originalPrice - $discountPrice; 
+                    $savingsPercentage = round(($savings / $originalPrice) * 100, 0);
+
+?>
+
+<div class="slider <?php if($increment==4) {
+echo 'last';
+} ?>">
+
+<div class="product_image_div">
+                          <?php
+/**
+ * Display product image
+ */
+?>
+ <a href="<?php echo $item->getProductUrl() ?>" 
+ title="<?php echo $this->escapeHtml($item->getName()) ?>" class="product-image">
+                    <?php $_imgSize = 260; ?>
+                    <img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize($_imgSize); ?>" 
+                    alt="<?php echo $this->stripTags($this->getImageLabel($item, 'small_image'), null, true) ?>" />
+</a>
+<h3 class="product-name">
+<a href="<?php echo $item->getProductUrl(); ?>">
+                       <?php echo $item->getName (); ?>
+ </a>
+</h3>
+ <div class="product-details">
+ <?php if($item->getPrice() > $item->getSpecialPrice()){ ?>
+ <span class="offer_price"> <?php echo $coreHelper->currency($item->getSpecialPrice(), true, false); ?></span>
+ 
+  <span class="original_price"> <?php echo $coreHelper->currency($item->getPrice(), true, false); ?></span> 
+                                
+<span class="discount_label"><?php echo $this->__('Discount: ') ?>  </span> 
+                                <span class="discount_price" <?php echo $this->getIdSuffix() ?>>
+                                      <?php echo $savingsPercentage, '%';?>
+                                </span>
+                                <div class="home-out-stock">
+                             <?php 
+							$isInStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($item)->getIsInStock();
+							if($isInStock==0){
+								echo $this->__('Out of Stock');	
+							}
+                              ?>
+                                </div>
+                              <?php }
+                                else{ ?>
+                                <span> 
+                                    <?php echo $coreHelper->currency($item->getPrice(), true, false); ?>
+                                </span> 
+                                <?php } 
+                                /**
+                                 * Quick view of the product
+                                 * If quickview has been enabled in admin section show quick view
+                                 */
+                                if(Mage::getStoreConfig('quickview/general/enabled')){ 
+                                ?> 
+                                <input type="hidden" name="appthaAjaxLoading" id="appthaAjaxLoading" value="<?php echo $this->getSkinUrl('facebox/loading.gif') ?>" />
+                                <input type="hidden" name="appthaAjaxClose" id="appthaAjaxClose" value="<?php echo $this->getSkinUrl('facebox/closelabel.png') ?>" />
+                                <a rel="facebox" href="<?php echo Mage::helper('quickview')->getQuickViewUrl($item->getId());?>">
+                                <em class="quickview"><em class="btn-quickview"><?php echo $this->__('Quick View')?></em></em>
+                                </a>
+                                <?php } ?>
+                            </div>
+                         <?php 
+/**
+ * Display Add to cart,
+ * add to wishlist 
+ * and compare
+ */
+?>
+ <div class="actions">
+  <?php 
+if($item->isSaleable()){ ?>
+                       <?php                        /**
+                        * Check the product is saleable
+                        * if so then display the option add to cart
+                        * else show out of stock message
+                        */?>
+                        <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart animated fadeIn" 
+                        onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($item) ?>')">
+<span><span><?php echo $this->__('Add to Cart') ?></span></span>
+</button>
+                    <?php } 
+                    else {?>
+                        <p class="availability out-of-stock animated fadeIn">
+<span>
+<?php echo $this->__('Out of stock') ?></span>
+</p>
+                   <?php } ?>
+<ul class="add-to-links">
+<li>
+<a href="<?php echo $this->helper('wishlist')->getAddUrl($item) ?>"
+title="<?php echo $this->__('Add to Wishlist') ?>"
+class="link-wishlist animated fadeIn">
+<?php echo $this->__('Add to Wishlist') ?>
+</a>
+</li>
+<li>
+<span class="separator">|
+</span> 
+<a href="<?php echo Mage::helper('catalog/product_compare')->getAddUrl($item);?>" class="link-compare animated fadeIn" title="<?php echo $this->__('Add to Compare') ?>">
+<?php echo $this->__('Add to Compare');?>
+</a>
+</li>
+</ul>
+<a class="button-action"><span class="plus"></span></a></div>                  
+<?php echo $this->helper('marketplace/marketplace')->getLabel($item);?>
+</div></div>
+<?php $increment++; 
+}?>
+</div>
+<?php } ?>

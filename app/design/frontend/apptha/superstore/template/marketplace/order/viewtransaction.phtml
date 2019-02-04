@@ -1,0 +1,113 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ */
+?>
+<div class="page-title sellers_store view_transaction_div" id="mp_order_transaction"><h1><?php echo $this->__('Transaction History'); ?></h1>
+    <?php
+     /**
+    Display remaining amount and received amount from admin
+    *
+    */ ?>
+    <div class="top_amount view_transaction_div">
+        <span class="right_space view_transaction_span">
+            <?php echo $this->__('Total Amount Received') ?> : <b class="view_transaction_amount"><?php echo Mage::helper('marketplace/marketplace')->getAmountReceived(); ?></b>
+        </span>
+        <span class="view_transaction_span">
+            <?php echo $this->__('Amount Pending') ?> :  <b><?php echo Mage::helper('marketplace/marketplace')->getAmountRemaining(); ?></b>
+        </span>
+    </div> 
+</div>
+<?php
+/**
+ * Display transaction history of the seller
+ */ 
+$customerLoggedIn = Mage::getSingleton('customer/session')->isLoggedIn();
+$customerGroupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+$getGroupId = Mage::helper('marketplace')->getGroupId();
+$customerData = Mage::getSingleton("customer/session")->getCustomer();
+$customer_status = $customerData->getCustomerstatus();
+if ($customerGroupId == $getGroupId && $customerLoggedIn && $customer_status != 2) {
+    //Get Transaction collection
+    $collection = $this->getCollection();
+    $count = count($this->getTransactionhistory()->addFieldToFilter ( 'paid', array('in' => array('0' ) )));
+    if($count>0){?>
+		<button onclick="window.location='<?php echo Mage::helper('marketplace/general')->getWithdrawalUrl(); ?>';" title="Send Withdrawal Request to Admin" class="button right mp_addnew_pdt"> <span><span><?php echo $this->__('Send Withdrawal Request to Admin'); ?> </span></span></button>
+	<?php }
+    ?>
+    <table class="data-table" id="my-orders-table" summary="<?php echo $this->__('Items Ordered') ?>">    
+        <thead>
+            <tr>
+                <th><?php echo $this->__('Transaction Id') ?></th> 
+                <th><?php echo $this->__('Order Id') ?></th>     
+                <th class="a-center"><?php echo $this->__('Earned Amount') ?></th> 
+                <th class="a-center"><?php echo $this->__('Admin Commission') ?></th>
+                <th class="a-center"><?php echo $this->__('Paid On') ?></th>
+                <th class="a-center no-border-right"><?php echo $this->__('Payment Status') ?></th>            
+            </tr>
+        </thead>              
+        <?php
+        //Display transaction info
+        $count = count($collection);
+        if ($count > 0) {
+            foreach ($collection as $_collection) {
+                $commission_id = $_collection['commission_id'];
+                $order_id = $_collection['order_id'];
+                $orderModel = Mage::getModel('sales/order')->load($order_id);
+                ?>
+                <tbody>  
+                    <tr>
+                        <td><?php echo $_collection['id']; ?></td> 
+                        <td><?php echo $orderModel['increment_id']; ?></td>               
+                        <td class="a-center"><?php echo Mage::helper('core')->currency($_collection['seller_commission'], true, false); ?></td>
+                        <td class="a-center"><?php echo Mage::helper('core')->currency($_collection['admin_commission'], true, false); ?></td>
+                        <td class="a-center"><?php $paid_date = $_collection['paid_date'];
+                echo $paid_date; ?></td>                
+                        <td class="a-center">
+                            <?php if ($_collection['received_status'] != '1') { ?>
+                                <a href='<?php echo $this->getAcknowledge($commission_id); ?>'><span><span><?php echo $this->__('Acknowledge') ?></span></span></a>
+                            <?php
+                            } else {
+                                $acknowledge_date = $_collection['acknowledge_date'];
+
+                                echo '<h6>' . $this->__('Acknowledged on') . ' ' . date('M j, Y', strtotime($acknowledge_date)) . '</h6>';
+                            }
+                            ?>
+                        </td>
+                    </tr>  
+        <?php } ?>  
+            </tbody>     
+    <?php } else { ?>
+            <tfoot><tr><td colspan="6" class="a-center no_product_content"><?php echo $this->__('No Transactions to Show'); ?></td></tr></tfoot>
+    <?php } ?>
+    </table>
+<?php } ?>
+<?php //Display pagination
+echo $this->getPagerHtml();
+?>

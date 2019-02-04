@@ -1,0 +1,158 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+
+/**
+ * Product media data template
+ *
+ * @see Mage_Catalog_Block_Product_View_Media
+ */
+?>
+<?php
+
+$divid = 'jm-contain-'.rand().rand().time();
+
+$_product = $this->getProduct ();
+$_helper = $this->helper ( 'catalog/output' );
+
+$baseconfig =  Mage::helper("jmbasetheme")->getactiveprofile();
+
+if ($baseconfig) :
+    $productlimagewidth = $baseconfig["productlimagewidth"];
+    $productlimageheight = $baseconfig["productlimageheight"];
+else :
+    $productlimagewidth = 775;
+    $productlimageheight = 440;
+endif;
+?>
+<?php $galleryImages= $_product->getMediaGalleryImages();?>
+
+<p class="product-image product-image-zoom" style="<?php echo 'width:'.$productlimagewidth.'px; height:'.$productlimageheight.'px;'; ?>">
+    <?php
+        if (count($galleryImages)>0){
+            foreach ($galleryImages as $_image){
+                if ($_image->getLabel()=="first") continue;
+				$mainImageUrl = $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize($productlimagewidth, $productlimageheight);
+                $_img = '<img id="image" src="' . $mainImageUrl . '" alt="' . $this->htmlEscape ( $this->getImageLabel () ) . '" title="' . $this->htmlEscape ( $this->getImageLabel () ) . '" />';
+                break;
+            }
+        }
+		
+        if (!isset($_img)){
+			$mainImageUrl = Mage::getModel('catalog/product')->getImageUrl($productlimagewidth, $productlimageheight);
+            $_img = '<img id="image" src="' . $mainImageUrl . '" alt="' . $this->htmlEscape ( $this->getImageLabel () ) . '" title="' . $this->htmlEscape ( $this->getImageLabel () ) . '" />';
+		}
+
+        echo $_helper->productAttribute ( $_product, $_img, 'image' );
+    ?>
+</p>
+
+<?php if (count($galleryImages) > 0): ?>
+    <div class="jm-product-lemmon">
+        <div class="prev"><span><i class="fa fa-caret-left"></i></span></div>
+        <div class="more-views">
+            <ul>
+                <?php
+                $main_image_name = strrchr($mainImageUrl, '/');
+                $start = $i = 0;
+                ?>
+				<?php
+				$magentoVersion = Mage::getVersion();
+				if (version_compare($magentoVersion, '1.9.1.0', '>=')): ?>
+
+					<!-- version is 1.9.1.0 or greater-->
+					<?php foreach ($galleryImages as $_image): ?>
+						<?php if ($this->isGalleryImageVisible($_image)): ?>
+							<?php 
+								$thumb_image_name = strrchr($_image->getFile(), '/'); 
+								if ($thumb_image_name == $main_image_name)
+									$start = $i;
+							?>
+							<li class="">
+								<a href="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize ( $productlimagewidth, $productlimageheight ); ?>"
+								   title="<?php echo $_product->getName();?>"
+								   onclick="return false;"> <!-- The below should remain the same as before -->
+									<i class="fa fa-caret-up"></i>
+									<img
+										src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->keepAspectRatio(true)->resize(78, 78); ?>"
+										alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>"
+										title="<?php echo $this->htmlEscape($_image->getLabel()) ?>" />
+								</a>
+							</li>
+						<?php $i++; endif; ?>
+					<?php endforeach; ?>
+
+				<?php else: ?>
+					<!--version is below 1.9.1.0-->
+					<?php foreach ($galleryImages as $_image): ?>
+							<?php 
+								$thumb_image_name = strrchr($_image->getFile(), '/'); 
+								if ($thumb_image_name == $main_image_name)
+									$start = $i;
+							?>
+							<li class="">
+								<a href="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize ( $productlimagewidth, $productlimageheight ); ?>"
+								   title="<?php echo $_product->getName();?>"
+								   onclick="return false;"> <!-- The below should remain the same as before -->
+									<i class="fa fa-caret-up"></i>
+									<img
+										src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->keepAspectRatio(true)->resize(78, 78); ?>"
+										alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>"
+										title="<?php echo $this->htmlEscape($_image->getLabel()) ?>" />
+								</a>
+							</li>
+					<?php $i++; endforeach; ?>
+
+				<?php endif; ?>
+            </ul>
+        </div>
+        <div class="next"><span><i class="fa fa-caret-right"></i></span></div>
+
+        <script type="text/javascript" src="<?php echo $this->getSkinUrl('js/easy-slider-older.js');?>"></script>
+        <script type="text/javascript">
+            // <![CDATA[
+            (function($){
+                $(document).ready(function($){
+                    $(".more-views").easySlider({
+                        mainImg: "p.product-image-zoom img",
+                        btnNext: ".jm-product-lemmon .next",
+                        btnPrev: ".jm-product-lemmon .prev",
+                        animate: true,
+                        loop: true,
+                        speed: 300,
+                        width: 100,
+                        width_img: 78,
+                        start: <?php echo $start?>
+                    });
+                });
+
+            })(jQuery);
+            // ]]>
+        </script>
+    </div>
+
+    <?php echo $this->getChildHtml('after'); ?>
+
+<?php endif; ?>

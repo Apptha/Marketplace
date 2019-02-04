@@ -1,0 +1,91 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * @var $this Mage_Paypal_Block_Express_Shortcut
+ */
+
+?>
+<li>
+    <p class="paypal-logo">
+        <?php $shortcutHtmlId = $this->getShortcutHtmlId() ?>
+        <?php $bmlShortcutHtmlId = $this->getBmlShortcutHtmlId() ?>
+        <a class="paypal-button" data-action="checkout-form-submit" id="<?php echo $shortcutHtmlId ?>" href="<?php
+         echo $this->getCheckoutUrl()?>">
+         <img src="<?php echo $this->getImageUrl()?>" alt="<?php
+          echo Mage::helper('paypal')->__('Checkout with PayPal');?>" title="<?php
+           echo Mage::helper('paypal')->__('Checkout with PayPal');?>" /></a>
+
+        <span class="paypal-or"><?php echo $this->__('-OR-');?></span>
+    </p>
+</li>
+<?php if ($this->getIsBmlEnabled()): ?>
+<li class="bml-checkout-type">
+    <p class="paypal-logo">
+        <span class="bml_button">
+            <a id="<?php echo $bmlShortcutHtmlId ?>" href="<?php
+             echo $this->getBmlCheckoutUrl()?>">
+            <img src="<?php echo $this->getBmlImageUrl()?>" alt="<?php
+             echo Mage::helper('paypal')->__('Checkout with PayPal Bill Me Later');?>" title="<?php
+              echo Mage::helper('paypal')->__('Checkout with PayPal Bill Me Later');?>" /></a>
+            <a href="<?php echo $this->getMarketMessageUrl()?>">
+            <img src="<?php echo $this->getMarketMessage()?>" /></a>
+        </span>
+        <span class="paypal-or"><?php echo $this->__('-OR-');?></span>
+    </p>
+</li>
+<?php endif;?>
+
+<?php if ($this->getConfirmationUrl() || $this->getIsInCatalogProduct()): ?>
+    <?php if ($this->getIsInCatalogProduct()): ?>
+        <input type="hidden"
+         id="pp_checkout_url"
+         name="return_url" value="" />
+    <?php endif; ?>
+    <script type="text/javascript">
+        //<![CDATA[
+        $$('#<?php echo $shortcutHtmlId ?>','#<?php
+         echo $bmlShortcutHtmlId ?>').invoke('observe', 'click', function(event) {
+            <?php if ($this->getConfirmationUrl()): ?>
+            if (confirm('<?php echo Mage::helper('core')->jsQuoteEscape($this->getConfirmationMessage())?>')) {
+                this.href = '<?php echo $this->getConfirmationUrl() ?>';
+            }
+            <?php endif; ?>
+            <?php 
+            if ($this->getIsInCatalogProduct()): ?>
+            $('pp_checkout_url').value = this.href;
+            productAddToCartForm.submit(this);
+            event.stop();
+            <?php endif; ?>
+        });
+        //]]>
+    </script>
+<?php endif; ?>

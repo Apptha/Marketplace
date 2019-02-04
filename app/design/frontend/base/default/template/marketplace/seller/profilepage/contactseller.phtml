@@ -1,0 +1,148 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+ 
+<?php 
+
+/**
+ * get seller id
+ */
+$id = $this->getRequest()->getParam('id');
+
+/**
+ * display product collection
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+
+/**
+ * contact seller starts
+ */?>
+ <?php $enablecontactSeller = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/display_contact_seller');?>
+ <?php if($enablecontactSeller == 1){
+    $customerLogged = Mage::getSingleton('customer/session')->isLoggedIn();
+    if ($customerLogged ==1) {
+/**
+ * get customer id
+ */
+        $customerId    = Mage::getSingleton('customer/session')->getId();
+        /**
+         * load customer info
+         */
+        $customerInfo = Mage::getModel('customer/customer')->load($customerId); 
+    }
+    ?>
+ 
+<div class="block"> 
+<?php 
+/**
+ * Form for contact seller
+ */
+
+?>
+<form action="<?php echo $this->getContactSellerUrl($id); ?>" id="marketplaceContactForm" name="form" method="post">
+ 
+        <div class="block-title"><strong><span><?php echo Mage::helper('marketplace')->__('Contact Seller') ?></span></strong></div>
+          <div class="block-content"><ul class="form-list">
+           <?php 
+                    /**
+                     * getting customer name
+                     */
+                    ?>
+            <li class="fields">
+                <div class="field">         
+                    <div class="input-box">
+                   
+                        <input class="required-entry" name="customer_name" id="customer_name" title="<?php
+                         echo Mage::helper('marketplace')->__('Customer Name') ?>" value="<?php
+                          if($customerLogged ==1){
+                              echo $customerInfo->getName(); 
+                          } ?>" <?php
+                           if($customerLogged ==1 && $customerInfo->getName()!='') {
+                               echo 'readonly'; 
+                           }?> class="input-text required-entry" type="text" placeholder="<?php
+                                echo $this->__('Your Name'); ?>"/>
+                    </div>
+                </div>
+            </li> 
+                <?php  /**
+                     * getting customer email
+                     */
+                    ?>
+            <li class="fields">
+                <div class="field">         
+                    <div class="input-box">
+                   
+                 
+                        <input class="required-entry validate-email" name="customer_email" id="customer_email" title="<?php echo Mage::helper('marketplace')->__('Customer Email') ?>" value="<?php
+                         if($customerLogged ==1){
+                             echo $customerInfo->getEmail(); 
+                         } ?>" <?php
+                          if($customerLogged ==1 && $customerInfo->getEmail()!='') {
+                              echo 'readonly'; 
+                          }?> class="input-text validate-email required-entry" type="text" placeholder="<?php
+                           echo $this->__('Your Email'); ?>"/>
+                    </div>
+                </div>
+            </li> 
+              <?php 
+                    /**
+                     * getting customer messgae
+                     */
+                    ?> 
+            <li class="wide">    
+                       
+                <div class="input-box">
+                    <textarea name="message" id="message" title="<?php echo Mage::helper('marketplace')->__('Message') ?>" class="required-entry input-text" cols="5" rows="3"  placeholder="<?php
+                     echo $this->__('Your Message'); ?>"></textarea>
+                </div>
+            </li>
+        </ul>
+   <?php  /**
+                     * sending message
+                     */
+                    ?>
+    <div class="buttons-set">        
+        <button type="submit" title="<?php echo Mage::helper('marketplace')->__('Send Message') ?>" class="button">
+        <span><span><?php echo Mage::helper('marketplace')->__('Submit') ?></span></span></button>
+    </div></div>
+</form>
+
+<script type="text/javascript">
+    //<![CDATA[
+    var marketplaceContactForm = new VarienForm('marketplaceContactForm', true);
+    //]]>
+</script>
+
+</div>
+ <?php }  ?> 
+ <?php 
+/**
+ * contact seller ends
+ */?>  

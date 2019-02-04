@@ -1,0 +1,70 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$customer = Mage::getSingleton('customer/session')->getCustomer();
+$wishList = Mage::getSingleton('wishlist/wishlist')->loadByCustomer($customer);
+$wishListItemCollection = $wishList->getItemCollection();
+
+$arrProductIds = array();
+
+if (count($wishListItemCollection)) {
+foreach ($wishListItemCollection as $item) {
+$product = $item->getProduct();
+$arrProductIds[] = $product->getId();
+}
+}
+
+?>
+<?php $_product = $this->getProduct(); ?>
+<?php $_wishlistSubmitUrl = $this->helper('wishlist')->getAddUrl($_product); ?>
+
+<ul class="add-to-links">
+<?php if ($this->helper('wishlist')->isAllow()) : ?>
+<?php if(in_array($_product->getId(),$arrProductIds)){
+$class =  'added'; 
+}
+else{
+$class = ''; 
+} ?>
+    <li><a href="<?php echo $_wishlistSubmitUrl ?>" onclick="productAddToCartForm.submitLight(this, this.href); return false;" 
+    title="<?php echo $this->__('Add to Wishlist') ?>" 
+    class="link-wishlist <?php echo $class; ?>">
+    <?php echo $this->__('Add to Wishlist') ?></a></li>
+<?php endif; ?>
+<?php
+    $_compareUrl = $this->helper('catalog/product_compare')->getAddUrl($_product);
+?>
+<?php if($_compareUrl) : ?>
+    <li><span class="separator">|</span> <a href="#" onclick="ajaxCompare('<?php echo $_compareUrl?>','<?php echo $_product->getId()?>'); return false;" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
+<?php endif; ?>
+<li><span id='ajax_loading<?php echo $_product->getId()?>' style='display:none'><img src='<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif')?>'/></span></li>
+
+</ul>

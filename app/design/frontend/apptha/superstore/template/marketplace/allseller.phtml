@@ -1,0 +1,76 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<div class="page-title">
+    <h1><?php echo $this->__('All sellers'); ?> </h1>
+</div>
+ <?php
+    //Get seller data collection
+    $seller_collection = $this->getCollection();
+    $seller_count = count($seller_collection);
+    if ($seller_count > 0) { ?>
+ <div class="my-account-wrapper"><ul class="mp_all_sellers_container f-left" border="0" cellspacing="0" cellpadding="0">
+   <?php 
+        foreach ($seller_collection as $_seller_collection) {
+            $seller_id = $_seller_collection['entity_id'];
+            $get_requestPath = Mage::helper('marketplace/common')->getSellerRewriteUrl($seller_id);
+            if (strpos($_seller_collection['store_logo'], '.') && $_seller_collection['store_title'] != '') {
+                ?>                    
+                <li class="f-left">
+                    <a class="mp_all_sellers_view" href="<?php echo $get_requestPath; ?>" 
+                    title="<?php echo $_seller_collection['store_title']; ?>">
+                    <img src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $_seller_collection['store_logo']; ?>" style="vertical-align: middle;" /> 
+                    <span style="clear:both;text-transform:uppercase;" ><?php echo $_seller_collection['store_title']; ?></span>
+                    </a>
+                </li>
+        <?php } 
+        if (!strpos($_seller_collection['store_logo'], '.') && $_seller_collection['store_title'] != '') { ?>
+                <li class="f-left">
+                    <a class="mp_all_sellers_view" href="<?php echo $get_requestPath; ?>" 
+                    title="<?php echo $_seller_collection['store_title']; ?>">
+                        <img width="150" height="110" src="<?php echo $this->getSkinUrl('images/no-store-logo.png'); ?>" style="vertical-align: middle;" />
+                     <span style="clear:both;text-transform:uppercase;"><?php echo $_seller_collection['store_title']; ?></span>
+                    </a> 
+                </li>
+        <?php } 
+       
+    } ?> 
+    </ul>
+    </div>
+    <div style="clear: both;"></div>  
+    <?php
+    if( $seller_count > 10){
+    echo $this->getPagerHtml();
+    }
+} else {
+    echo $this->__('There is no seller available.');
+}
+?>

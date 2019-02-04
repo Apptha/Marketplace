@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<config>
+   <!-- Super deals module version which is mentioned into sytem configutaion -->
+   <modules>
+      <Apptha_Superdeals>
+         <version>1.6</version>
+      </Apptha_Superdeals>
+   </modules>
+   <!-- 
+    Ffront end tab starts
+     -->
+   <frontend>
+      <translate>
+         <modules>
+            <!-- Transulation file for super deals -->
+            <translations>
+               <files>
+                  <default>Apptha_Superdeals.csv</default>
+               </files>
+            </translations>
+         </modules>
+      </translate>
+      <!-- 
+        Create front end routers for deals package
+         -->
+      <routers>
+         <superdeals>
+            <use>standard</use>
+            <args>
+               <module>Apptha_Superdeals</module>
+               <frontName>deals</frontName>
+            </args>
+         </superdeals>
+      </routers>
+      <layout>
+         <updates>
+            <!-- Layout file for super deals -->
+            <superdeals>
+               <file>superdeals.xml</file>
+            </superdeals>
+         </updates>
+      </layout>
+   </frontend>
+   <!-- 
+    Frontend tab ends
+     -->
+   <!-- 
+    Global tab starts
+     -->
+   <global>
+      <!-- Superdeals heler file -->
+      <helpers>
+         <superdeals>
+            <class>Apptha_Superdeals_Helper</class>
+         </superdeals>
+      </helpers>
+      <!-- Superdeals block -->
+      <blocks>
+         <superdeals>
+            <class>Apptha_Superdeals_Block</class>
+         </superdeals>
+      </blocks>
+      <!-- Superdeals module -->
+      <models>
+         <superdeals>
+            <class>Apptha_Superdeals_Model</class>
+            <resourceModel>superdeals_mysql4</resourceModel>
+         </superdeals>
+         <!-- Superdeals sql -->
+         <superdeals_mysql4>
+            <class>Apptha_Superdeals_Model_Mysql4</class>
+            <entities>
+               <dealz>
+                  <table>superdeals_orders</table>
+               </dealz>
+            </entities>
+            <!-- superdeals reports -->
+            <entities>
+               <dealstatistics>
+                  <table>superdeals_reports</table>
+               </dealstatistics>
+            </entities>
+         </superdeals_mysql4>
+         <!-- Rewrite sales -->
+         <sales>
+            <rewrite>
+               <order>Apptha_Superdeals_Model_Order</order>
+            </rewrite>
+         </sales>
+      </models>
+      <resources>
+         <!-- Superdeals setup -->
+         <superdeals_setup>
+            <setup>
+               <module>Apptha_Superdeals</module>
+            </setup>
+            <!-- Core setup permission -->
+            <connection>
+               <use>core_setup</use>
+            </connection>
+         </superdeals_setup>
+         <!-- Superdeals write permission -->
+         <superdeals_write>
+            <connection>
+               <use>core_write</use>
+            </connection>
+         </superdeals_write>
+         <!-- Super deal read permission -->
+         <superdeals_read>
+            <connection>
+               <use>core_read</use>
+            </connection>
+         </superdeals_read>
+      </resources>
+      <template>
+         <email>
+            <!-- Superdeals email template notification -->
+            <superdeals_general_notify_template translate="label" module="superdeals">
+               <label>Notification Email Template</label>
+               <file>superdeals/superdeals_notification_email.html</file>
+               <type>html</type>
+            </superdeals_general_notify_template>
+         </email>
+      </template>
+      <events>
+         <!-- Observer for after place the order -->
+         <sales_order_place_after>
+            <observers>
+               <superdeals>
+                  <type>singleton</type>
+                  <class>superdeals/observer</class>
+                  <method>afterSalesOrderSaved</method>
+                  <args />
+               </superdeals>
+            </observers>
+         </sales_order_place_after>
+         <!-- Observer for after save the product -->
+         <catalog_product_save_after>
+            <observers>
+               <superdeals>
+                  <type>singleton</type>
+                  <class>superdeals/observer</class>
+                  <method>afterProductSaved</method>
+                  <args />
+               </superdeals>
+            </observers>
+         </catalog_product_save_after>
+         <!-- Observer for after order status -->
+         <sales_order_status_after>
+            <observers>
+               <superdeals>
+                  <type>singleton</type>
+                  <class>superdeals/observer</class>
+                  <method>salesOrderStatusAfter</method>
+                  <args />
+               </superdeals>
+            </observers>
+         </sales_order_status_after>
+      </events>
+   </global>
+   <!-- 
+    Global tab ends
+     -->
+   <!-- 
+    Admin tab starts
+     -->
+   <admin>
+      <routers>
+         <superdeals>
+            <use>admin</use>
+            <args>
+               <module>Apptha_Superdeals</module>
+               <frontName>superdeals</frontName>
+            </args>
+         </superdeals>
+      </routers>
+   </admin>
+   <!-- 
+Admin html configuration is starts
+ -->
+   <adminhtml>
+      <!-- Admin layout XML file initialization -->
+      <layout>
+         <updates>
+            <superdeals>
+               <file>superdeals.xml</file>
+            </superdeals>
+         </updates>
+      </layout>
+      <translate>
+         <modules>
+            <!-- Language transulation file for superdeals -->
+            <translations>
+               <files>
+                  <default>Apptha_Superdeals.csv</default>
+               </files>
+            </translations>
+         </modules>
+      </translate>
+   </adminhtml>
+   <!-- 
+ Admin html configuration is ends
+ Cron job for send notification email -->
+   <crontab>
+      <jobs>
+         <superdeals_observer2>
+            <schedule>
+               <cron_expr>* * * * *</cron_expr>
+            </schedule>
+            <run>
+               <model>superdeals/observer::SendNotificationMail</model>
+            </run>
+         </superdeals_observer2>
+      </jobs>
+   </crontab>
+   <default>
+      <!-- Superdeals timer default color -->
+      <superdeals>
+         <timer>
+            <save_dis_lable_color>cc3333</save_dis_lable_color>
+            <save_dis_price_color>cc3333</save_dis_price_color>
+            <text>cc3333</text>
+            <heading_text_color>cc3333</heading_text_color>
+         </timer>
+      </superdeals>
+   </default>
+</config>
+<!-- 
+Configuration is starts
+ -->

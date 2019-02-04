@@ -1,0 +1,68 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php $_product = $this->getProduct(); ?>
+<?php $buttonTitle = $this->__('Add to Cart'); ?>
+<?php //if($_product->isSaleable()): ?>
+    <div class="add-to-cart">
+        <?php if(!$_product->isGrouped()): ?>
+        <div class="qty-wrapper">
+            <label for="qty"><?php echo $this->__('Qty:') ?></label>
+            <input type="text"
+             pattern="\d*"
+              name="qty" 
+              id="qty" 
+              maxlength="12" 
+              value="<?php echo max($this->getProductDefaultQty() * 1, 1) ?>" 
+            title="<?php echo $this->__('Qty') ?>" class="input-text qty" />
+        </div>
+        <?php //endif; ?>
+        <div class="add-to-cart-buttons">
+            <button type="button" id="add-to-cart"
+             title="<?php echo $buttonTitle ?>" class="button btn-cart" onclick="productAddToCartForm.submit(this)">
+            <span><span><?php echo $buttonTitle ?></span></span></button>
+            <?php echo $this->getChildHtml('', true, true) ?>
+        </div>
+        <?php 
+        $enableZipcodeValidation=Mage::getStoreConfig("marketplace/product/zipcode_validation");
+        $productTypeArray=array("virtual","downloadable");
+        if(($enableZipcodeValidation==1) && (!in_array($_product->getTypeId(),$productTypeArray))) {
+        ?>
+        <div class="zipcode" style="display: block !important;">
+		<label>  <?php echo $this->__('Check Availability at:') ?></label> <input
+			type="text" placeholder="enter zipcode" id="zipcode" name="zipcode"
+			value="" class="required-entry input-text" onkeyup="checkForZipcode(event);" autocomplete="off">
+
+		<div id="response-text"></div>
+		<div id="error-msg"></div>
+	</div> 
+	<?php }?>
+    </div>
+<?php endif; ?>

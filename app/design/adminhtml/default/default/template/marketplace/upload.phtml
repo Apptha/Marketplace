@@ -1,0 +1,22 @@
+<form id="doc-form" name="doc-form" method="post" action="<?php echo  Mage::helper("adminhtml")->getUrl('marketplaceadmin/adminhtml_managezipcodes/saveupload');?>" enctype="multipart/form-data">
+<input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+<label>Upload Document</label>
+<input type="file" title="File" name="docname" onchange="return validateFileExtension(this);" required>
+<span><?php echo $this->__('(Upload only .csv file)');?></span> <br/>
+<button type="submit" title="Save"><span>Upload</span></button>  <br/> <br/>         
+<span><a href = "<?php echo  Mage::helper("adminhtml")->getUrl('marketplaceadmin/adminhtml_zipcodes/index');?>">Click here to View the Zipcode details</a></span>          
+</form>
+<br/>
+
+<script type="text/javascript">
+
+function validateFileExtension(fld) {
+    if (!/(\.csv)$/i.test(fld.value)) {
+        fld.form.reset();
+        fld.focus();
+        alert('Invalid File type');
+        return false;
+    }
+    return true;
+}
+</script>

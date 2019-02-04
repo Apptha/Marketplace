@@ -1,0 +1,330 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Advancedfilters
+ * @version     1.0.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */?>
+ <?php 
+ $helper = Mage::helper('productfilters');
+ ?>
+<?php if($this->canShowBlock()): ?>
+	<?php if (!$this->getRequest()->isAjax()): ?>
+	<div id="layer_ajax_filter">
+	
+	<?php endif; ?>
+	<div class="block block-layered-nav">
+		<div class="block-title">
+			<strong><span><?php echo $this->__('Shop By') ?></span></strong>
+		</div>
+		
+		<div class="block-content">
+	        <?php  echo $this->getStateHtml() ?>
+	        <?php if ($this->getLayer()->getState()->getFilters()): ?>
+	            <div class="actions">
+					<a class="clearAll" href="<?php echo $this->getClearUrl() ?>"><?php echo $this->__('Clear All') ?></a>
+				</div>
+	        <?php endif; ?>
+	        <?php if($this->canShowOptions()): ?>
+	            <p class="block-subtitle"><?php echo $this->__('Shopping Options') ?></p>
+				<ul id="narrow-by-list">
+	                <?php $_filters = $this->getFilters() ?>
+	                <?php foreach ($_filters as $_filter): ?>   
+		                <?php if(($_filter->getName()) == Apptha_Productfilters_Model_Catalog_Layer_Filter_Category::getName()){ 
+		              			if ($this->getNameInLayout()=='catalog.leftnav')
+		              				$_filter->setTemplate('productfilters/catalog/layer/categoryfilter.phtml');
+		              			elseif ($this->getNameInLayout()=='catalogsearch.leftnav')
+		              				$_filter->setTemplate('productfilters/catalog/layer/custom.phtml');
+						}?>
+	                     <?php if($_filter->getItemsCount()): ?>
+	                    	<li style=cursor:pointer class="section expanded">
+	                    		<a class="title" ><span style=cursor:pointer;><?php echo $this->__($_filter->getName()) ?></span><span class="symbol"></span></a>
+								<div class="toggle" style=cursor:default;><?php echo $_filter->getHtml() ?></div>
+							</li>
+	                	<?php endif; ?>
+	                <?php endforeach; ?>
+	            </ul>
+			<script type="text/javascript">decorateDataList('narrow-by-list')</script>
+	        <?php endif; ?>
+	    </div>
+	</div>
+<?php if (!$this->getRequest()->isAjax()): ?>
+</div>
+<?php endif; ?>
+<?php endif; ?>
+
+<?php if (!$this->getRequest()->isAjax()): ?>
+<script>
+	var current_url = "<?php echo Mage::getUrl('*/*/*', array('_current'=>false, '_use_rewrite'=>true,array())); ?>";
+	//<![CDATA[
+	(function(window,undefined){
+	
+		// Prepare our Variables
+		var
+			History = window.History,
+			State = History.getState(),
+			document = window.document,
+			FILTER = {},
+			loading_html = '<div id="sticky-referrer" class="browse-vd newvd" style="position: relative;">'
+							    +'<div class="loadingWrapper" style="display: none;">'
+							    	+'<div class="loading"></div>'
+							    	+'<div class="content">'
+							            +'<img src="<?php echo $this->getSkinUrl('productfilters/images/ajax-loader.gif')?>" alt="">'
+							            +'<span class="text">Loading...</span>'
+							        +'</div>'
+							    +'</div>'
+						   +'</div>',
+			isAjax = true;
+							
+		// Check to see if History.js is enabled for our Browser
+		if ( !History.enabled ) {
+			 isAjax = false;
+		}
+
+		<?php if (!$this->helper('productfilters')->isAjaxEnabled()): ?>
+			 isAjax=false;
+		<?php endif;?>
+		
+		// Bind to State Change
+		History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+			// Log the State
+			var State = History.getState(); // Note: We are using History.getState() instead of event.state
+			//History.log('statechange:', State.data, State.title, State.url);
+			sendAjax(State.url);	
+		});
+		
+
+		function sendAjax(url) {
+			//loadingWrapper
+			new Ajaxreq.Request(url,{
+			    method:'get',
+			    action_content: ['product_list','catalog.leftnav','search_result_list','catalogsearch.leftnav'],
+			    onSuccess: function(transport,json) {
+					var response = transport.responseJSON;
+			    	if(response){
+					   if (product = response['action_content_data']['product_list']) {
+					  	 var categoryProducts = $$('div.category-products');
+					  	 if(categoryProducts[0]){
+					  		categoryProducts[0].remove();
+					  	 }
+					  	 var noProduct = $$('p.note-msg');
+				  	     if(noProduct[0]){
+				  	    	noProduct[0].remove();
+					  	 }
+					  	 var categoryProducts = $$('div.col-main');
+					  	 categoryProducts[0].insert(product);
+					   }
+					      if (product = response['action_content_data']['catalog.leftnav']) {
+						   $('layer_ajax_filter').update(product);
+						   updateDOM();
+					   }    
+					   if (product = response['action_content_data']['search_result_list']) {
+						  	 var categoryProducts = $$('div.category-products');
+						  	 if(categoryProducts[0]){
+							  		categoryProducts[0].remove();
+							  	 }
+							  	 var noProduct = $$('p.note-msg');
+						  	     if(noProduct[0]){
+						  	    	noProduct[0].remove();
+							  	 }
+							  	 var categoryProducts = $$('div.col-main');
+							  	 categoryProducts[0].insert(product);
+					   }
+					    if (product = response['action_content_data']['catalogsearch.leftnav']) {
+						   $('layer_ajax_filter').update(product);
+						   updateDOM();
+					   } 
+						  
+					} 
+				},
+				onFailure: function() { 
+					alert('Something went wrong...');
+				}, 
+				onCreate: function(){
+				    $$('div.loadingWrapper')[0].show();
+				}, 
+				onComplete: function(){
+					$$('div.loadingWrapper')[0].hide();
+				}
+			});
+		}
+
+		<?php 
+			$currentParams = $this->getRequest()->getQuery();
+			$reqParam = array(); 
+			foreach ($currentParams as $key=>$value){
+				if(!in_array($key,array('ajax_request','action_content'))){				
+					$reqParam[$key] = explode(',', $value);
+				}
+			}
+		?>
+		var filter_array =  <?php echo (!empty($reqParam))?json_encode($reqParam):'{}'; ?>;
+		var title = document.getElementsByTagName("title")[0].innerHTML;
+
+		var formUrl = function (urlData){
+			//console.log(urlData);
+			
+			 var _urlArray = []
+			for(var _item in urlData){
+				if(urlData[_item].length){
+					_urlArray.push(_item+'='+urlData[_item].join(','));
+				}
+			}
+			var _urlString = '';
+			if(_urlArray.length){
+			 	_urlString = '?'+_urlArray.join('&');
+			}
+			//console.log(_urlString);
+			var url = current_url+_urlString;
+
+			if(!isAjax){
+				window.location.href = url;
+				return;
+			}
+			History.pushState(_urlArray,title,url);	 
+		} 
+
+			var updateDOM = function(){
+
+			//update the checkbox
+			var accordion = new Accordion('narrow-by-list', {
+				 startHidden: false,
+				 mutuallyExclusive: false
+			});
+			
+			$$('input.filter_options').each(function(input,i){
+	
+				$(input).observe('click', function(e){
+					var $this = $(this);
+					var attributeName = $this.readAttribute('name');
+					var attributeValue = $this.value;
+					var attributeArr = filter_array[attributeName];
+	
+					if(this.checked){
+						
+						if(attributeArr){
+							filter_array[attributeName].push(attributeValue);  
+						}else{
+							filter_array[attributeName] = [attributeValue];
+						}	
+	
+					}else{
+						
+						if(attributeArr){
+							
+							var index = attributeArr.indexOf(attributeValue);
+							if (index > -1) {
+								filter_array[attributeName].splice(index, 1);
+							}					
+						}
+					}
+					
+					formUrl(filter_array);
+				});
+			});
+
+			//update the remove link
+			
+			$$('div.currently  a.btn-remove').each(function(input,i){
+				$(input).observe('click', function(e){
+					e.preventDefault();
+					var $this = $(this);
+					var attributeName = $this.readAttribute('data-name');
+					var attributeValue = $this.readAttribute('data-value');
+					var attributeArr = filter_array[attributeName];
+
+					if(attributeArr){
+						
+						var index = attributeArr.indexOf(attributeValue);
+						if (index > -1) {
+							filter_array[attributeName].splice(index, 1);
+						}
+						if(filter_array['prev_cat'] && attributeName == 'cat' ){
+
+							var index = filter_array['prev_cat'].indexOf(attributeValue);
+							if (index > -1) {
+								filter_array['prev_cat'].splice(index, 1);
+							}
+							var new_cat_value = filter_array['prev_cat'][filter_array['prev_cat'].length-1];
+							if(new_cat_value){
+								filter_array[attributeName] = [new_cat_value];
+							}
+							
+						}				
+					}
+					
+					formUrl(filter_array);
+				});
+			});
+
+			$$('div.ajaxloader a.ajaxfilter').each(function(input,i){
+				$(input).observe('click', function(e){
+					e.preventDefault();
+					var $this = $(this);
+					var attributeName = $this.readAttribute('name');
+					var attributeValue = $this.readAttribute('value');
+					var attributeArr = filter_array[attributeName];
+					
+					if(attributeName == 'cat'){
+						if(filter_array['prev_cat']){
+							filter_array['prev_cat'].push(attributeValue);  
+						}else{
+							filter_array['prev_cat'] = [attributeValue];
+						}
+					}
+					filter_array[attributeName] = [attributeValue];
+					
+					formUrl(filter_array);
+				});
+			});
+
+
+			//update the clear all link
+			$$('div.actions a.clearAll').each(function(input,i){
+				$(input).observe('click', function(e){
+					e.preventDefault();
+					if(filter_array.q){
+						filter_array = {'q':filter_array.q};
+					}else{	
+						filter_array = {};
+					}
+					formUrl(filter_array);
+					
+				});
+			});
+			
+		}
+		updateDOM();
+		window.FILTER = {
+				'filter_array':filter_array,
+				'formUrl':formUrl
+		};
+
+		$$('div.main')[0].insert(loading_html);
+		
+	})(window);
+
+</script>
+<?php endif; ?>

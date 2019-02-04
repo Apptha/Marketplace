@@ -1,0 +1,61 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * Seller profile Update
+ * This file contains add seller profile
+ * Edit seller profile
+ */
+?>
+<!DOCTYPE html>
+<!--[if IE 7 ]>    <html lang="en" id="top" class="no-js ie7"> <![endif]-->
+<!--[if lt IE 7 ]> <html lang="en" id="top" class="no-js ie6"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" id="top" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" id="top" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" id="top" class="no-js"> <!--<![endif]-->
+
+<head><?php echo $this->getChildHtml('head') ?></head>
+<body class="page-print<?php echo $this->getBodyClass()?$this->getBodyClass():'' ?>">
+<div>
+    <div class="print-head">
+        <img src="<?php echo $this->getPrintLogoUrl() ? $this->getPrintLogoUrl() : $this->getChild('header')->getLogoSrc() ?>" class="logo" alt="" />
+        <?php if ($this->getPrintLogoText()):?>
+            <address><?php echo nl2br($this->escapeHtml($this->getPrintLogoText())) ?></address>
+        <?php endif;?>
+    </div>
+    <?php echo $this->getChildHtml('content') ?>
+    <div class="buttons-set">
+        <button type="button" title="<?php echo $this->__('Close Window') ?>" class="button" onclick="window.close();">
+        <span><span><?php echo $this->__('Close Window') ?></span></span></button>
+    </div>
+    <?php echo $this->getAbsoluteFooter() ?>
+</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+ <?php 
+$colorPicker='';
+$colorPicker=Mage::getStoreConfig("marketplace/marketplace/color_picker");
+if($colorPicker){
+?>
+ <div class="color_theme">
+        <a id="cpToggle" href="javascript:void(0);"></a>
+          <ul style="display:none;">
+          <li class="violet_clr">violet</li>
+          <li class="red_clr">red</li>
+          <li class="blue_clr">blue</li>
+          <li class="green_clr">green</li>
+          <li class="blk_clr">black</li>
+          </ul>
+        </div>
+        
+        
+      
+ <?php }?>
+<div class="footer-content">
+    <div class="footer-container">
+        <div class="footer">
+        <?php echo $this->getChildHtml() ?>
+           <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_footer_links_company')->toHtml() ?> 
+        </div>
+        <div class="footer-middle">
+            <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_footer_middle_block')->toHtml() ?>
+        </div>
+    </div>
+    <?php $footerCopyright = Mage::getStoreConfig('marketplace/marketplace/footer_content');
+ $defaultFooterCopyright = Mage::getStoreConfig('design/footer/copyright');
+    if($footerCopyright == '') {
+    if($defaultFooterCopyright != '') { ?>
+    <div class="footer-bottom">
+    <div class="footer-inner">
+        <address class="copyright"><?php echo $this->getCopyright() ?></address>
+         <address><?php echo $defaultFooterCopyright; ?> </address>
+        <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_footer_payment_method')->toHtml() ?>
+        </div>
+    </div>
+    <?php }else{ ?>
+    <div class="footer-bottom">
+        <div class="footer-inner">
+        <address class="copyright"><?php echo $this->getCopyright() ?></address>
+        <address>@2016 <a href="https://www.apptha.com/" target="_blank" title="Joomla Extensions, Joomla Templates, Joomla Themes, Magento Extensions, Magento Themes, Magento Templates, Wordpress Themes,  Wordpress Templates, Wordpress Plugins, Apptha.com, Apptha, best, free">Apptha Themes</a>. All rights reserved</address>
+        <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_footer_payment_method')->toHtml() ?>
+        </div>
+    </div>
+    <?php } ?>
+    <?php } else { ?>
+    <div class="footer-bottom">
+        <div class="footer-inner">
+        <address class="copyright"><?php echo $this->getCopyright() ?></address>
+         <address><?php echo $footerCopyright; ?> </address>
+        <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_footer_payment_method')->toHtml() ?>
+        </div>
+    </div>
+    <?php } ?>
+</div>
+<div id="back_top"></div>
+
+<script type="text/javascript">
+document.observe('click', function(e, el) {
+    if ( ! e.target.descendantOf('header-minicart')) {  
+    if($('header-cart').hasClassName('skip-active')){
+    $('header-cart').removeClassName('skip-active');
+    }  
+    }
+});
+
+jQuery(function() {
+    jQuery(window).scroll(function() {
+    if(jQuery(this).scrollTop() > 300) {
+        jQuery('#back_top').fadeIn();    
+    } else {
+        jQuery('#back_top').fadeOut();
+    }
+});
+   jQuery('#back_top').click(function() {
+    jQuery('body,html').animate({scrollTop:0},500);
+});    
+});
+</script>

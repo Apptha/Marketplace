@@ -1,0 +1,128 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/* ============================================ *
+ * PayPal
+ * ============================================ */
+
+.paypal-review-order {
+    @include bp(max-width, $bp-medium + 100) {
+        @include bp(min-width, $bp-medium + 1) {
+            .col2-set {
+                .col-1,
+                .col-2 {
+                    padding: 0px;
+                }
+            }
+        }
+    }
+
+    .info-set {
+        margin-bottom: $gap;
+        padding-bottom: $gap;
+        border-bottom: 1px solid $c-fieldset-border-light;
+    }
+
+    .buttons-set {
+        margin-top: 0px;
+        padding-top: 0px;
+        border: 0;
+
+        button {
+            margin-bottom: $gap;
+        }
+    }
+
+    @include bp(max-width, $bp-medium) {
+        .col-1 {
+            padding-bottom: 0;
+        }
+
+        .field.inactive {
+            display: none;
+        }
+    }
+}
+
+.bml-ad {
+    display: none;
+
+    &.small {
+        img {
+            margin: auto;
+            max-width: 100%;
+        }
+    }
+}
+
+@include bp(max-width, 799px) {
+    .bml-ad.small {
+        display: block;
+    }
+}
+
+@include bp(min-width, 800px) {
+    .bml-ad.large {
+        display: block;
+    }
+}
+
+div.paypal-logo {
+    text-align: center;
+    margin: $trim-small 0;
+    max-width: 100%;
+
+    span {
+        display: block;
+        width: 100%;
+
+        a {
+            display: inline-block;
+            max-width: 100%;
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
+
+    span > img {
+        display: none;
+    }
+}
+
+.checkout-types {
+    div.paypal-logo {
+        text-align: right;
+    }
+}
+
+.bml-checkout-type {
+    list-style-type: none;
+}

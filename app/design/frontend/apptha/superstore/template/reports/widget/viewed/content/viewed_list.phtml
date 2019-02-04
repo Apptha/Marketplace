@@ -1,0 +1,64 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * @see Mage_Reports_Block_Product_Viewed
+ */
+?>
+<?php if ($prodsList = $this->getRecentlyViewedProducts()): ?>
+    <div class="widget widget-viewed">
+        <div class="widget-title">
+            <h2><?php echo $this->__('Recently Viewed') ?></h2>
+        </div>
+        <div class="widget-products">
+            <ol class="mini-products-list">
+                <?php $i=0;
+                 foreach ($prodsList as $prod): ?>
+                    <li class="item<?php 
+                    ++$i;
+                    echo ($i == count($prodsList))?' last':''; ?>">
+                        <a href="<?php echo $prod->getProductUrl() ?>" title="<?php
+                         echo $this->stripTags($prod->getName(), null, true) ?>" class="product-image">
+                         <img src="<?php echo $this->helper('catalog/image')->init($prod, 'small_image')->resize(50) ?>" width="50" height="50" alt="<?php
+                          echo $this->stripTags($prod->getName(), null, true) ?>" /></a>
+                        <div class="product-details">
+                            <div class="f-fix">
+                                <h3 class="product-name"><a href="<?php echo $prod->getProductUrl() ?>" title="<?php
+                                 echo $this->stripTags($prod->getName(), null, true) ?>"><?php
+                                  echo $this->helper('catalog/output')->productAttribute($prod, $prod->getName() , 'name') ?></a></h3>                          
+                            </div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        </div>
+    </div>
+<?php endif; ?>

@@ -1,0 +1,530 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Apptha Social login pop-up form template
+ *
+ */
+
+/**
+ * get Current URL
+ */
+$currentUrl = $this->helper('core/url')->getCurrentUrl();
+/**
+ * set session for URLs relink and Link
+ */
+$currentUrl = Mage::helper('core/url')->getCurrentUrl();
+$secure=strstr($currentUrl,"https");
+
+if($secure == true) {
+
+
+	$forgotdirection=Mage::getUrl('',array('_secure'=>true)) . 'sociallogin/index/forgotPasswordPost/' ;
+}
+/**
+ * Else the secure url is not appended.
+ */
+else{
+
+	$forgotdirection=Mage::getBaseUrl() . 'sociallogin/index/forgotPasswordPost/';
+}
+
+Mage::getSingleton('customer/session')->setLink($currentUrl);
+Mage::getSingleton('core/session')->setReLink($currentUrl);
+
+/**
+ * Check if social login is enabaled or not
+ */
+/**
+ * Check if fb is enabaled or not
+ */
+$fbStatus = Mage::getStoreConfig('sociallogin/facebook/enable_fb');
+/**
+ * Check if twitter is enabaled or not
+ */
+$twitterStatus = Mage::getStoreConfig('sociallogin/twitter/enable_twitter');
+/**
+ * Check if google is enabaled or not
+ */
+$googleStatus = Mage::getStoreConfig('sociallogin/google/enable_google');
+/**
+ * Check if yahoo is enabaled or not
+ */
+$yahooStatus = Mage::getStoreConfig('sociallogin/yahoo/enable_yahoo');
+/**
+ * Check if social login is enabaled or not
+ */
+$enableStatus = Mage::getStoreConfig('sociallogin/general/enable_sociallogin');
+/**
+ * Check if customer logged in or not 
+ */
+$loggedIn = $this->helper("customer")->isLoggedIn();
+$facebookappId = Mage::getStoreConfig('sociallogin/facebook/fbapp_id');
+/**
+ * Check if dob is enabaled or not
+ */
+$enableDob = Mage::getStoreConfig('customer/address/dob_show');
+/**
+ * Check if gender is enabaled or not
+ */
+$enableGender = Mage::getStoreConfig('customer/address/gender_show');
+/**
+ * Check if tax is enabaled or not
+ */
+$enableVat = Mage::getStoreConfig('customer/address/taxvat_show');
+/**
+ * Check if captcha is enabaled or not
+ */
+$enableCaptcha = Mage::getStoreConfig('customer/captcha/enable');
+
+$reqClass = 'class="required"';
+$emImport = '<em>*</em>';
+
+if (!$loggedIn && $enableStatus == 1){
+ ?>
+    <?php /* Social login pop-up div */ ?>
+    <div id="header_logo_Div" class="apptha_header_logo_Div" style="display: none;">
+        <a class="closeLink apptha_social_popup_sprite" href="javascript:apptha_socialloginclose();"></a>
+        <div id="social_popup_main" class="apptha_social_popup_main">
+            <input type="hidden" name="main_hidden" id="main_hidden" value=""/>
+            <div id="socialpopup_main_div" class="apptha_socialpopup_main_div">
+                <div class="left_login"><?php /* Login Block */ ?>
+                    <div id="login_block">
+                        <form id="form_login"
+                              action="<?php echo $this->getUrl("sociallogin/index/customerloginpost/") ?>"
+                              class="socialpopup_form apptha_form_login">
+                            <div id="customer_login"><h4><?php echo $this->__('Customer Login'); ?></h4></div>
+                            <div id="seller_login" style="display:none;"><h4><?php echo $this->__('Seller Login'); ?></h4></div>
+                            <input type="hidden" name="login_hidden" id="login_hidden" value=""/>
+                            <label for="email" class="required"><?php echo $this->__('Email Address'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box">
+                                <input type="text" name="email" value="" id="email" onfocus="document.getElementById('formSuccess').style.display = 'none';" class="input-text validate-email required-entry" title="<?php echo $this->__('Email Address'); ?>" /></div>
+                            <label for="password" class="required">
+                                <?php echo $this->__('Password'); ?><em>*</em></label>
+                            <div class="socialpopup-input-box">
+                                <input type="password" name="password" value="" id="password" onfocus="document.getElementById('formSuccess').style.display = 'none';" class="input-text required-entry validate-password" title="<?php echo $this->__('Password'); ?>" />
+                                <div id="formSuccess" class="apptha_formSuccess" style="display: none;">&nbsp;</div>
+                                <div class="social_login_btn">
+                                    <a href="javascript:void(0);" id="show_password" class="apptha_show_password" onclick="show_hide_socialforms('3');"><?php echo $this->__('Forgot Your Password'); ?>?</a>
+                                   
+                                    <?php if ($enableCaptcha) { ?>
+                                <div class="sl_captcha"><?php /* captcha Block */ ?>  <?php echo $this->getChildHtml('form.additional.infos'); ?>
+                                </div>
+                            <?php } ?>
+                                    
+                                    <span id="progress_image_login" class="apptha_progress_image_login" style="display: none">
+                                        <img
+                                            src="<?php echo $this->getSkinUrl('sociallogin/images/ajax-loader.gif'); ?>"
+                                            alt="loading please wait" /> </span>
+                                    <button type="button" onclick="socialLoginFrm.submit(this)"
+                                            class="button popup_click_btn" title="<?php echo $this->__('Login') ?>"
+                                            name="send" id="slogin" onSubmit="test();"><span><span> <?php echo $this->__('Login') ?></span></span></button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="new_account_create"><?php echo $this->__("Don't have an account?"); ?> 
+                            <a href="javascript:void(0);" onclick="show_hide_socialforms('2');"><?php echo $this->__('Create One!'); ?></a></div>
+                        <div class="sl_clear"></div>
+                        <div id="forget_password_div" style="display: none">
+                      <?php /** Form tag starts from here for forget forward password */?>
+                           
+                            <form id="forget_password_form"
+                                  action="<?php echo $forgotdirection; ?>"
+                                  class="socialpopup_form">
+                                <h4><?php echo $this->__('Forgot Your Password'); ?>?</h4>
+                                
+                                <label for="forget_email" class="required"><?php echo $this->__('Enter Your Email'); ?>
+                                    <em>*</em></label>
+                                <div class="socialpopup-input-box"><input type="text" value=""
+                                                                          name="forget_password" class="input-text validate-email required-entry"
+                                                                          id="forget_password" />
+                                    <input type="text" name="extraforgetelement" style="display:none;" />
+                                     <?php if ($enableCaptcha) { ?>
+                                <div class="sl_captcha"><?php /* captcha Block */ ?>  <?php echo $this->getChildHtml('form.additional.forgetpassword'); ?>
+                                </div>
+                            <?php } ?>
+                                    <div class="social_login_btn f-right">
+                                        <div id="progress_image_forgot" style="display: none;"><img
+                                                src="<?php echo $this->getSkinUrl('sociallogin/images/ajax-loader.gif'); ?>"
+                                                alt="loading please wait" /></div>
+                                        <div id="forget_password_error"></div>
+                                        <button type="button" id="sforget" onclick="socialforgetFrm.submit(this)"
+                                                class="button" ><span><span><?php echo $this->__('Submit'); ?></span></span></button>
+                                    </div>
+                                </div>
+                               
+                            </form>
+                        </div>
+                        <div class="sl_clear"></div>
+                    </div>
+
+                    <?php
+                     /** Registration Block 
+                    */ ?>
+
+                    <div id="register_block" class="apptha_register_block" style="display: none;">
+                        <div id="register_error" class="popup_error_msg apptha_register_error" style="display: none;"></div>
+                        <form id="social_frm_register"
+                              action="<?php echo $this->getUrl('sociallogin/index/createPost/'); ?>"
+                              class="socialpopup_form">
+                            <h4><?php echo $this->__('New User? Sign Up'); ?></h4>
+                            <input type="hidden" name="register_hidden" id="register_hidden" value=""/>
+                            <label for="first_name" class="required"><?php echo $this->__('First Name'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="text" name="firstname"
+                                                                      value="" id="first_name" class="input-text required-entry"
+                                                                      title="<?php echo $this->__('First Name'); ?>" /></div>
+                            <label for="last_name" class="required"><?php echo $this->__('Last Name'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="text" name="lastname"
+                                                                      value="" id="last_name" class="input-text required-entry"
+                                                                      title="<?php echo $this->__('Last Name'); ?>" /></div>
+                            <label for="email_register" class="required"><?php echo $this->__('Email Address'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="text" name="email"
+                                                                      value="" id="email_register"
+                                                                      class="input-text validate-email required-entry"
+                                                                      title="<?php echo $this->__('Email Address'); ?>" /></div>
+                            <label for="password_register" class="required"><?php echo $this->__('Password'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="password"
+                                                                      name="password" class="input-text required-entry validate-password"
+                                                                      id="password_register" title="<?php echo $this->__('Password'); ?>" />
+                            </div>
+                            <label for="confirm_password" class="required"><?php echo $this->__('Confirm Password'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="password"
+                                                                      name="confirmation" value="" id="confirm_password"
+                                                                      class="input-text required-entry validate-cpassword"
+                                                                      title="<?php echo $this->__('Confirm Password'); ?>" /></div>
+                            <?php if ($enableDob != '') { ?> <label for="social_dob"
+                                <?php
+                                if ($enableDob == 'req') {
+                                    echo $reqClass;
+                                }
+                                ?>><?php echo $this->__('DOB'); ?> <?php
+                                           if ($enableDob == 'req') {
+                                               echo $emImport;
+                                           }
+                                           ?></label>
+                                <div class="socialpopup-input-box"><input type="text" name="dob"
+                                                                          title="<?php echo $this->__('DOB'); ?>" id="social_dob"
+                                                                          placeholder="DD/MM/YYYY"
+                                                                          class="<?php
+                                                                          if ($enableDob == 'req') {
+                                                                              echo 'input-text required-entry validate-date-au';
+                                                                          }
+                                                                          ?>" /></div>
+
+                            <?php } if ($enableGender != '') { ?> <label
+                                    for="social_gender"
+                                    <?php
+                                    if ($enableGender == 'req') {
+                                        echo $reqClass;
+                                    }
+                                    ?>><?php echo $this->__('Gender'); ?> <em>*</em></label>
+                                <div class="socialpopup-input-box"><select name="gender"
+                                                                           id="social_gender">
+                                        <option value="1"><?php echo $this->__('Male'); ?></option>
+                                        <option value="2"><?php echo $this->__('Female'); ?></option>
+                                    </select></div>
+                            <?php } if ($enableVat != '') { ?> <label for="taxvat"
+                                <?php
+                                if ($enableVat == 'req') {
+                                    echo $reqClass;
+                                }
+                                ?>><?php echo $this->__('Tax/VAT number'); ?> <em>*</em></label>
+                                <div class="socialpopup-input-box"><input type="text" name="social_vat"
+                                                                          title="<?php echo $this->__('Tax/VAT number'); ?>"
+                                                                          <?php
+                                                                          if ($enableVat == 'req') {
+                                                                              echo 'class="input-text required-entry"';
+                                                                          }
+                                                                          ?>
+                                                                          id="social_vat" /></div>
+                                <div class="sl_clear"></div>
+                            <?php } if ($enableCaptcha) { ?>
+                                <div class="sl_captcha"><?php /* captcha Block */ ?>  <?php echo $this->getChildHtml('form.additional.info'); ?>
+                                </div>
+                            <?php } ?>
+                            <div class="socialpopup-submit-box">
+                                <div class="social_login_btn">
+                                    <div id="progress_image_register" class="apptha_progress_image_register" style="display: none"><img
+                                            src="<?php echo $this->getSkinUrl('sociallogin/images/ajax-loader.gif'); ?>"
+                                            alt="loading please wait" /></div>
+                                    <button type="button" onclick="socialRegisFrm.submit(this)"
+                                            title="<?php echo $this->__('Sign Up Now!'); ?>" class="button"
+                                            id="sregister"><span><span><?php echo $this->__('Sign Up Now!'); ?></span></span></button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="new_account_create"><?php echo $this->__("Already have an account?"); ?> 
+                            <a href="javascript:void(0);" onclick="show_hide_socialforms('1');"><?php echo $this->__('Login!'); ?></a></div>
+                    </div>
+                    <?php /* Registration Block Ends */ ?>
+
+                    <div id="twitter_block" style="display: none;">
+                        <form id="social_tiw_login" onsubmit="return false"
+                              action="<?php echo $this->getUrl('sociallogin/index/twitterpost/'); ?>"
+                              class="socialpopup_form apptha_social_tiw_login">
+                            <h4><?php echo $this->__('Please Enter your twitter email'); ?></h4>
+                            <input type="hidden" name="twitter_hidden" id="twitter_hidden" value=""/>
+                            <label for="tw_email" class="required"><?php echo $this->__('Enter Your Email'); ?>
+                                <em>*</em></label>
+                            <div class="socialpopup-input-box"><input type="text" id="tw_email"
+                                                                      name="email_value" value=""
+                                                                      class="input-text apptha_tw_email validate-email required-entry" />
+                                <div id="twitter_error" class="apptha_twitter_error popup_error_msg"></div>
+                                <div class="social_login_btn">
+                                    <div id="progress_image_twitter" class="apptha_progress_image_twitter" style="display: none"><img
+                                            src="<?php echo $this->getSkinUrl('sociallogin/images/ajax-loader.gif'); ?>"
+                                            alt="loading please wait" /></div>
+                                    <button type="button" onclick="socialTwitFrm.submit(this);" id="twitter_mail_button"
+                                            class="button twitter_popup_btn"><span><span><?php echo $this->__('Submit'); ?></span></span></button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="new_account_create"><?php echo $this->__("Already have an account?"); ?> 
+                            <a href="javascript:void(0);" onclick="show_hide_socialforms('1');"><?php echo $this->__('Login!'); ?></a></div>
+                    </div>
+                </div>
+                <span class="divider-or apptha_social_popup_sprite social_popup_sprite"><b><?php echo $this->__('OR'); ?></b></span>
+                <div id="all_social_iconbtn" class="apptha_all_social_iconbtn">
+                    <h4><?php echo $this->__('Sign in with'); ?></h4>
+
+                    <?php /* Social login Icons */ ?>
+                    <ul>
+                        <?php if ($fbStatus == 1) { ?>
+                            <?php /* Facebook button */ ?>
+                            <li id="login" class="sl_clearfix"><div id='facebook_login'
+                                                                  title="<?php echo $this->__('Facebook'); ?>" onclick='fblogin();'> <span
+                                        class="f_icon_left icon_left_grid apptha_social_login_sprite"></span>
+                                    <button type="button" class="fb_login inner_social_grid" name="send"><?php echo $this->__('Facebook'); ?></button>
+                                    <span class="f_icon_right apptha_social_login_sprite icon_right_grid apptha_progress_image_facebooklogin"></span><img
+                                        id="progress_image_facebooklogin" style="display: none"
+                                        src="<?php echo $this->getSkinUrl('sociallogin/images/ajax-loader.gif'); ?>"
+                                        alt="loading please wait" /></div></li>
+                            <?php } if ($twitterStatus == 1) { ?>
+                                <?php /* Twitter button */ ?>
+                            <li class="sl_clearfix"><div onclick="show_hide_socialforms('4');"
+                                                       id="popup_twitter_email" title="<?php echo $this->__('Twitter'); ?>">
+                                    <span class="t_icon_left apptha_social_login_sprite icon_left_grid"></span>
+                                    <button type="submit" class="twitter_login inner_social_grid"
+                                            name="send"><?php echo $this->__('Twitter'); ?></button>
+                                    <span class="t_icon_right apptha_social_login_sprite icon_right_grid"></span></div></li>
+                        <?php } if ($googleStatus == 1) { ?>
+                            <?php /* Google button */ ?>
+                            <li class="sl_clearfix">
+                                <div onclick="googlepost();"
+                                   title="<?php echo $this->__('Google+'); ?>"> 
+                                    <span class="gplus_icon_left apptha_social_login_sprite icon_left_grid"></span>
+                                    <button type="submit" class="google_login inner_social_grid"
+                                            name="send"><?php echo $this->__('Google+'); ?></button>
+                                    <span class="gplus_icon_right apptha_social_login_sprite icon_right_grid"></span></div></li>
+                        <?php } if ($yahooStatus == 1) { ?>
+                            <?php /* Yahoo button */ ?>
+                            <li class="sl_clearfix"><div
+                                    onclick="yahoopost();"
+                                    title="<?php echo $this->__('Yahoo'); ?>"> <span
+                                        class="yahoo_icon_left apptha_social_login_sprite icon_left_grid"></span>
+                                    <button type="submit" class="yahoo_login inner_social_grid" name="send">
+                                        <?php echo $this->__('Yahoo'); ?></button>
+                                    <span class="yahoo_icon_right apptha_social_login_sprite icon_right_grid"></span></div></li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
+            <div class="sl_clear"></div>
+        </div>
+        <div class="sl_clear"></div>
+    </div>
+    </div>
+
+<script type="text/javascript">
+                                        //<![CDATA[
+
+                                        var socialLoginFrm = new VarienForm('form_login', true);
+                                        socialLoginFrm.submit = function() {
+                                            if (this.validator.validate()) {
+                                                var form = this.form;
+                                                doSociallogin(form.id, form.action, 'formSuccess', 'progress_image_login');
+                                            }
+                                        }.bind(socialLoginFrm);
+
+                                        var socialRegisFrm = new VarienForm('social_frm_register', true);
+                                        socialRegisFrm.submit = function() {
+                                            if (this.validator.validate()) {
+                                                var form = this.form;
+                                                doSociallogin(form.id, form.action, 'register_error', 'progress_image_register');
+                                            }
+                                        }.bind(socialRegisFrm);
+
+                                        var socialforgetFrm = new VarienForm('forget_password_form', true);
+                                        socialforgetFrm.submit = function() {
+                                            if (this.validator.validate()) {
+                                                var form = this.form;
+                                                doSociallogin(form.id, form.action, 'forget_password_error', 'progress_image_forgot');
+                                            }else{
+                                                if (typeof window.innerHeight != 'undefined') {
+
+                                                    var newpostop = Math.round(document.body.offsetTop + ((window.innerHeight - $('header_logo_Div').getHeight())) / 2);
+                                                    var newposleft = Math.round(document.body.offsetLeft + ((window.innerWidth - $('header_logo_Div').getWidth())) / 2);
+                                                    $('header_logo_Div').setStyle({top: newpostop + 'px', left: newposleft + 'px'});
+
+                                                } else {
+                                                    var newpostop = Math.round(document.body.offsetTop + ((document.documentElement.offsetHeight - $('header_logo_Div').getHeight())) / 2);
+                                                    var newposleft = Math.round(document.body.offsetLeft + ((document.documentElement.offsetWidth - $('header_logo_Div').getWidth())) / 2);
+                                                    $('header_logo_Div').setStyle({top: newpostop + 'px', left: newposleft + 'px'});
+
+                                                }
+                                            }
+                                        }.bind(socialforgetFrm);
+
+                                        var socialTwitFrm = new VarienForm('social_tiw_login', true);
+                                        socialTwitFrm.submit = function() {
+                                            if (this.validator.validate()) {
+                                                var form = this.form;
+                                                doSociallogin(form.id, form.action, 'twitter_error', 'progress_image_twitter');
+                                            }
+                                        }.bind(socialTwitFrm);
+
+                                        //]]>
+    </script>
+
+    <div id="fb-root"></div>
+    <?php
+    /**
+     * Checking if the base URL is https or not
+     *
+     * @return string
+     */
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+    $secureUrl = strstr($currentUrl, "https");
+    if ($secureUrl == true) {
+
+        $siteBaseUrl = Mage::getUrl('', array('_secure' => true));
+    } else {
+
+        $siteBaseUrl = Mage::getBaseUrl();
+    }
+    ?>
+    <script type="text/javascript">
+    <?php /* facebook Block */ ?>
+
+    
+        function fblogin() {
+            FB.login(function(response) {
+                FB.getLoginStatus(function(response) {
+                    if (response.status === 'connected') {
+                        document.getElementById('progress_image_facebooklogin').style.display = "block";
+                        login();
+                    }
+                });
+            }, {scope: 'email'});
+            return false;
+        }
+
+        window.fbAsyncInit = function() {
+            FB.init({appId: '<?php echo $facebookappId; ?>', status: true, cookie: true, xfbml: true});
+            /* All the events registered */
+            FB.Event.subscribe('auth.login', function(response) {
+                // do something with response
+               // login();
+            });
+        };
+        (function() {
+
+            var e = document.createElement('script');
+            e.type = 'text/javascript';
+            e.src = document.location.protocol +
+                    '//connect.facebook.net/en_US/all.js';
+            e.async = true;
+            document.getElementById('fb-root').appendChild(e);
+        }());
+        function login() {
+            FB.api('/me',{fields:'email,first_name,last_name'}, function(response) {
+                var fb = $('main_hidden').value;
+                if (fb == 1) {
+                	 window.location.href = '<?php echo $siteBaseUrl; ?>sociallogin/index/fblogin?fb=1&email='+response.email+'&fname='+response.first_name+'&lname='+response.last_name;
+                } else {                    
+                	 window.location.href = '<?php echo $siteBaseUrl; ?>sociallogin/index/fblogin?fb=0&email='+response.email+'&fname='+response.first_name+'&lname='+response.last_name;
+                }
+            });
+        }
+
+        $('socialpopup_main_div').observe('keypress', socialkeypressHandler);
+        function socialkeypressHandler(event) {
+            var key = event.which || event.keyCode;
+            switch (key) {
+                default:
+                    break;
+                case Event.KEY_RETURN:
+                    $('slogin').click();
+                    break;
+            }
+        }
+
+        $('social_popup_main').observe('keypress', socialsignupkeypressHandler);
+        function socialsignupkeypressHandler(event) {
+            var key = event.which || event.keyCode;
+            switch (key) {
+                default:
+                    break;
+                case Event.KEY_RETURN:
+                    $('sregister').click();
+                    break;
+            }
+        }
+        function googlepost() {
+            var fb = $('main_hidden').value;
+            if (fb == 1) {
+                javascript:location.href = '<?php echo Mage::getUrl('sociallogin/index/googlepost?fb=1') ?>';
+            } else {
+                javascript:location.href = '<?php echo Mage::getUrl('sociallogin/index/googlepost/') ?>';
+            }
+        }
+        function yahoopost() {
+            var fb = $('main_hidden').value;
+            if (fb == 1) {
+                javascript:location.href = '<?php echo Mage::getUrl('sociallogin/index/yahoopost?fb=1') ?>';
+            } else {
+                javascript:location.href = '<?php echo Mage::getUrl('sociallogin/index/yahoopost/') ?>';
+            }
+        }
+		var $jq=jQuery.noConflict();
+		 $jq("#tw_email").keyup(function(event){
+			 event.preventDefault();
+            if(event.keyCode == 13){
+                $jq("#twitter_mail_button").click();
+            }
+        });
+    </script>
+<?php } ?>
+

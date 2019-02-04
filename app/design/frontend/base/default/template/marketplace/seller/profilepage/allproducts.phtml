@@ -1,0 +1,161 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+ 
+<?php 
+/**
+ * get seller id
+ */
+$id = $this->getRequest()->getParam('id');
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+
+/**
+ * display product collection
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+?>
+<div class="clear"></div>
+   <div class="all-product-wrapper">
+   <div class="page-title category-title">
+<h1><?php echo $this->__('All');?>
+<?php
+ echo ' '.$this->__('Products');?>
+</h1>
+</div>
+    <div id="loader-image" style="display: none;">
+   <img src="<?php echo Mage::getBaseUrl('skin') . 'frontend/base/default/images/ajax-loader.gif' ?>" />
+    </div>
+    <ul id = "mp-product-list" class="products-grid product_snipt f-left">       
+        <?php
+        $displayProduct = $this->getCollection();
+        /**
+         * Check the display product count is greater than zero
+         */
+        if (count($displayProduct) > 0) {
+            foreach ($displayProduct as $_product) {
+            /**
+            * get compare url of the product
+            */
+            $_compareUrl = Mage::helper('catalog/product_compare')->getAddUrl($_product);
+            /**
+             * count the words of the product name
+             */
+                $wordsCountCategory = strlen($_product->getName());                 
+                ?>
+                <li class="item">
+                    <a href="<?php echo $_product->getProductUrl(); ?>">
+                        <img class="product-image" src="<?php echo $this->helper('catalog/image')->init($_product, 'thumbnail')->resize(250); ?>" alt="<?php
+                         echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" />
+                    </a>
+                    <div class="product-info">
+                    <?php 
+                    /**
+                     * Display product name
+                     */
+                    ?>              
+                    <h2 class="product-name">
+                        <a href="<?php echo $_product->getProductUrl(); ?>"> 
+                            <?php if ($wordsCountCategory > 15) { 
+                                echo substr($this->htmlEscape($_product->getName()), 0, 15) . '...';
+                                } else {
+                                echo $_product->getName();
+                             } ?>
+                        </a>
+                       
+                    </h2>                
+                   <div class="price-box"> <span class="regular-price">             
+                        <span class="price">
+                            <?php
+                            /**
+                             * Display Product Price
+                             * Get the product price
+                             * Get Prodcut special price
+                             * Get deal expire date
+                             */
+                            $price = $_product->getPrice();
+                            $splPrice = $_product->getSpecialPrice();
+                            $dealExpireDate = $_product->getSpecialToDate();
+                            /**
+                             * Check the product special price is not equal to empty
+                             * and deal expire date is not equal to empty
+                             * and deal expire date is greater than or equal to current date
+                             * if so get the original price
+                             * Get the discount price
+                             * Calculate the saving amount
+                             * Calcualte the savings percentage
+                             */
+                            if (!empty($splPrice) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) { 
+                                $originalPrice = $_product->getPrice(); 
+                                $discountPrice = $_product->getSpecialPrice(); 
+                                $savings = $originalPrice - $discountPrice; 
+                                $savingsPercentage = round(($savings / $originalPrice) * 100, 0);?>
+                              <p class="original_price"><?php  echo '<del>' . Mage::helper('core')->currency($price, true, false) . '</del>'; ?></p>
+                               <p class="offer_price"><?php echo Mage::helper('core')->currency($splPrice, true, false); ?></p>
+                               <p class="discount_price"> <?php echo $savingsPercentage.'%';?></p>
+                            <?php } else { ?>
+                              <p> <?php echo Mage::helper('core')->currency($price, true, false); ?></p>
+                          <?php  }
+                            ?>
+                        </span>
+                    </span></div>
+                    <?php 
+                            /**
+                             * Display Add to cart, 
+                             * add to wishlist 
+                             * and Add to compare
+                             */
+                            ?>  <div class="actions">   
+                                   <?php if($_product->isSaleable()): ?>
+                        <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php
+                         echo Mage::helper('checkout/cart')->getAddUrl($_product) ?>')">
+                         <span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+                    <?php else: ?>
+                        <p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+                    <?php endif; ?>                        
+                    <ul class="add-to-links">
+                              <li><a href="<?php echo Mage::helper('wishlist')->getAddUrl($_product) ?>" title="<?php
+                               echo $this->__('Add to Wishlist') ?>" class="link-wishlist <?php
+                                 ?>"><?php
+                                 echo $this->__('Add to Wishlist') ?></a></li>
+                            <li><span class="separator">|</span> <a href="<?php echo $_compareUrl ?>" class="link-compare" title="<?php
+                             echo $this->__('Add to Compare') ?>"><?php
+                              echo $this->__('Add to Compare') ?></a></li>
+                        </ul>                
+                    </div> 
+                    </div>
+                    
+                    
+                </li>
+                        <?php   }
+                    } else {
+                        echo '<li class="no_products_avail"><p>'.$this->__('There is no product available for this seller.').'</p></li>';
+                    }    ?>
+    </ul>
+      </div>

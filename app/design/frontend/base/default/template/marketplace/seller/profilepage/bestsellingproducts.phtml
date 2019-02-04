@@ -1,0 +1,132 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?> 
+<?php 
+/**
+ * get seller id
+ */
+$id = $this->getRequest()->getParam('id');
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+
+/**
+ * display product collection
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+?>
+  <div id="bestsellingproducts" class="bestsellingproducts">
+  <?php $bestSellingCollection = $this->bestSellerCollection ($id);
+$categoryCount = count ( $bestSellingCollection );
+if ($categoryCount >= 1) { ?>
+
+<div class="page-title category-title">
+<h1><?php echo $this->__('Best Selling');?>
+<?php
+ echo ' '.$this->__('Products');?>
+</h1>
+</div>
+<ul class="products-grid <?php if($categoryCount>3){
+    echo 'slider-carousel'; 
+} 
+else {
+    echo 'no-slider'; 
+} ?>"> 
+<?php 
+foreach ( $bestSellingCollection as $_bestSellingCollection ) {
+?>
+<li class="item slider">
+<a href="<?php echo $_bestSellingCollection->getProductUrl(); ?>" title="<?php echo $this->escapeHtml($_bestSellingCollection->getName()) ?>" class="product-image">
+<img src="<?php echo $this->helper('catalog/image')->init($_bestSellingCollection, 'small_image')->resize(135); ?>" width="135" height="135" alt="<?php echo $this->stripTags($this->getImageLabel($_bestSellingCollection, 'small_image'), null, true) ?>" /></a>
+<div class="product-info">
+<h2 class="product-name">
+<a href="<?php echo $_bestSellingCollection->getProductUrl(); ?>" title="<?php echo $this->escapeHtml($_bestSellingCollection->getName()) ?>">
+<?php $prName = $_bestSellingCollection->getName ();
+$lenprName = strlen ( $_bestSellingCollection->getName () );
+$subprName = substr ( $prName, 0, 26 );
+if ($lenprName >= 26) {
+$prNameFix = $subprName . "...";
+} else {
+$prNameFix = $prName;
+}
+echo $prNameFix;?>
+</a></h2>
+<div class="price-box">
+<span class="regular-price"> 
+<span class="price">
+<?php
+/**
+ * Display Product Price
+ */
+$newproductPrice = $_bestSellingCollection->getPrice ();
+$newSpecialPrice = $_bestSellingCollection->getSpecialPrice ();
+$newDealExpireDate = $_bestSellingCollection->getspecial_to_date ();
+if (! empty ( $newSpecialPrice ) && ($newDealExpireDate != '') && ($newDealExpireDate >= $currentDate)) {
+echo Mage::helper ( 'core' )->currency ( $newSpecialPrice, true, false );
+} else {
+echo Mage::helper ( 'core' )->currency ( $newproductPrice, true, false );
+}
+?>
+                                   </span>
+                               </span>
+</div>
+<div class="actions">
+<?php if($_bestSellingCollection->isSaleable()): ?>
+<button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($_bestSellingCollection); ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+<?php else: ?>
+<p class="availability out-of-stock"><span><?php echo $this->__('Out of stock') ?></span></p>
+<?php endif; ?>
+<ul class="add-to-links">
+<?php if ($this->helper('wishlist')->isAllow()) : ?>
+<li><a href="<?php echo $this->helper('wishlist')->getAddUrl($_bestSellingCollection) ?>" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a></li>
+<?php endif; ?>
+<?php if($_compareUrl=Mage::helper('catalog/product_compare')->getAddUrl($_bestSellingCollection)): ?>
+<li><span class="separator">|</span> <a href="<?php echo $_compareUrl ?>" class="link-compare"><?php echo $this->__('Add to Compare') ?></a></li>
+<?php endif; ?>
+</ul>
+</div>
+</div>
+</li>
+<?php
+} ?>
+</ul> 
+
+<?php } ?>
+</div>
+<script type="text/javascript">
+  $mp = jQuery.noConflict();
+  $mp(document).ready(function(){
+  $mp('.slider-carousel').bxSlider({ 
+	  infiniteLoop: false,
+	  hideControlOnEnd: true,
+	      minSlides: 1,
+	      moveSlides: 1,
+	      slideMargin: 10
+  });
+});
+</script>

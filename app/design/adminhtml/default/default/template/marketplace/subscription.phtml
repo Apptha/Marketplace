@@ -1,0 +1,184 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ */ 
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+
+<script type="text/javascript" src="<?php echo $this->getJsUrl('prototype/validation.js') ?>"></script>
+</head>
+<body>
+<?php
+$currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode(); 
+$currencySymbol = Mage::app()->getLocale()->currency( $currencyCode )->getSymbol();  
+?>
+<div class="list-plans ">
+<?php 
+$subscriptionList = $this->getSubscriptionPlanList();
+$count = count($subscriptionList);
+?>
+<div class="content-header">
+
+<h3><?php echo $this->__('Subscription Plans')?></h3>
+</div>
+<a style="margin:10px 10px;" href="<?php echo Mage::helper('adminhtml')->getUrl('marketplaceadmin/adminhtml_subscription/index');?>"><span><?php echo $this->__('Add Subscription Plan')?></span></a>
+<table  style="border: 0px solid #ccc;" >
+<tr class="admin-subscription">
+<th><?php echo $this->__('Plan Name')?></th>
+<th><?php echo $this->__('Subscription Type(Monthly/Yearly)');?></th>
+<th><?php echo $this->__('Validity Period')?></th>
+<th><?php echo $this->__('Subscription Fee').' '.'('.$currencySymbol.')'?></th>
+<th><?php echo $this->__('Number of Products Allowed')?></th>
+<th><?php echo $this->__('Products Type')?></th>
+<th><?php echo $this->__('Edit')?></th>
+<th><?php echo $this->__('Delete')?></th>
+</tr>
+<?php if($count>=1){ ?>
+<?php 
+foreach($subscriptionList as $list){
+	$product_type = $list->getProductType();
+	$product_type_name = 'Limited';
+	if($product_type == 2){
+		$product_type_name = 'Unimited';
+	} 
+?>
+<tr class="data_subscription">
+<td><?php echo $list->getPlanName();?></td>
+<td><?php if ($list->getSubscriptionPeriod()==1){ echo 'Monthly'; } else { echo 'Yearly'; }?></td>
+<td><?php echo $list->getValidityPeriod();?></td>
+<td><?php echo $list->getYearlyFee();?></td>
+<td><?php if($product_type_name == 'Unimited'){ echo $product_type_name; }else{ echo $list->getProductCount(); }?></td>
+<td><?php echo $product_type_name;?></td>
+<td><a href="<?php echo Mage::helper('adminhtml')->getUrl('marketplaceadmin/adminhtml_subscription/index', array('id' =>$list->getPlanId()));?>"><img src="<?php echo Mage::getBaseUrl('skin') . "frontend/apptha/superstore/images/edit.png"; ?>" alt="Edit" /></a></td>
+<td><a onclick="return confirm('<?php echo $this->__('Are you sure want to delete?'); ?>');" href="<?php echo Mage::helper('adminhtml')->getUrl('marketplaceadmin/adminhtml_subscription/delete', array('id' =>$list->getPlanId()));?>"><img src="<?php echo Mage::getBaseUrl('skin') . "frontend/apptha/superstore/images/delete.png"; ?>" alt="Delete" /></a></td>
+</tr>
+<?php 
+}
+?>
+<?php } else { ?>
+	<tr class="data_subscription">
+	<td colspan="10"><?php echo $this->__('No Subscription Plan Added');?></td>
+	</tr>
+<?php }?>
+</table>
+
+</div>
+
+<div class="subcription-form">
+<?php $planId = $this->getRequest()->getParam('id');
+$collection = Mage::getModel('marketplace/subscriptionplans')->load($planId);?>
+<div class="content-header">
+<h3><?php echo $this->__(' Subscription Plan')?></h3>
+</div>
+<form method="post" id="subscription" name="subscription" action="<?php echo Mage::getUrl('marketplaceadmin/adminhtml_subscription/savesubscription');?>">
+<input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+
+<div class="text-field-mp">
+<input name="plan_id" type="hidden" value="<?php if($collection->getPlanId()!=''){ echo $collection->getPlanId(); } ?>" id="plan_id" />
+	<label for="plan_name"><?php echo $this->__('Plan Name ')?><span class="required">*</span></label>
+	<input type="text" class="required-entry input-text" maxlength="35" name="plan_name" id="plan_name" value="<?php if($collection->getPlanName()!=''){ echo $collection->getPlanName(); }?>"/>
+</div>
+<div class="text-field-mp">
+	<label for="subscription_period"><?php echo $this->__('Subscription Period (Monthly/Yearly) ');?><span class="required">*</span></label>
+	<select name="subscription_period" id="subscription_period" class="select input-text required-entry input-text_pro" onchange="subscription_valid_period(this.value)">
+		<option value="" ><?php echo $this->__('Select Subscription Period'); ?></option>
+		<option value="1" <?php if($collection->getSubscriptionPeriod()==1){ echo 'selected'; }?>><?php echo 'Monthly';?></option>
+		<option value="2" <?php if($collection->getSubscriptionPeriod()==2){ echo 'selected'; }?>><?php echo 'Yearly';?></option>
+	</select>
+	
+</div>
+<div class="text-field-mp">
+	<label for="Validity_period"><?php echo $this->__('Validity Period ');?><span id="validity_units"><?php if($collection->getSubscriptionPeriod() == 1 ){ echo '(Monthly)';}elseif($collection->getSubscriptionPeriod() == 2 ){ echo '(Yearly)'; }?></span><span class="required">*</span></label>
+	<input type="number" id="validity_period" name="validity_period" min="1" class="input-text required-entry validate-number" value = "<?php if($collection->getValidityPeriod()!=''){ echo $collection->getValidityPeriod(); }?>"/>
+</div>
+<div class="text-field-mp">
+	<label for="product_type"><?php echo $this->__('Product Type ');?><span class="required">*</span></label>
+	<select name="product_type" id="product_type" class="select input-text required-entry input-text_pro" onchange="subscription_product_type(this.value)">		
+		<option value="" ><?php echo $this->__('Select Product Type'); ?></option>
+		<option value="1" <?php if($collection->getProductType()==1){ echo 'selected'; }?>><?php echo 'Limited';?></option>
+		<option value="2" <?php if($collection->getProductType()==2){ echo 'selected'; }?>><?php echo 'Unlimited';?></option>
+	</select>
+	
+</div>
+<div class="text-field-mp">
+	<label for="yearly_fee"><?php echo $this->__('Subscription Fee ').' '.'(' .$currencySymbol. ') ';?><span class="required">*</span></label>
+	<input type="text" name="yearly_fee" class="required-entry input-text validate-number " id="yearly_fee" value="<?php if($collection->getYearlyFee()!=''){ echo $collection->getYearlyFee(); }?>"/>
+</div>
+<?php if($collection->getProductType() != 2 ){ ?>
+<div class="text-field-mp" id="no_of_products_allowed">
+	<label for="product_count"><?php echo $this->__('Number of Products Allowed ');?><span class="required">*</span></label>
+	<input type="text" name="product_count" class="required-entry input-text validate-digits validate-greater-than-zero"  id="product_count" value="<?php if($collection->getProductCount()!=''){ echo $collection->getProductCount(); }?>"/>
+</div>
+<?php } ?>
+<div class="subscribe_button_admin">
+<button style="float: right;margin-right: 9%;" type="submit" title="Save" type="button" name="subscription_submit" class="scalable save"><span><span><span><?php echo $this->__('Save'); ?></span></span></span></button>
+</div>
+</form>
+
+<script type="text/javascript">
+	  var loginForm = new varienForm('subscription');
+	</script>
+<script>
+var planid=$$('[name="plan_id"]')[0].value;
+if(planid.length>0){
+	$('yearly_fee').disable();
+	var element =  document.getElementById('product_count');
+	if (typeof(element) != 'undefined' && element != null)
+	{
+		$('product_count').disable();
+	}
+	$('validity_period').disable();
+	$('subscription_period').disable();
+	$('product_type').disable();
+	
+}
+
+function subscription_valid_period(value){
+	if(value == 1){
+		document.getElementById("validity_units").innerHTML = "(Monthly) ";
+	}else if(value == 2){
+		document.getElementById("validity_units").innerHTML = "(Yearly) ";
+	}else{
+		document.getElementById("validity_units").innerHTML = "";
+	}
+}
+
+function subscription_product_type(productType){
+	if(productType == 2){
+		document.getElementById("no_of_products_allowed").style.display="none";
+		document.getElementById("product_count").value="";
+	}else{
+		document.getElementById("no_of_products_allowed").style.display="block";
+	}
+}
+</script>
+</div>
+</body>
+</html>

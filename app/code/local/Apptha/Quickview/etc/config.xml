@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/**
+* Apptha
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the EULA
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://www.apptha.com/LICENSE.txt
+*
+* ==============================================================
+*                 MAGENTO EDITION USAGE NOTICE
+* ==============================================================
+* This package designed for Magento COMMUNITY edition
+* Apptha does not guarantee correct work of this extension
+* on any other Magento edition except Magento COMMUNITY edition.
+* Apptha does not provide extension support in case of
+* incorrect edition usage.
+* ==============================================================
+*
+* @category    Apptha
+* @package     Apptha_Marketplace
+* @version     1.9.0
+* @author      Apptha Team <developers@contus.in>
+* @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+* @license     http://www.apptha.com/LICENSE.txt
+* 
+*/
+ -->
+<config>
+   <modules>
+      <Apptha_Quickview>
+         <version>0.1.0</version>
+      </Apptha_Quickview>
+   </modules>
+   <frontend>
+      <routers>
+         <quickview>
+            <use>standard</use>
+            <args>
+               <module>Apptha_Quickview</module>
+               <frontName>quickview</frontName>
+            </args>
+         </quickview>
+      </routers>
+      <layout>
+         <updates>
+            <quickview>
+               <file>quickview.xml</file>
+            </quickview>
+         </updates>
+      </layout>
+      <translate>
+         <modules>
+            <Apptha_Quickview>
+               <files>
+                  <default>Apptha_Quickview.csv</default>
+               </files>
+            </Apptha_Quickview>
+         </modules>
+      </translate>
+   </frontend>
+   <global>
+      <helpers>
+         <quickview>
+            <class>Apptha_Quickview_Helper</class>
+         </quickview>
+      </helpers>
+      <blocks>
+         <quickview>
+            <class>Apptha_Quickview_Block</class>
+         </quickview>
+      </blocks>
+   </global>
+</config>

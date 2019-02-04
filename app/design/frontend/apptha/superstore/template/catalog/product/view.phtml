@@ -1,0 +1,577 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * Product view template
+ *
+ * @see Mage_Catalog_Block_Product_View
+ * @see Mage_Review_Block_Product_View
+ */
+?>
+<?php 
+$_helperOutput = $this->helper('catalog/output'); ?>
+<?php $_product = $this->getProduct();
+$currentAction=Mage::helper('marketplace/outofstock')->getCurrentHandler();
+if($currentAction=="catalog_product_view"){
+$stock = $_product->getStockItem();
+$status=$_product->getStatus();
+if (!$stock->getIsInStock()|| $status==2) {
+	$productCollection=Mage::helper('marketplace/outofstock')->CheckOutofstock($_product->getId());
+	if(count($productCollection)>0){
+		$result=$productCollection->getFirstItem();
+		$productId=$result->getEntityId();
+		
+		$_product=Mage::helper('marketplace/outofstock')->getProductObject($productId);
+		Mage::unregister('product');
+		Mage::register('product', $_product);
+	}
+}
+	
+}
+?>
+<script type="text/javascript">
+    var optionsPrice = new Product.OptionsPrice(<?php echo $this->getJsonConfig() ?>);
+</script>
+<?php 
+/**
+ * form for Product information
+ */
+?>
+<?php
+$sellerId=$customerId='';
+$sellerId= $_product->getSellerId();
+if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+	$customerData = Mage::getSingleton('customer/session')->getCustomer();
+	$customerId= $customerData->getId();
+}
+?>
+<div id="messages_product_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+<div class="product-view">
+    <div class="product-essential">
+        <form action="<?php echo $this->getSubmitUrl($_product) ?>" method="post" 
+        id="product_addtocart_form"<?php if($_product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
+            <?php echo $this->getBlockHtml('formkey') ?>
+            <div class="no-display">
+                <input type="hidden" name="product" value="<?php echo $_product->getId() ?>" />
+                <input type="hidden" name="related_product" id="related-products-field" value="" />
+            </div>
+        <div class="product-img-box">
+                <div class="product-name">
+                    <h1><?php echo $_helperOutput->productAttribute($_product, $_product->getName(), 'name') ?></h1>
+                </div>
+                <?php echo $this->getChildHtml('media') ?>
+       </div>
+       <div class="product-shop">
+                <div class="product-name">
+                    <span class="h1"><?php echo $_helperOutput->productAttribute($_product, $_product->getName(), 'name') ?></span>
+                </div>
+              <?php echo $this->getReviewsSummaryHtml($_product, 'default', true)?>
+              <div class="clear"></div>
+              <div class="product-info-wr <?php if($_product->getTypeId() == 'grouped' ||  $_product->getTypeId() == 'bundle'){  echo 'grouped-bundle';} ?>"> 
+                <div class="price-info">                
+                  <?php echo $this->getChildHtml('marketplace_customer'); ?>
+                 <?php echo $this->getChildHtml('product_type_availability'); ?>
+                 <?php 
+                 /**
+                  * Check the product has short description
+                  * if has display the product short description
+                  */
+                 if ($_product->getShortDescription()):?>
+                    <div class="short-description">
+                       <?php echo $_helperOutput->productAttribute($_product, nl2br($_product->getShortDescription()), 'short_description') ?>
+                    </div>
+                <?php endif;?>
+                    <?php 
+                    /**
+                     * Display product price
+                     */
+                    echo $this->getPriceHtml($_product); ?>
+                    <?php 
+                    /**
+                     * Display Product bundle prices
+                     */
+                    echo $this->getChildHtml('bundle_prices') ?>
+                    <?php 
+                    /**
+                     * Display the Product tier price
+                     */
+                    echo $this->getTierPriceHtml() ?>
+
+<?php 
+/**
+ * Starts super deals timer
+ */
+?>                    
+<?php
+/**
+ *  Count for timer calculation declared here 
+ */
+if (!Mage::registry('timer_count')) :
+    $counts = 1;
+    Mage::register('timer_count', $counts);
+else:
+    $counts = Mage::registry('timer_count');
+    $counts = $counts + 1;
+    Mage::unregister('timer_count');
+    Mage::register('timer_count', $counts);
+endif;
+
+$_helperOutput = $this->helper('catalog/output');
+/**
+ *  Admin Controllers for timer are declared here 
+*/
+$dealsEnable   =  Mage::helper('core/data')->isModuleEnabled('Apptha_Superdeals');
+/**
+ * Get the admin deal enable status in a variable
+ */
+$dealsEnabled  =  intval($dealsEnable);
+$advanceOption =  Mage::getStoreConfig('advanced/modules_disable_output/Apptha_Superdeals');
+/**
+ * Get the admin advance option in a variable
+ */
+$advanceOption =  intval($advanceOption);
+/**
+ * Define deals enable status in constant
+ */
+$STORE_CONFIG_DEALS_ENABLED = Mage::getStoreConfig('superdeals/superdeals_group/deals_enable');
+/**
+ * Define custom color enable status in constant
+ */
+$STORE_CONFIG_CUSTOM_COLOR_ENABLED = Mage::getStoreConfig('superdeals/timer/custom_color_enable');
+/**
+ * Define timer enable status in constant
+ */
+$STORE_CONFIG_TIMER_ENABLED = Mage::getStoreConfig('superdeals/timer/show_timer');
+/**
+ * Define timer active status in constant
+ */
+$timer_active = Mage::getStoreConfig('superdeals/timer/show_timer');
+/**
+ * Define text color in constant
+ */
+$timer_color = Mage::getStoreConfig('superdeals/timer/text');
+/**
+ * Define timer background color in constant
+ */
+$timer_background = Mage::getStoreConfig('superdeals/timer/background_color');
+/**
+ * Define timer caption color in constant
+ */
+$caption_color = Mage::getStoreConfig('superdeals/timer/caption_color');
+/**
+ * Define timer heading color in constant
+ */
+$heading_color = Mage::getStoreConfig('superdeals/timer/heading_text_color');
+/**
+ * Define timer label color in constant
+ */
+$save_dis_lable_color = Mage::getStoreConfig('superdeals/timer/save_dis_lable_color');
+/**
+ * Define price color in constant
+ */
+$save_dis_price_color = Mage::getStoreConfig('superdeals/timer/save_dis_price_color');
+/**
+ * Define timer font size in constant
+ */
+$save_dis_font_size = Mage::getStoreConfig('superdeals/timer/save_dis_font_size');
+/**
+ * Define timer category font size in constant
+ */
+$save_cat_time_font_size = Mage::getStoreConfig('superdeals/timer/save_cat_time_font_size');
+/**
+ * Define save view font size in constant
+ */
+$save_view_time_font_size = Mage::getStoreConfig('superdeals/timer/save_view_time_font_size');
+
+$timer_head = Mage::getStoreConfig('superdeals/timer/timer_head');
+/**
+ * Get special price end date
+ */
+$toDate = $_product->getSpecialTODate();
+$now = Mage::getModel('core/date')->timestamp(time());
+$now = date('Y-m-d' . ' 00:00:00', $now);
+?>
+<?php 
+/**
+ * check customer color enabled and
+ * deals enabled and
+ * advance option is zero
+ */
+if(($STORE_CONFIG_CUSTOM_COLOR_ENABLED == 1)&& ( $dealsEnabled == 1)&& ( $advanceOption == 0)){?>
+<style type="text/css">  
+ /* design for Category page */          
+    .deal-price-box .price-label {color: #<?php echo $save_dis_lable_color ?>; }
+    .deal-price-box .price {color: #<?php echo $save_dis_price_color ?>; }                      
+    .dealtimer_listpage .dealtimer_listpage_timer span, .dealtimer_listpage .dealtimer_listpage_timer{ color: #<?php echo $timer_color ?>; 
+    font-size:<?php echo $save_cat_time_font_size ?>px; }
+    
+    /* design for Detail page */
+    .dealtimer_detailpage .dealtimer_detailpage_offerlabel{ color: #<?php echo $heading_color ?>; font-weight: bold; 
+    font-size: <?php echo $save_view_time_font_size ?>px; } 
+    .detail-deal-page-box .price-label {color: #<?php echo $save_dis_lable_color ?>; 
+    font-size: <?php echo $save_dis_font_size ?>px; }
+    .detail-deal-page-box .price{color: #<?php echo $save_dis_price_color ?>; 
+    font-size: <?php echo $save_dis_font_size ?>px; }
+   .app_deal_time_container app_offer_head{color: #<?php echo $heading_color ?>;} 
+   .dealtimer_detailpage .dealtimer_detailpage_timer span, .dealtimer_detailpage .dealtimer_detailpage_timer{color: #<?php echo $timer_color ?>; 
+   font-size: <?php echo $save_view_time_font_size ?>px;}
+</style>
+<?php } ?>
+
+
+                <?php
+                /**
+                 *  Display the saving amount here
+                 *  Check product price is greater than product special price
+                 *  and deals has been enables
+                 *  and product special price is not equal to empty
+                 */            
+                
+                if ($_product->getPrice() > $_product->getSpecialPrice() && $dealsEnabled == 1 && $_product->getSpecialPrice() != ''){
+                $savingsDollarValue = ($_product->getPrice() - $_product->getFinalPrice());
+                /**
+                 * Get product original price
+                 */
+                $originalPrice = $_product->getPrice();
+                /**
+                 * Get product discount price
+                 */
+                $discountPrice = $_product->getFinalPrice(); 
+                /**
+                 * Calculate the savings price
+                 */
+                $savings = $originalPrice - $discountPrice;
+                /**
+                 * Calculate the savings pecentage
+                 */
+                $savingsPercentage = round(($savings / $originalPrice) * 100, 0);
+                /**
+                 * Get the product type
+                 */
+                $productType = $_product->getTypeId();
+                $coreHelper = $this->helper('core');
+                ?>               
+                
+                <?php 
+                /**
+                 * check the price of the product is greater than product special price
+                 * and product type is not equal to bundle
+                 */
+                if (($_product->getPrice()) > ($_product->getSpecialPrice()) && $productType != 'bundle'){ ?>            
+                <div class="clear saving_options"> 
+                    <?php 
+                    /**
+                     * Check saving price dollar value is greater than zero
+                     * if so display savings price value
+                     */
+                    if($savingsDollarValue > 0){ ?>                                      
+                <span> <?php echo $this->__('Save').':';   ?>
+                <span><b><?php echo $coreHelper->currency($savingsDollarValue, true, false); ?></b>
+                </span> </span>                 
+                <?php } ?>                            
+                 <?php 
+                 /**
+                  * Check savings percentage is greater than zero
+                  * if so display the savings percentage
+                  */
+                 if($savingsPercentage > 0){ ?>         
+                <span><?php echo $this->__('Discount').':'; ?> </span>
+                <span><b><?php echo $savingsPercentage, '%'; ?></b>
+                </span>  
+                <?php } ?>                                      
+                </div>
+                <?php }
+                      } ?>
+       <!--timer starts-->
+      <?php 
+      /**
+       * Check the product price is greater than prodcut special price
+       * and deals has been enabled in configuration
+       * and timer has been enabled in configuration
+       * and deals enabled equal to 1
+       * and advance option is equal to zero
+       */
+      if ((($_product->getPrice() > $_product->getSpecialPrice())) && ($STORE_CONFIG_DEALS_ENABLED == 1) && ($STORE_CONFIG_TIMER_ENABLED == 1) && $_product->isAvailable() && $this->displayProductStockStatus() ):
+      if( ( $dealsEnabled == 1)&& ( $advanceOption == 0)){
+      ?>
+            <?php 
+            /**
+             * Check the to date is not empty
+             * and to date is greater than or equal to current date time
+             */
+            if (!empty($toDate) && $toDate >= $now){ ?>
+                <?php 
+                /**
+                 * check the product special price is not equal to zero
+                 * or the product special price is not equal to empty
+                 */
+                if ($_product->getSpecialPrice() != 0 || $_product->getSpecialPrice() != "") : ?>
+                    <?php if (Mage::registry('product')) : ?>
+                        <div class="dealtimer_detailpage">
+                            <div id="heading<?php echo $counts; ?>" class="dealtimer_detailpage_offerlabel">
+                                <?php echo $timer_head ?>
+                            </div>
+                            <div id="countbox<?php echo $counts; ?>" class="dealtimer_detailpage_timer"></div>
+                        </div>      
+			            <script type="text/javascript">
+			                var dthen<?php 
+			                echo $counts; ?> = new Date("<?php
+			                 echo Date("m/d/y", strtotime($toDate)) . ' 11:59:00 PM'; ?>");
+			                start = "<?php
+			                 echo Date("m/d/y h:i:s A", strtotime(Mage::app()->getLocale()->date(null, null, "en_US", true))); ?>";
+			                start_date = Date.parse(start);
+			                var dnow<?php
+			                 echo $counts; ?> = new Date(start_date);
+			                if(CountStepper>0)
+			                    ddiff= new Date((dnow<?php
+			                     echo $counts; ?>)-(dthen<?php
+			                      echo $counts; ?>));
+			                else
+			                    ddiff = new Date((dthen<?php
+			                     echo $counts; ?>)-(dnow<?php
+			                      echo $counts; ?>));
+			                gsecs<?php echo $counts; ?> = Math.floor(ddiff.valueOf()/1000);
+			                var iid<?php echo $counts; ?> = "countbox<?php
+			                 echo $counts; ?>";
+			                CountBack(gsecs<?php echo $counts; ?>,iid<?php
+			                 echo $counts; ?>, <?php
+			                  echo $counts; ?>);
+			                j++;
+			            </script>
+                    <?php endif; ?>
+                    <?php endif; ?><!-- first if ends here -->
+                    
+                    <?php }else{
+                    /**
+                    * Checking the product special price is not equal to zero
+                    * and product to date is empty
+                    * if so display as on sale
+                    */
+                    if ($_product->getSpecialPrice() != 0 && empty($toDate)){ ?>
+                    <?php if (Mage::registry('product')) { ?>
+                        <div class="dealtimer_detailpage">                                             
+                            <div class="dealtimer_detailpage_timer">
+                                <?php echo $this->__('On Sale!'); ?>
+                            </div>
+                        </div>
+                     <?php }
+                           } ?>
+                     <?php } ?>
+                     <?php $counts = $counts + 1; ?>
+            <?php }?> 
+        <?php endif; 
+        /**
+         * Timer Ends
+         */
+        ?>
+  <?php 
+/**
+ * Ends super deals timer
+ */
+?>                  
+</div>
+                <?php echo $this->getChildHtml('alert_urls') ?>        
+
+				 <?php 
+   if($_product->getTypeId() == 'grouped' || $_product->getTypeId() == 'downloadable' ):
+   		echo $this->getChildHtml('product_type_data');
+   endif;
+   ?>
+                <?php echo $this->getChildHtml('other');?>
+                
+<div class="product-options-block">
+               <?php 
+               /**
+                * check the product is saleable
+                * and the product has options
+                */
+               if ($_product->isSaleable() && $this->hasOptions()):?>
+                    <?php echo $this->getChildChildHtml('container1', '', true, true) ?>
+                <?php endif;?>
+                <?php if ($_product->isSaleable() && $this->hasOptions()):?>
+                <?php echo $this->getChildChildHtml('container2', '', true, true) ?>
+            <?php endif;?>
+</div>
+
+   <div class="add-to-cart-wrapper">
+  
+                <?php 
+                /**
+                 * Confirm the product does not have options
+                 */
+                if (!$this->hasOptions()){?>
+                    <div class="add-to-box">
+                        <?php 
+                        /**
+                         * Check the product is available for sale
+                         * if so display add to cart option
+                         */
+                        if($_product->isSaleable()): ?>
+                            <?php echo $this->getChildHtml('addtocart') ?>
+                            <?php 
+                            /**
+                             * Check the wishlist option allowed for the product
+                             * or compare url is available for the product
+                             */
+                            if( $this->helper('wishlist')->isAllow() || $_compareUrl=$this->helper('catalog/product_compare')->getAddUrl($_product)): ?>
+                                <span class="or"><?php echo $this->__('OR') ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php echo $this->getChildHtml('addto') ?>
+                        <?php echo $this->getChildHtml('sharing') ?>
+                    </div>
+                    <?php echo $this->getChildHtml('extra_buttons') ?>
+                <?php }
+                /**
+                 * else if the product has options
+                 */
+                else{  
+                /**
+                * Check the product is not saelable
+                * if so display options like
+                * add to
+                * sharing
+                 */
+                if (!$_product->isSaleable()){ ?>
+                    <div class="add-to-box">
+                        <?php echo $this->getChildHtml('addto') ?>
+                        <?php echo $this->getChildHtml('sharing') ?>
+                    </div>
+                <?php }
+                } ?>
+            </div>  
+
+</div>
+<div class="extra-info">
+                                        <?php echo $this->getChildHtml('extrahint') ?>
+                                       
+                </div>
+            
+            </div>
+
+       
+            <div class="clearer"></div>
+            
+        </form>
+        <?php echo $this->getChildHtml('marketplace_compareprice'); ?>
+        <script type="text/javascript">
+        //<![CDATA[
+            var productAddToCartForm = new VarienForm('product_addtocart_form');
+            productAddToCartForm.submit = function(button, url) {
+                if (this.validator.validate()) {
+                    var form = this.form;
+                    var oldUrl = form.action;
+
+                    if (url) {
+                       form.action = url;
+                    }
+                    var e = null;
+                    try {
+                        this.form.submit();
+                    } catch (e) {
+                    }
+                    this.form.action = oldUrl;
+                    if (e) {
+                        throw e;
+                    }
+
+                    if (button && button != 'undefined') {
+                        button.disabled = true;
+                    }
+                }
+            }.bind(productAddToCartForm);
+
+            productAddToCartForm.submitLight = function(button, url){
+                if(this.validator) {
+                    var nv = Validation.methods;
+                    delete Validation.methods['required-entry'];
+                    delete Validation.methods['validate-one-required'];
+                    delete Validation.methods['validate-one-required-by-name'];
+                    // Remove custom datetime validators
+                    for (var methodName in Validation.methods) {
+                        if (methodName.match(/^validate-datetime-.*/i)) {
+                            delete Validation.methods[methodName];
+                        }
+                    }
+
+                    if (this.validator.validate()) {
+                        if (url) {
+                            this.form.action = url;
+                        }
+                        this.form.submit();
+                    }
+                    Object.extend(Validation.methods, nv);
+                }
+            }.bind(productAddToCartForm);
+        //]]>
+        </script>
+    </div>
+
+    <div class="related-tabs">
+    <div class="product-collateral toggle-content tabs">
+        <?php 
+        /**
+         * Check detailed info group has been set
+         */
+        if ($detailedInfoGroup = $this->getChildGroup('detailed_info', 'getChildHtml')):?>
+            <dl id="collateral-tabs" class="collateral-tabs">
+                <?php foreach ($detailedInfoGroup as $alias => $html):?>
+                    <dt class="tab"><span><?php echo $this->escapeHtml($this->getChildData($alias, 'title')) ?></span></dt>
+                    <dd class="tab-container">
+                        <div class="tab-content"><?php echo $html ?></div>
+                    </dd>
+                <?php endforeach;?>
+            </dl>
+        <?php endif; ?>
+    </div>
+    <?php echo $this->getChildHtml('related_products') ?>
+</div>
+
+    <?php echo $this->getChildHtml('upsell_products') ?>
+    <?php echo $this->getChildHtml('product_additional_data') ?>
+
+</div>
+<script>
+
+var jQ=jQuery.noConflict();
+var sellerid='<?php echo $sellerId ?>';
+var customerid='<?php echo $customerId ?>';
+jQ(document).ready(function(){
+if((sellerid!='')&&(customerid!='')){
+	
+	if(sellerid==customerid){
+	jQ('.rating-links span').hide();
+	jQ('.rating-links a:not(:first)').hide();
+	jQ('.no-rating').hide();
+	}
+}
+});
+</script>
+

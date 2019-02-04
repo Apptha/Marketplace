@@ -1,0 +1,76 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to display the product sold count in product detail page
+ */
+
+if (Mage::getStoreConfig ( 'marketplace/product/product_sold_count' ) == 1) {
+    ?>
+<div style="clear: both;"></div>
+<div class="product-sold-count">        
+            <?php
+    $arrStatus = array (
+            'complete',
+            'processing' 
+    );
+    /**
+     * Getting current productid
+     */
+    $productId = $this->getProduct ()->getId ();
+    $items = Mage::getModel ( 'sales/order_item' )->getCollection ()->addFieldToFilter ( 'product_id', $productId );
+    $orderArr = array ();
+    foreach ( $items as $item ) {
+        $orderArr [] = $item->order_id;
+    }
+    $collection = Mage::getModel ( 'sales/order' )->getCollection ()->addFieldToFilter ( 'status', array (
+            'in' => $arrStatus 
+    ) );
+    $collection->addAttributeToFilter ( 'entity_id', array (
+            'in' => $orderArr 
+    ) );
+    $count = count ( $collection );
+    $model = Mage::getModel ( 'catalog/product' );
+    $_product = $model->load ( $productId );
+    $stocklevel = ( int ) Mage::getModel ( 'cataloginventory/stock_item' )->loadByProduct ( $_product )->getQty ();
+    if ($stocklevel > 0 && $stocklevel < 10) {
+        echo $this->__ ( 'Available %d ', $stocklevel );
+    } else {
+        if ($stocklevel > 0 && $stocklevel > 10) {
+            echo $this->__ ( 'More than 10 available' );
+        }
+    }
+    if ($count > 0) {
+        echo $this->__ ( ' / %d sold', $count );
+    }
+    
+    ?>
+
+    </div>
+<?php } ?>

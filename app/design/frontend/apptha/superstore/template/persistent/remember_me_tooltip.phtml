@@ -1,0 +1,68 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * "Remember Me" popup template (when click on "What's this?")
+ *
+ */
+/** @var $this Mage_Core_Block_Template */
+?>
+<div class="remember-me-popup">
+    <div class="remember-me-popup-head">
+        <h3>What's this?</h3>
+        <a href="#" class="remember-me-popup-close" title="<?php echo $this->__('Close') ?>"><?php
+         echo $this->__('Close') ?></a>
+    </div>
+    <div class="remember-me-popup-body">
+        <p>Checking &quot;Remember Me&quot; will let you access your shopping cart on this computer when you are logged out</p>
+        <div class="remember-me-popup-close-button a-right">
+            <a href="#" class="remember-me-popup-close button" title="<?php echo $this->__('Close') ?>">
+            <span><?php echo $this->__('Close') ?></span></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+function toggleRememberMePopup() {
+    var formParent = jQuery(this).parents('form:first');
+    formParent.find('.remember-me-box a').toggleClass('hide');
+    formParent.find('.remember-me-popup').toggleClass('show');
+    return false;
+}
+var rememberMeToggleSetup = false;
+jQuery(document).ready(function(){
+    if (!rememberMeToggleSetup) {
+        jQuery('.remember-me-box a, .remember-me-popup a').on('click', toggleRememberMePopup);
+        rememberMeToggleSetup = true;
+    }
+});
+//]]>
+</script>

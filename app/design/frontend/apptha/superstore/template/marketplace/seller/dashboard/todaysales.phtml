@@ -1,0 +1,90 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Display todays sales of a seller
+ */
+
+        $id = Mage::getSingleton('customer/session')->getId();        
+      
+        /**
+         * To display Life time sales
+         */
+        $sellerProductData = Mage::getModel('marketplace/sellerprofile')->getTodayOrder($id);
+        $lifetimeSales = array();
+        $orderIds = array();
+        $productIds = array();
+        $averageOrders = '';
+        foreach ($sellerProductData as $_sellerProduct) {
+            $lifetimeSales[] = $_sellerProduct['seller_amount'];
+            $orderIds[] = $_sellerProduct['order_id'];
+            $productIds[] = $_sellerProduct['product_id'];
+        }
+        $totalSumValue = array_sum($lifetimeSales);
+        $orderSum = count($orderIds);
+        if (!empty($orderSum)) {
+            $averageOrders = $totalSumValue / $orderSum;
+        }
+        ?>
+       
+           <div class="cart_bg">           
+           <div class="left_wr"><strong><?php echo $this->__('Today\'s Sales'); ?></strong>
+            <p><?php echo Mage::helper('core')->currency($totalSumValue, true, false); ?></p></div> <i></i></div> 
+        <?php 
+        /**
+         * Get yesterday order
+         */?>    
+            
+          <?php $yesterdayOrder = $this->getYesterdayOrder($id);
+                $yesterdaylifetimeSales = array();
+                $yesterdayorderIds = array();
+                $yesterdayproductIds = array();
+                $yesterdayaverageOrders = '';
+                if( is_array( $yesterdayOrder ) && count( $yesterdayOrder ) > 0 ) {
+                foreach ($yesterdayOrder as $_yesterdayOrder) {
+                    $yesterdaylifetimeSales[] = $_yesterdayOrder['seller_amount'];
+                    $yesterdayorderIds[] = $_yesterdayOrder['order_id'];
+                    $yesterdayproductIds[] = $_yesterdayOrder['product_id'];
+                }
+                }
+                $yesterdaytotalSum = array_sum($yesterdaylifetimeSales);
+                $yesterdayorderSum = count($yesterdayorderIds);
+                if (!empty($orderSum) && !empty($yesterdayorderSum)) {
+                    $yesterdayaverageOrders = $yesterdaytotalSum / $yesterdayorderSum;
+            }?>
+            <?php 
+            /**
+             * Get difference of total sales from yesterday to today
+             */
+            ?>
+           
+         <div class="Order_bg"><div class="left_wr"><strong><?php echo $this->__('Today\'s Orders'); ?></strong>
+            <p><?php             
+            $orderIds = array_unique($sellerProductData->getColumnValues('order_id'));
+            echo count($orderIds);?></p></div> <i></i></div>  

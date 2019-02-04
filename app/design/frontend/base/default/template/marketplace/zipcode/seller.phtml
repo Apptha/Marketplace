@@ -1,0 +1,130 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php $id=$this->getRequest()->getParam('id');
+$zipIdentification=$zipCity=$zipState=$zipCountry=$zipCodeRange=$zipException='';
+if(!empty($id)){
+$zipCodeObject=Mage::getModel('marketplace/productzipcode')->load($id);
+$zipIdentification=$zipCodeObject->getZipcodeId();
+$zipCountry=$zipCodeObject->getCountry();
+$zipState=$zipCodeObject->getState();
+$zipCity=$zipCodeObject->getCity();
+$zipCodeRange=$zipCodeObject->getSellerZipcodeRange();
+$zipException=$zipCodeObject->getSellerZipcodeExp();
+}
+ ?>
+
+
+<form action="<?php echo $this->getZipcodeSaveAction(); ?>" id="marketplaceZipcodeForm" name="marketplaceZipcodeForm" method="post">
+    <div class="fieldset">
+        <h2 class="legend"><?php echo Mage::helper('marketplace')->__('Zipcode Management') ?></h2>
+        <ul class="form-list">
+            <li class="fields">
+                <div class="field">
+                    <label for=""zipcode_identification"" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('Location Identification') ?></label>
+                    <div class="input-box">
+                        <input name="zipcode_identification" id="zipcode_identification" value="<?php echo $zipIdentification; ?>" title="<?php echo Mage::helper('marketplace')->__('Location Identification') ?>" value="" class="input-text required-entry" type="text" />
+                    </div>
+                </div>
+		  </li>
+
+
+			<li class="fields">
+				<div>
+					<label for="country" class="required"><?php echo Mage::helper('marketplace')->__('Country'); ?> 
+                    <em><?php echo $this->__('*'); ?></em> </label>  
+                    <?php
+						$_countries = Mage::getResourceModel ( 'directory/country_collection' )->loadData ()->toOptionArray ( false )?>
+                            <?php if (count($_countries) > 0) { ?>
+                        <select name="country" id="country"
+						class="validate-select" title="Country">
+						<option value="">-- Please Select --</option>
+                            <?php foreach ($_countries as $_country) { ?>
+                                <option
+							value="<?php echo $_country['value']; ?>"
+							<?php echo $zipCountry == $_country['value'] ? ' selected="selected"' : ''; ?>>
+                            <?php echo $_country['label']?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
+                </div>
+			</li>
+			<li class="fields">
+                <div class="field">
+                    <label for="state" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('State') ?></label>
+                    <div class="input-box">
+                        <input name="state" id="state" value="<?php echo $zipState;?>" title="<?php echo Mage::helper('marketplace')->__('State') ?>" value="" class="input-text required-entry" type="text" />
+                    </div>
+                </div>
+
+            </li>
+             <li class="fields">
+                <div class="field">
+                    <label for="city" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('City') ?></label>
+                    <div class="input-box">
+                        <input name="city" id="city"  value="<?php echo $zipCity;?>"title="<?php echo Mage::helper('marketplace')->__('City') ?>" value="" class="input-text required-entry" type="text" />
+                    </div>
+                </div>
+
+            </li>
+             <li class="fields">
+                <div class="field">
+                    <label for="zipcode_range" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('ZipCode Range') ?></label>
+                    <div class="input-box">
+                        <input name="zipcode_range" id="zipcode_range"  value="<?php echo $zipCodeRange ;?>"title="<?php echo Mage::helper('marketplace')->__('Zipcode Range') ?>" value="" class="input-text required-entry" type="text" />
+                    	<p><span><?php echo "Eg:5001-5005,6000,60000-600045"?></span></p>
+                    </div>
+                </div>
+
+            </li> 
+             <li class="fields">
+                <div class="field">
+                    <label for="zipcode_exception" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('ZipCode Exception') ?></label>
+                    <div class="input-box">
+                        <input name="zipcode_exception" id="zipcode_exception"  value="<?php echo $zipException;?>" title="<?php echo Mage::helper('marketplace')->__('Zipcode Exception') ?>" value="" class="input-text required-entry" type="text" />
+                    	<p><span><?php echo "Eg:5002,6000,60006-60008"?></span></p>
+                    </div>
+                </div>
+
+            </li> 
+        </ul>
+    </div>
+    <div class="buttons-set">
+        <p class="required"><?php echo Mage::helper('marketplace')->__('* Required Fields') ?></p> 
+        <button type="submit" title="<?php echo Mage::helper('marketplace')->__('Submit') ?>" class="button">
+        <span><span><?php echo Mage::helper('marketplace')->__('Submit') ?></span></span></button>
+    </div>
+    <input type="hidden" id="zip_id" name="zip_id" value="<?php echo $id?>"/>
+</form>
+ <script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('marketplaceZipcodeForm', true);
+        </script>

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_FacebookStore
+ * @version    	0.1.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ * */
+ -->
+<layout version="0.1.0">
+ <default>
+    <reference name="content">
+        <remove name="banner" />
+    </reference>
+</default>
+    <!-- Index Page -->
+      <facebookstore_index_productdisplay> 
+          <reference name="head">
+            <action method="addJs"><script>facebookstore/droplicious.js</script></action>
+            <action method="setTitle" translate="title"><title>My Store</title></action> 
+            <action method="addCss"><stylesheet>facebookstore/css/style.css</stylesheet></action>           
+        </reference>
+          <reference name="root">
+            <action method="setTemplate"><template>page/4column.phtml</template></action>            
+        </reference>  
+        <reference name="content">       
+            <block type="facebookstore/facebooktabpage" name="facebooktabpage">
+                <action method="setTemplate" ifconfig="facebookstore/faceconnect/enabled">
+                     <template>facebookstore/facebooktabpage.phtml</template>
+                </action>
+            </block>
+        </reference>    
+          
+      </facebookstore_index_productdisplay>
+
+    <!--Product View Page -->  
+      <facebookstore_index_defaultdisplay> 
+          <reference name="head">
+            <action method="addJs"><script>facebookstore/droplicious.js</script></action>
+            <action method="setTitle" translate="title"><title>My Store</title></action> 
+            <action method="addCss"><stylesheet>facebookstore/css/style.css</stylesheet></action>           
+        </reference>
+          <reference name="root">
+            <action method="setTemplate"><template>page/4column.phtml</template></action>            
+        </reference>
+        <reference name="content">       
+            <block type="facebookstore/defaultdisplay" name="defaultdisplay">
+                <action method="setTemplate" ifconfig="facebookstore/faceconnect/enabled">
+                    <template>facebookstore/defaultdisplay.phtml</template>
+                </action>
+            </block>
+        </reference>                       
+      </facebookstore_index_defaultdisplay>
+</layout> 

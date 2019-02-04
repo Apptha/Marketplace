@@ -1,0 +1,70 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Template for MAP popup
+ *
+ */
+
+?>
+<?php if (Mage::helper('catalog')->isMsrpEnabled()): ?>
+<div id="map-popup" class="map-popup" style="display:none;">
+    <a href="#" class="map-popup-close" id="map-popup-close">&times;</a>
+    <div class="map-popup-heading"><h3 id="map-popup-heading"></h3></div>
+    <div class="map-popup-content" id="map-popup-content">
+        <div class="map-popup-msrp" id="map-popup-msrp-box">
+            <span class="label"><?php echo $this->__('Price'); ?>:</span>
+            <span style="text-decoration:line-through;" id="map-popup-msrp"></span>
+        </div>
+        <div class="map-popup-price" id="map-popup-price-box">
+            <span class="label"><?php echo $this->__('Actual Price'); ?>:</span>
+            <span id="map-popup-price"></span>
+        </div>
+        <div class="map-popup-checkout">
+            <form action="" method="POST" id="product_addtocart_form_from_popup">
+                <input type="hidden" name="product" class="product_id" value="" id="map-popup-product-id" />
+                <div class="additional-addtocart-box">
+                    <?php echo $this->getChildHtml(); ?>
+                </div>
+                <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" id="map-popup-button">
+                <span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+            </form>
+        </div>
+        <script type="text/javascript">
+        //<![CDATA[
+            document.observe("dom:loaded", Catalog.Map.bindProductForm);
+        //]]>
+        </script>
+    </div>
+    <div class="map-popup-text" id="map-popup-text"><?php echo Mage::helper('catalog')->getMsrpExplanationMessage(); ?></div>
+    <div class="map-popup-text" id="map-popup-text-what-this"><?php echo Mage::helper('catalog')->getMsrpExplanationMessageWhatsThis(); ?></div>
+</div>
+<?php endif; ?>

@@ -1,0 +1,104 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php $_items = $this->getReviewsCollection()->getItems();?>
+<div class="box-collateral box-reviews" id="customer-reviews">
+    <?php if (count($_items)){ ?>
+        <div class="review-heading">
+            <h2>
+                <?php echo $this->__('Customer Reviews') ?>
+                <span><?php echo count($_items); ?> item(s)</span>
+            </h2>
+            <?php echo $this->getChildHtml('toolbar') ?>
+        </div>
+        <dl>
+        <?php foreach ($_items as $_review):?>
+            <dt>
+                <a href="<?php echo $this->getReviewUrl($_review->getId()) ?>">
+                    <?php echo $this->escapeHtml($_review->getTitle()) ?>
+                </a>
+            </dt>
+            <dd>
+            
+                <?php $_votes = $_review->getRatingVotes(); ?>
+				<?php $arrReview = explode("\n", nl2br($this->escapeHtml($_review->getDetail())));?>
+                <div>
+				  <p <?php if(count($arrReview) > 3 || strlen(nl2br($this->escapeHtml($_review->getDetail()))) > 700){?> class="product_review" <?php } ?>><?php echo nl2br($this->escapeHtml($_review->getDetail())) ?></p> 
+				  <span class="read-more" <?php if(count($arrReview) < 4 || strlen(nl2br($this->escapeHtml($_review->getDetail()))) < 700){?> style='display:none;' <?php } ?>>Read More</span>
+				</div>
+
+                <?php if (count($_votes)): ?>
+                <table class="ratings-table">
+                    <col width="1" />
+                    <col />
+                    <tbody>
+                        <?php foreach ($_votes as $_vote): ?>
+                        <tr>
+                            <th><?php echo $this->escapeHtml($_vote->getRatingCode()) ?></th>
+                            <td>
+                                <div class="rating-box">
+                                    <div class="rating" style="width:<?php echo $_vote->getPercent() ?>%;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php endif; ?>
+
+
+                <span class="review-meta">
+                    <?php echo $this->__('Review by %s', $this->escapeHtml($_review->getNickname())) ?>
+                    /
+                   <?php echo $this->__('(Posted on %s)', $this->formatDate($_review->getCreatedAt()), 'long') ?>
+                </span>
+            </dd>
+        <?php endforeach; ?>
+        </dl>        
+    <?php }else{
+    if($this->getParentBlock()){ ?>
+        <?php echo $this->getParentBlock()->getReviewsSummaryHtml($this->getProduct(), 'short', true)?>
+    <?php } 
+    }?>
+    <?php echo $this->getChildHtml('review_form') ?>
+</div>
+<script>
+$jno = jQuery.noConflict();
+
+    $jno('span.read-more').click(function(){
+        $jno(this).prev('p.product_review').css({
+        	   'height' : 'auto',
+        	   'overflow' : 'visible'
+        	});
+    	$jno(this).prev('p.product_review').next('span.read-more').css({
+      	   'display' : 'none'
+      	});
+    });
+</script>

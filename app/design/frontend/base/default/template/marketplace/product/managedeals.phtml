@@ -1,0 +1,311 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+ /**
+   * This file is used to manage the deal products(edit and delete deals)
+   */
+/**
+ * Assign the posted values to variables like
+ * filter_id
+ * filter_name
+ * filter_quantity
+ * filter_status
+ * filter_price
+ */
+$filterId = $this->getRequest()->getParam('filter_id');
+$filterName = $this->getRequest()->getParam('filter_name');
+$filterPrice = $this->getRequest()->getParam('filter_price');
+$filterQuantity = $this->getRequest()->getParam('filter_quantity');
+$filterStatus = $this->getRequest()->getParam('filter_status');
+?>
+<?php 
+/**
+ * Display page title
+ */
+?>
+<div class="account-login" id="market_place_manage_products" class="market_place_manage_products">
+    <div class="page-title">
+        <h1 class="manage_products_head"><?php echo $this->__('Manage Deals') ?></h1>
+        <div class="top_amount">
+            <span class="right_space">
+                <?php 
+                /**
+                 * Display Total amount received & remaining amount
+                 */
+                echo Mage::helper('marketplace')->__('Total Amount Received') ?> : <b><?php
+                $getAmountReceived = Mage::helper('marketplace/transaction')->getAmountReceived();
+                echo $getAmountReceived; ?></b>
+            </span>   
+            <span>
+               <?php echo Mage::helper('marketplace')->__('Amount Pending') ?> :  <b><?php
+               $getAmountRemaining = Mage::helper('marketplace/transaction')->getAmountRemaining();
+               echo $getAmountRemaining; ?></b>
+            </span> 
+        </div>         
+    </div>    
+    <form name="multiple_select" id="multiple_select" class="multiple_select" method="post" action="<?php echo $this->getmultiselectUrl(); ?>">
+        <div class="mp_action"><b><?php echo $this->__('Action'); ?></b>
+            <select name="multi">
+                <option name="" value="Select an option"><?php echo $this->__('Select an option'); ?></option>
+                <option name="delete" value="delete"><?php
+                /**
+                 * Display Option to remove deals
+                 */
+                echo $this->__('Remove Deals'); ?></option>      
+            </select>
+            <button type="submit" class="button multi_submit"  title="<?php echo $this->__('Submit') ?>" name="multi_submit" id="multi_submit" >
+            <span><span><?php echo $this->__('Submit') ?></span></span></button>   
+
+        </div>
+        <div style="clear: both;"></div>       
+        <?php
+        echo $this->getMessagesBlock()->getGroupedHtml();
+        $products = $this->getCollection();
+        /**
+         * set sno in collection
+         */
+        $rowCount = 1;
+        $currentPage = Mage::getBlockSingleton('page/html_pager')->getCurrentPage();
+        $getPageSize = $products->getPageSize();
+        if ($currentPage >= 2) {
+            $calPage = ceil($products->getSize() / $getPageSize);
+            if ($currentPage <= $calPage) {
+                $rowCount = abs(($currentPage * $getPageSize) - $getPageSize) + 1;
+            } else {
+                $rowCount = abs(($calPage * $getPageSize) - $getPageSize) + 1;
+            }
+        } else {
+            $rowCount = 1;
+        }
+        ?>
+        <table class="data-table deals-datas-table my-product-table market_place_manage_products_table" id="my-product-table">
+            <col width="1" />
+            <col width="1" />
+            <col />
+            <col width="1" />
+            <col width="1" />
+            <col width="1" />
+            <thead>
+                <tr>
+                    <th><?php echo Mage::helper('marketplace')->__('#') ?></th>            
+                    <th class="mtext_left"><?php echo $this->__('Id') ?></th>
+                    <th colspan="2" width="33%" class="mtext_left"><?php echo $this->__('Product Name') ?></th>
+                    <th><?php echo $this->__('Quantity') ?></th>
+                    <th><?php echo $this->__('Price') ?></th>
+                    <th width="12%"><?php echo $this->__('Status') ?></th>
+                    <th class="no-border-right"><?php echo $this->__('Action') ?></th>
+                </tr>
+                <?php 
+                /**
+                 * Display the filter function
+                 */
+                ?>
+                <tr class="mp_filter_function">
+                    <th></th>
+                    <th class="mtext_left"><input type="text" value="<?php echo $filterId; ?>" name="filter_id" style="width:30px;" id="filter_id"/></th>
+                    <th colspan="2" width="33%" class="mtext_left"><input type="text" value="<?php echo $filterName; ?>" name="filter_name" id="filter_name"/></th>           
+                    <th><input type="text" name="filter_quantity" id="filter_quantity" value="<?php echo $filterQuantity; ?>"/></th>
+                    <th><input type="text" value="<?php echo $filterPrice; ?>" name="filter_price" id="filter_price"/></th>
+                    <th width="12%">                
+                        <select name="filter_status"  onchange="this.form.submit();">
+                            <option name="select" value="0"><?php echo $this->__('Select a status'); ?></option>
+                            <option name="enabled" value="1" <?php 
+                            /**
+                             * Check the filter status is equal to 1
+                             * if so display as enabled
+                             * else display as disabled
+                             */
+                            if ($filterStatus == 1) {
+                                ?> selected="selected" <?php 
+} ?>><?php 
+echo $this->__('Enabled'); ?></option>  
+                            <option name="disabled" value="2"  <?php if ($filterStatus == 2) {
+                                ?> selected="selected" <?php 
+} ?>><?php 
+echo $this->__('Disabled'); ?></option> 
+                        </select>                
+                    </th>
+                    <th class="a-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                /**
+                 * Check the prodcut size
+                 * if it has size display the product information
+                 */
+                if ($products->getSize()):
+                    foreach ($products as $product):
+                        ?>
+                        <tr>            
+                            <td><input type="checkbox" name="id[]" id="id" value="<?php echo $product->getId(); ?>"/></td>
+                            <td class="mtext_left"><em><?php echo $product->getId(); ?></em></td>
+                            <td class="img_td">
+                            <?php
+                            /**
+                             * Check the product status is equal to 1
+                             * if so display the prodcut information like
+                             * product name
+                             * short description
+                             * product main image
+                             * product thumbnail image
+                             */
+                            if ($product->getStatus() == 1) { ?>
+                                    <a href="<?php echo $product->getProductUrl() ?>" class="product-image">
+                                    <img src="<?php echo $this->helper('catalog/image')->init($product, 'small_image')->resize(55, 45); ?>" width="55" height="45" alt="<?php
+                                     echo $product->getName(); ?>" />
+                                        <div class="big_image">
+                                            <img src="<?php echo $this->helper('catalog/image')->init($product, 'small_image')->resize(146, 196); ?>" width="146" height="196" alt="<?php
+                                             echo $product->getName(); ?>" /><div><h5><?php
+                                              echo $product->getName(); ?></h5><p><?php
+                                               echo $product->getShortDescription(); ?></p></div></div>
+                                    </a>                
+                                <?php } 
+                                else { 
+                                    /**
+                                    * If the product status is not equal to 1
+                                    * Display product information like
+                                    * product thumbnail image
+                                    * product name
+                                    */
+                                    ?>
+                                    <img src="<?php echo $this->helper('catalog/image')->init($product, 'small_image')->resize(55, 45); ?>" width="55" height="45" alt="<?php
+                                     echo $product->getName(); ?>" title="<?php
+                                      echo $product->getName(); ?>" />
+                                <?php } ?>            
+                            </td>
+                            <td class="mtext_left">
+                                <?php 
+                                /**
+                                 * Checking the status of the product is equal to 1
+                                 * if so display product information like
+                                 * product name with product link
+                                 */
+                                if ($product->getStatus() == 1) { ?>
+                                    <a href="<?php echo $product->getProductUrl(); ?>" class="get_pdct_name manage_get_pdct_name" ><?php
+                                     echo $product->getName(); ?>            
+                                    </a>
+                                <?php } 
+                                /**
+                                 * If the status of the product is not equal to 1
+                                 * Display information like
+                                 * product name without product link
+                                 * 
+                                 */
+                                else { ?>
+                                    <span class="get_pdct_name"><?php echo $product->getName(); ?></span>
+                                <?php } ?>
+                                <?php
+                                $categoryIds = $product->getCategoryIds();
+                                $count = count($categoryIds);
+                                $cat = Mage::getModel('catalog/category')->getCollection()
+                                        ->addAttributeToSelect('category_id');
+                                $incrementCat = 1;
+                                /**
+                                 * Checking the category count is greater than zero
+                                 */
+                                if ($count > 0) {
+                                    echo $this->__('(');
+                                    foreach ($categoryIds as $_categoryIds) {
+                                        $cat = Mage::getModel('catalog/category');
+                                        $cat->load($_categoryIds);
+                                        ?>
+                                        <a href="<?php echo $cat->getUrl(); ?>"><?php
+                                         echo $cat->getName(); ?></a> 
+                                        <?php
+                                        if ($incrementCat != $count) {
+                                            echo ' ,';
+                                        }
+                                        $incrementCat = $incrementCat + 1;
+                                    }
+                                    echo $this->__(')');
+                                    ?>
+                                    <?php } ?>   
+                            </td>
+                            <td width="14%"> <em><?php 
+                            /**
+                             * checking the product is saleable
+                             * if so dipsly product available quantity
+                             * if not then display message like out of stock 
+                             */
+                            if ($product->isSaleable()): ?>
+                        <?php echo $val = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($product)->getQty(); ?>
+                        <?php else: ?><?php 
+                        echo $this->__('Out of Stock') ?><?php
+                         endif; ?></em></td>
+                            <td><em><?php echo Mage::helper('core')->currency($product->getPrice(), true, false); ?></em></td>
+                            <td width="12%"><em><span><?php 
+                            /**
+                             * Checking the product status is equal to 1
+                             * if so display as enabled
+                             * if not display as disabled
+                             */
+                            if ($product->getStatus() == 1):
+                             echo $this->__('Enabled');
+                        else: 
+                        echo '<em>' . $this->__('Disabled') . '</em>';
+                        endif; ?></span></em></td>
+                            <td>
+                                <em>
+                                    <span class="nobr"><a href="<?php echo Mage::getUrl('marketplace/product/edit/', array('id' => $product->getId())); ?>" > 
+                                    <img src="<?php echo $this->getSkinUrl('marketplace/images/edit.png') ?>" alt="" title="<?php
+                                    /**
+                                     * Display Edit Deal Option
+                                     */
+                                    echo $this->__('Edit Deal') ?>"/> </a>               
+                                        <a href="<?php echo Mage::getUrl('marketplace/product/deletesingledeal/', array('id' => $product->getId())); ?>" onclick="return confirm('<?php
+                                        /**
+                                         * Confirming once before deleting a deal
+                                         */
+                                        echo $this->__('Are you sure want to remove deal for this product?'); ?>');" > 
+                                         <img src="<?php echo $this->getSkinUrl('marketplace/images/delete.png') ?>" alt="" title="<?php
+                                         /**
+                                          * show option to remove deal
+                                          */
+                                         echo $this->__('Remove Deal') ?>"/> </a>
+                                    </span>
+                                </em>
+                            </td>
+                        </tr>
+                        <?php $rowCount++;
+                    endforeach; ?>
+                </tbody>
+        <?php 
+        /**
+         * If the product size has no values
+         * Then display message like you have no product
+         */
+        else: ?>
+                <p><tr class="mtext_center"><td colspan="9" class="no_product_content"><?php echo $this->__('You have no product.'); ?></td></tr></p>
+<?php endif ?>
+        </table>   
+        <script type="text/javascript">decorateTable('my-product-table');</script>
+<?php echo $this->getPagerHtml(); ?>
+</div></form>

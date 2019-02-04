@@ -1,0 +1,314 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to compare seller product price with others seller products
+ */
+/**
+ * Getting current product id in registry
+ */
+$productId = Mage::registry('current_product')->getId();
+$mainProduct = Mage::getModel('catalog/product')->load($productId);
+$formKey = Mage::getSingleton('core/session')->getFormKey();
+/**
+ * Getting current date to check the special price 
+ */
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+/**
+ * Product collection with 'compare_product_id' attribute filter
+ */
+$collection = $this->getComparePrice($productId);
+$size = count($collection);
+if ($size > 0) { ?>    
+    <div id="seller_price_comparison_wrapper" class="compare_wrapper">
+        <div>
+            <h1><?php echo $this->__('More sellers selling this product'); ?></h1>
+            <div class="view_link"
+            <?php if($mainProduct->getTypeId() == 'configurable'){
+            echo 'style="display:none;"';	
+            } ?>
+            >               
+                <a href="<?php echo Mage::helper('marketplace/url')->getComparePriceUrl($productId); ?>">
+                <?php echo $this->__('View all sellers').'('. $size.')'; ?></a>
+                <?php  
+                              
+                foreach ($collection as $_collection) { 
+                $price = $_collection->getPrice();
+                $splPrice = $_collection->getSpecialPrice();
+                $dealExpireDate = $_collection->getspecial_to_date();             
+                if (!empty($splPrice) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) { ?>
+                <span><?php echo $this->__('Minimum starting price is ').Mage::helper('core')->currency($splPrice, true, false);?></span>
+                <?php } else { ?>
+                <span><?php echo $this->__('Minimum starting price is ').Mage::helper('core')->currency($price, true, false);?></span>
+                <?php }             
+                break;
+                }
+                ?>             
+            </div>
+        </div>
+        <table class="data-table" class="marketplace_compare_product" id="compare_product">
+        <thead>
+            <tr>
+                <th width="20%"><?php echo Mage::helper('marketplace')->__('Seller Information'); ?></th>
+                <th width="60%" class="product_info_title"><?php echo Mage::helper('marketplace')->__('Product Information'); ?></th>
+                <th width="10%" class="padding"><?php echo Mage::helper('marketplace')->__('Price'); ?></th>
+                <th width="10%"><?php echo Mage::helper('marketplace')->__('Cart'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+            $increment = 1;
+            foreach ($collection as $_collection) {
+            $productName = strip_tags($_collection->getDescription());
+            $lengthProductName = strlen($productName);
+            $subProductName = substr($productName, 0, 130);
+            if ($lengthProductName >= 130) {
+        $productNameFix = $subProductName . "...";
+            } else {
+        $productNameFix = $productName;
+            }
+                /**
+                 * Getting seller information using seller id
+                 */
+            
+            if($increment >= 5){
+            break;
+            }     
+            ?>
+                    <tr>
+                        <td>
+                            <h2> <?php
+                                $sellerId = $_collection->getSellerId();
+                                $sellerInfo = Mage::getModel('marketplace/sellerprofile')->collectprofile($sellerId);                                
+                                $sellerUrl = Mage::getModel('marketplace/sellerreview')->backUrl($sellerId);?>
+                                <a href="<?php echo $sellerUrl; ?>" 
+                                title="<?php echo $sellerInfo['store_title']; ?>"> 
+                                <?php echo $sellerInfo['store_title']; ?></a>
+                                <?php
+                                /**
+                                 * Getting seller review information
+                                 */
+                                ?>
+                            </h2>
+                            <?php $ratingCollection = $this->averageRatings($sellerId);                        
+                            ?>
+                            <span class="all_review_container_wr">  
+                                <span class="all_reviews_details_wr"> 
+                                    <p class="all_reviews_block">
+                                    <label class="all_review_rating" style="width:<?php echo round($ratingCollection,2)*20; ?>%;"></label>
+                                    </p>
+                                </span>
+
+                                <p class="feedback_text"> <?php
+                                    /**
+                                     * Getting seller review information
+                                     */
+                                    $reviewCount = $this->getReviewsCount($sellerId);
+                                    if ($reviewCount > 0) {
+                                    echo $reviewCount.$this->__(' Feedback(s)');                                   
+                                    }
+                                    /**
+                                     * Getting seller rating information
+                                     */
+                                    ?>
+                                </p>
+                            </span>
+                        </td>
+
+                        <?php
+                        /**
+                         * Display product information 
+                         */
+                        ?>
+                        <td class="product_image_compare">                             
+                            <div>                         
+                                <p>
+                                    <?php                              
+                                    echo $productNameFix;
+                                    ?>
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <?php
+                            /**
+                             *  Load the product
+                             */
+                            $product = Mage::getModel('catalog/product')->load($_collection->getId());
+                            
+                            /**
+                             * Checking for configurable product or not
+                             * 
+                             */
+                                                       
+                            $price = $_collection->getPrice();
+                            $splPrice = $_collection->getSpecialPrice();
+                            $dealExpireDate = $_collection->getspecial_to_date();
+                            if (!empty($splPrice) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) {
+                                echo '<p class="org_product_id assign_simple_product"><del>' . Mage::helper('core')->currency($price, true, false) . '</del>';
+                                echo Mage::helper('core')->currency($splPrice, true, false).'</p>';
+                            } else {
+                                echo '<p class="org_product_id assign_simple_product">'.Mage::helper('core')->currency($price, true, false).'</p>';                                
+                            }                         
+                            
+                            
+                            if($product->getTypeId() == 'configurable'){                      
+                            
+                            /**
+                             *  Get all configurable attributes 
+                             */ 
+                             $attributes = $product->getTypeInstance(true)->getConfigurableAttributes($product);
+                             /**
+                              * Array to keep the price differences for each attribute value 
+                              */
+                             $pricesByAttributeValues = array();
+                             /**
+                              * Base price of the configurable product 
+                              */
+                              $basePrice = $product->getFinalPrice();
+                              /**
+                               * loop through the attributes and get the price adjustments specified in the configurable product admin page
+                               */                              
+								foreach ($attributes as $attribute){
+									$prices = $attribute->getPrices();
+									foreach ($prices as $price){
+										if ($price['is_percent']){                                        
+									    /**
+                                         * If the price is specified in percents
+									     */	
+                                     	$pricesByAttributeValues[$price['value_index']] = (float)$price['pricing_value'] * $basePrice / 100;
+										}
+										else { 
+                                            /**
+                                             * If the price is absolute value
+                                             */                                            
+											$pricesByAttributeValues[$price['value_index']] = (float)$price['pricing_value'];
+										}
+									}
+								}
+                                /**
+                                 * Get all simple products
+                                 */								
+								$simple = $product->getTypeInstance()->getUsedProducts();								
+								/**
+								 * Loop through the products
+								 */								
+								foreach ($simple as $sProduct){
+									$totalPrice = $basePrice;
+									/**
+									 * Loop through the configurable attributes 
+									 */									
+									foreach ($attributes as $attribute){
+										/**
+										 * Get the value for a specific attribute for a simple product
+										 */										
+										$value = $sProduct->getData($attribute->getProductAttribute()->getAttributeCode());
+										/**
+										 * Add the price adjustment to the total price of the simple product
+										 */										
+										if (isset($pricesByAttributeValues[$value])){
+											$totalPrice += $pricesByAttributeValues[$value];
+										}
+									}									
+									$assignSimpleProductId = Mage::getModel('catalog/product')->load($sProduct->getId())->getConfigAssignSimpleId();
+									echo '<p class="simple_id_'.$assignSimpleProductId.' assign_simple_product" style="display:none;">'.Mage::helper('core')->currency($totalPrice, true, false).'</p>';								
+	             					} 
+
+/**
+ * End if for configurable or not
+ */
+}
+                            ?>  
+                        </td>  
+
+                        <td>
+                        
+            <?php
+            if ($_collection->isSaleable()) { 
+            if($mainProduct->getTypeId() != 'configurable'){
+             ?>
+                                <button type="button" title="<?php echo Mage::helper('marketplace')->__('Add to Cart');
+                                 ?>" class="org_product_id assign_simple_product button btn-cart mp_addtocart_button" onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($_collection); ?>');">
+                                    <span class="mp_addtocart"><?php echo Mage::helper('marketplace')->__('Add to Cart'); ?></span>
+                                </button>
+            <?php
+            }else{
+
+ /**
+ * Loop through the products
+ */
+foreach ($simple as $sProduct){
+  
+    if($sProduct->isSaleable()){
+	/**
+	 * Loop through the configurable attributes
+	 */
+	$assignSimpleProductId = Mage::getModel('catalog/product')->load($sProduct->getId())->getConfigAssignSimpleId();	
+    ?>
+    <form class="<?php echo "simple_id_$assignSimpleProductId"; ?> assign_simple_product" style="display: none;" action="<?php echo Mage::getUrl('checkout/cart/add/product/'.$_collection->getId()); ?>" method="get">	
+    <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />    
+    <input type="hidden" name="qty" value="1"> 
+    <?php 
+    foreach ($attributes as $attribute){
+    	/**
+    	 * Get the value for a specific attribute for a simple product
+    	 */
+    	$attributeId = $attribute->getProductAttribute()->getAttributeId();
+    	$optionValue = $sProduct->getData($attribute->getProductAttribute()->getAttributeCode());
+    ?>
+    <input type="hidden" name="super_attribute[<?php echo $attributeId; ?>]" value="<?php echo $optionValue; ?>"> 
+    <?php } ?>    
+    <input class="button btn-cart mp_addtocart_button" type="submit" title="<?php echo Mage::helper('marketplace')->__('Add to Cart'); ?>" value="<?php echo Mage::helper('marketplace')->__('Add to Cart'); ?>" />
+    </form>    
+    <?php
+    }else{
+    ?>
+     <p class="<?php echo "simple_id_$assignSimpleProductId"; ?> assign_simple_product availability out-of-stock"></p>
+    <?php 
+     }
+     }   
+     }      
+     } else { ?>
+                                     <p class="availability out-of-stock"></p>
+                 <?php }
+     
+     ?>                      
+                </td>                
+                </tr>
+                <?php
+                $increment++;
+            }
+            ?>
+
+        </tbody>
+        </table>
+    </div>
+<?php } ?>
+

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Advancedfilters
+ * @version     1.0.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */ -->
+<layout version="0.1.0">
+	<default>
+		<reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>productfilters/style.css</name>
+            </action>
+             
+        </reference>
+        
+	</default>
+	<catalog_category_layered>
+		<reference name="head">
+            <action method="addItem" >
+                <type>skin_css</type>
+                <name>productfilters/style.css</name>
+            </action>
+              <action method="addJs"><script>productfilters/history.js</script></action> 
+              <action method="addJs"><script>productfilters/jquery.js</script></action>
+              <action method="addJs"><script>productfilters/accordion.js</script></action> 
+        </reference>
+        <reference name="catalog.leftnav">
+            <action method="setTemplate" ifconfig="advancedproductfilters/catalog/enabled" >
+                <template>productfilters/catalog/layer/view.phtml</template>        
+            </action>
+        </reference> 
+    </catalog_category_layered>
+     
+    <catalogsearch_result_index translate="label" >
+   		<label>Quick Search Form</label>
+      	<reference name="head">
+        	 <action method="addItem" ifconfig="advancedproductfilters/catalog/enabled" >
+          		<type>skin_css</type>
+         		<name>productfilters/style.css</name>
+       		</action>
+            <action method="addJs" ifconfig="advancedproductfilters/catalog/enabled"><script>productfilters/history.js</script></action> 
+            <action method="addJs" ifconfig="advancedproductfilters/catalog/enabled"><script>productfilters/accordion.js</script></action>
+            <action method="addJs" ifconfig="advancedproductfilters/catalog/enabled"><script>productfilters/jquery.js</script></action> 	
+        </reference>
+        <reference name="catalogsearch.leftnav">
+	            <action method="setTemplate" ifconfig="advancedproductfilters/catalog/enabled" >
+	               <template>productfilters/catalog/layer/view.phtml</template>        
+	            </action>
+	     </reference> 
+    </catalogsearch_result_index>
+</layout>

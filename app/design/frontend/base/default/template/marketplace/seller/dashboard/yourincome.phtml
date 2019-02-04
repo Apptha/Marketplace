@@ -1,0 +1,146 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+        $id = Mage::getSingleton('customer/session')->getId();        
+      
+        /**
+         * Last Week Income
+         */
+        $lasWeek = Mage::getModel('marketplace/sellerprofile')->getLastWeekIncome($id);
+        /**
+         * Initialising variables with empty values
+         */
+        $lifetimeSales = array();
+        $orderIds = array();
+        $productIds = array();
+        $averageOrders = '';
+        foreach ($lasWeek as $_sellerProduct) {
+            $lifetimeSales[] = $_sellerProduct['seller_amount'];
+            $orderIds[] = $_sellerProduct['order_id'];
+            $productIds[] = $_sellerProduct['product_id'];
+        }
+        /**
+         * Get all sales total
+         */
+        $totalSum = array_sum($lifetimeSales);
+        /**
+         * Get total orders
+         */
+        $orderSum = count($orderIds);
+        /**
+         * Checking total orders is not empty
+         */
+        if (!empty($orderSum)) {
+            $averageOrders = $totalSum / $orderSum;
+        }
+        ?>
+            <h3 class="title_income"><?php echo $this->__('Your Income'); ?></h3>            
+            <div class="content_wr">
+            <ul class="marketplace_total_income">
+            <li>
+            <p><?php echo Mage::helper('core')->currency($totalSum, true, false); ?></p>
+            <strong><?php echo $this->__('last Week'); ?></strong></li>
+          
+    
+        <?php 
+        /**
+         * Last Month Income
+         */
+        $lasMonth = Mage::getModel('marketplace/sellerprofile')->getLastMonthIncome($id);
+        /**
+         * Initialising related variable with empty values
+         */
+        $lastMonthSales = array();
+        $lastMonthorderIds = array();
+        $productIds = array();
+        $averageOrders = '';
+        foreach ($lasWeek as $_sellerProduct) {
+        $lastMonthSales[] = $_sellerProduct['seller_amount'];
+        $lastMonthorderIds[] = $_sellerProduct['order_id'];
+        $productIds[] = $_sellerProduct['product_id'];
+        }
+        /**
+         * Get Last month sales total
+         */
+        $lastMonthTotalSum = array_sum($lastMonthSales);
+        /**
+         * Get Last month orders total
+         */
+        $lastMonthOrderSum = count($lastMonthorderIds);
+        /**
+         * check order total is not empty
+         */
+        if (!empty($orderSum)) {
+        /**
+        * Calculate orders average
+        */
+        $averageOrders = $lastMonthTotalSum / $lastMonthOrderSum;
+        }
+        ?>
+       <li><p><?php echo Mage::helper('core')->currency($lastMonthTotalSum, true, false); ?></p>
+        <strong><?php echo $this->__('last Month'); ?></strong></li>
+         
+   <?php 
+   /**
+    * Last Year Sales
+    */
+   $lastYear = Mage::getModel('marketplace/sellerprofile')->getLastYearIncome($id);   
+   /**
+    * Initialising last year related variables with empty values
+    */
+   $lastYearSales = array();
+        $lastYearorderIds = array();
+        $productIds = array();
+        $averageOrders = '';
+        foreach ($lastYear as $_sellerProduct) {
+        $lastYearSales[] = $_sellerProduct['seller_amount'];
+        $lastYearorderIds[] = $_sellerProduct['order_id'];
+        $productIds[] = $_sellerProduct['product_id'];
+        }
+        /**
+         * Calculate last year sales total
+         */
+        $lastYearTotalSum = array_sum($lastYearSales);
+        /**
+         * Calculate last year orders total
+         */
+        $lastYearOrderSum = count($lastYearorderIds);
+        if (!empty($orderSum) && $lastYearOrderSum != 0) {   
+        /**
+        * Calculate last year orders average
+        */    
+        $averageOrders = $lastYearTotalSum / $lastYearOrderSum;      
+        }
+        ?>
+       <li><p><?php echo Mage::helper('core')->currency($lastYearTotalSum, true, false); ?></p>
+        <strong><?php echo $this->__('last Year'); ?></strong></li>
+         </ul>
+         </div>
+   

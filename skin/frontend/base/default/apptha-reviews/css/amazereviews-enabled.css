@@ -1,0 +1,263 @@
+/**
+ * Apptha Hello
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Amazereviews
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ **/
+/* popup_box DIV-Styles*/
+#popup_box {display:none; /* Hide the DIV */position:fixed;_position:absolute; /* hack for internet explorer 6 */width: 100%;height: 100%;left: 0;top: 0;z-index:100; /* Layering ( on-top of others), if you have lots of layers: I just maximized, you can change it yourself */margin-left: 0;/* additional features, can be omitted */background: url(../images/popup_bg.png) repeat;font-size:15px;}
+#popup_box .white-container{background: #fff; padding:15px;}
+#popup_box .shadow_grid{width:254px; padding:5px; background: url(../images/popup_bg.png) repeat; position: absolute; left: 40%; top: 20%; -webkit-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.75);-moz-box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.75);box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.75);}
+#popup_box .white-container h4{border-bottom: 1px solid #ccc;}
+#popup_box .white-container span{font-size: 12px;}
+#container {background: #d2d2d2; /*Sample*/width:100%;height:100%;}
+a{cursor: pointer;text-decoration:none;}
+
+/* This is for the positioning of the Close Link */
+#popupBoxClose {	background: url(../images/close.png) no-repeat;	right: -9px;	top: -7px;        width: 24px;        height: 24px;	position:absolute;	color:#000;	font-weight:bold;}
+
+
+
+
+/* .main{background:#fff;} */
+.fleft{float:left !important;}
+.fright{float:left !important; margin: 7px 0px 0px 10px; font-size: 12px;}
+.dblock{display:block;}
+.clear{clear:both;}
+.group:before,
+.group:after{ content: ""; display: table;}
+.group:after { clear: both; }
+.group { zoom: 1; /* For IE 6/7 (trigger hasLayout) */}
+
+.individual-star-ratings {	width: auto;	overflow: hidden;}
+
+.rating-histogram {list-style-type: none;}
+
+
+.advanced-smallfont {font-size: 11px;}
+
+.tmargin3 {margin-top: 3px;}
+
+
+.rating-bars {background: #f2f2f2;width: 100px;display: inline-block;height: 10px;vertical-align: bottom;zoom: 1;}
+
+
+.rating-bars .progress {background: #7dd03f url(../images/graph-bar-tile-bbd1e89e.png);background-repeat: repeat-x;height: 9px;-webkit-box-shadow: .5px .5px .5px #c5c5c5;box-shadow: .5px .5px .5px #c5c5c5;background-image: url(../images/graph-bar-tile-bbd1e89e.png);}
+
+
+.fk-give-star:hover li.user-ratings{display:none!important}
+.fk-give-star li.user-ratings{background:url(../images/bkg_rating.gif) 0 -200px repeat-x;height:17px}
+
+
+
+.fk-give-star{width:69px;height: 17px;position:relative;background:url(../images/bkg_rating.gif) repeat-x;list-style-type:none;display:block;vertical-align:bottom;*display:inline;zoom:1;z-index:1; margin-top:10px;}
+.fk-give-star li{float:left}
+/* .fk-give-star:hover li.user-rating{display:none!important} */
+.fk-give-star li a{display:block;width:14px;height:13px;text-indent:-9000px;z-index:20;position:absolute;top:0;cursor:pointer}
+.fk-give-star li.user-rating{background:url(../images/bkg_rating.gif) 0 -200px repeat-x;height:13px}
+.fk-give-star li a:hover{background:url(../images/bkg_rating.gif) 0 -200px repeat-x;z-index:1;left:0}
+.fk-give-star a.star-1{left:0}
+.fk-give-star a.star-1:hover{width:14px}
+.fk-give-star a.stars-2{left:14px}
+.fk-give-star a.stars-2:hover{width:28px}
+.fk-give-star a.stars-3:hover{width:42px}
+.fk-give-star a.stars-3{left:28px}
+.fk-give-star a.stars-4{left:42px}
+.fk-give-star a.stars-4:hover{width:56px}
+.fk-give-star a.stars-5{left:56px}
+.fk-give-star a.stars-5:hover{width:70px}
+.fk-give-star.small{padding:0}
+.fk-give-star.small li a:hover{left:0;z-index:1}
+.fk-give-star.small a.star-1{left:0}
+.fk-give-star.small a.star-1:hover{width:13px}
+.fk-give-star.small a.stars-2{left:13px}
+.fk-give-star.small a.stars-2:hover{width:26px}
+.fk-give-star.small a.stars-3:hover{width:39px}
+.fk-give-star.small a.stars-3{left:26px}
+.fk-give-star.small a.stars-4{left:39px}
+.fk-give-star.small a.stars-4:hover{width:52px}
+.fk-give-star.small a.stars-5{left:52px}
+.fk-give-star.small a.stars-5:hover{width:65px}
+.actionBtn{background: #1ba2f4; background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod?EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+); background: -moz-linear-gradient(top, #1ba2f4 0%, #196bb5 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1ba2f4), color-stop(100%,#196bb5)); background: -webkit-linear-gradient(top, #1ba2f4 0%,#196bb5 100%); background: -o-linear-gradient(top, #1ba2f4 0%,#196bb5 100%); background: -ms-linear-gradient(top, #1ba2f4 0%,#196bb5 100%); background: linear-gradient(to bottom, #1ba2f4 0%,#196bb5 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1ba2f4', endColorstr='#196bb5',GradientType=0 ); border: solid 1px #1a7fd9;
+box-shadow: inset #52c0ff 0px 1px 0; display: inline-block; padding: 5px 15px; color: #fff; border-radius: 4px; margin-top: 10px; font: bold 12px Arial,sans-serif; cursor: pointer;}
+
+#review-form .data-table {border: 0px solid #bebcb7;}
+#review-form .data-table li{clear: both; margin-bottom:2px;  }
+#review-form .data-table li label{float: left; margin:-3px 10px 0px 0px; width:5%; }
+#review-form .data-table li .starContainer{float: left; }
+#review-form .data-table li .starContainer .fk-give-star{margin-top: 0;}
+.appthaReview .ratings_review{float:left;width:100%;}.ratings_review h2{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-weight:bold;font-size:17px;color:#000;background:#f1f1f1;border-bottom:2px solid #c70717;border-top:1px solid #d8d8d8;padding:7px 13px;margin:20px 0;}.ratings_review ul{float:left;width:100%;}.ratings_review ul li{border-bottom:1px solid #d8d8d8;margin-bottom:10px;}.ratings_review ul li h3{color:#4a91ac;font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:17px;font-weight:normal;margin-bottom:3px;}.ratings_review ul li span{color:#afb1b2;font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:11px;}.ratings_review ul li span strong{color:#7c7c7c;font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:11px;}.ratings_review ul li p{color:#000;font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-size:13px;margin-bottom:10px;}
+#review-form #product-review-table{background: inherit;}
+
+.appthaReview .review-header{color:#F1F1F1;font-family: 'Segoe UI',Arial,Helvetica,sans-serif;font-weight: bold;font-size: 17px;color: #000;background: #f1f1f1;border-bottom: 2px solid #c70717;border-top: 1px solid #d8d8d8;padding: 7px 13px;margin: 20px 0;}
+
+.appthaReview .rating_top{ padding: 0 0 0px;}
+.appthaReview .rating_top h3{margin: 0; font-size:13px; color: rgb(75, 75, 71); text-transform: none; }
+.appthaReview .rating_top h5{font:normal 11px/18px Arial, sans-serif;float: left;margin: 0 0 0 10px;}
+.appthaReview .rating_top h5 strong{font:bold 12px/18px Arial, sans-serif;}
+.appthaReview .rating_top .all-reviews a{}
+.appthaReview .rating_top .all-reviews a:hover{}
+
+.appthaReview .rating-box{}
+.appthaReview .rating-box .rating{   background: url(../images/bkg_rating.gif) 0 100% repeat-x; float:left; height:13px; }
+
+.appthaReview .individual-star-ratings{margin: 15px 0 0 0;float: left;width: auto;padding: 10px;}
+.appthaReview .individual-star-ratings ul{}
+.appthaReview .individual-star-ratings ul li{padding: 0 0 5px;}
+.appthaReview .individual-star-ratings ul li .rating-bars{float: left;width: 200px;background: #F3F3F3;height: 11px;margin: 2px 4px 0;}
+.appthaReview .individual-star-ratings ul li .rating-bars .progress{background: #EB5D51;height: 11px;}
+.appthaReview .individual-star-ratings ul li span{float:left; margin: -2px 0px 0px;}
+.appthaReview .individual-star-ratings ul li strong{float: left; font: bold 11px Arial,sans-serif; color: rgb(158, 158, 158);}
+
+.appthaReview .line{float: right; }
+.appthaReview .threecolumn_view{float: left !important; margin: 15px 0 20px 0 !important;width: 100%;}
+.appthaReview .line h3.advanced-rate-title {  margin: 0;  font-size: 15px;  font-family:arialbold; }
+.appthaReview .noneRated{float: left;padding-top: 40px;}
+
+.appthaReview .box-reviews .reivew-header{padding: 0 0 10px;}
+.appthaReview .box-reviews .reivew-header h3{margin:0; }
+.box-reviews .reivew-sub-header{padding: 10px 0 10px;}
+.appthaReview .box-reviews .reivew-header .rating-box,
+.appthaReview .box-reviews.box-reviews-detail .rating-box
+{}
+.appthaReview .box-reviews .reivew-header .rating-box .rating,
+.appthaReview .box-reviews.box-reviews-detail .rating-box .rating
+{}
+#customer-reviews{ margin-top: 10px; }
+.appthaReview .box-reviews .reivew-header .review_title{ float: left; width: 100%; padding-bottom: 3px; }
+.appthaReview .box-reviews .reivew-header .review_addedby{ width: 100%; float: left;  }
+.appthaReview .box-reviews .reivew-header h5.nickName{font-weight: bold; margin: 0; display: inline-block; padding-left: 2px; }
+.appthaReview .box-reviews .reivew-header .reviewed_date{ display: inline-block; }
+.box-reviews .reivew-sub-header span,.box-reviews .reivew-header h6{display: block; font-size:13px; margin: 0;text-align: right;}
+.box-reviews .reivew-sub-header span.permalink{padding-right: 10px; margin-right: 10px; border-right: 1px solid #ccc;}
+.line button,#popup_box button{   -moz-border-radius: 2px;  -webkit-border-radius: 2px;  border-radius: 2px;}
+/* .line button:hover,#popup_box button:hover{ background: #2D6B64; } */
+.box-reviews .reivew-sub-header span a{ line-height: 10px;font-size:13px;}
+.box-reviews .reivew-sub-header span a:hover{}
+.box-reviews .review-details{padding:10px 0 0; font-size:13px; }
+.permalink-reportabuse-date .success_msg{ font-size:13px; }
+.box-reviews .socialshare-useful-yesno span.useful strong{ font-size:13px; font-family:arialregular; font-weight:normal; }
+
+.appthaReview .box-reviews .socialshare-useful-yesno{}
+.box-reviews .socialshare-useful-yesno span{float: left;display: block;}
+.box-reviews .socialshare-useful-yesno span.socialshare{width: 50px;}
+.box-reviews .socialshare-useful-yesno span.socialshare a {float:left; margin-right: 5px;}
+.box-reviews .socialshare-useful-yesno span.useful{padding-left: 20px;}
+.box-reviews .socialshare-useful-yesno span.yesno{float:right; color: #e26703; margin: 3px 0px 0px; font-size:13px;}
+.box-reviews .socialshare-useful-yesno .yesno a:hover{text-decoration:underline;}
+.box-reviews .reivew-container{border-bottom: dotted 1px rgb(207, 207, 207);padding: 0 0 15px;margin: 0 0 15px; overflow: hidden;}
+.review_addedby{ font-size:11px; }
+
+.appthaReview .form-add{padding-bottom: 0; }
+.appthaReview .form-add h3{/*color: #0a263c;*/}
+.appthaReview .form-add h3 span{color: #e26703;}
+.appthaReview .form-add ul.form-list{width: 450px;padding: 8px 0 0;}
+.appthaReview .form-add ul.form-list li{clear: both;margin: 0 0 10px;}
+.appthaReview .form-add ul.form-list li label{color: #000;float: left;}
+.appthaReview .form-add ul.form-list li .input-box{float: none;clear: both;}
+.appthaReview .form-add ul.form-list li .input-box input, .form-add ul.form-list li .input-box textarea{border: 1px solid lightGrey;background-color: white;font: 12px Arial, Helvetica, sans-serif, helvetica;}
+
+.appthaReview .form-add ul.data-table{border: none;width: 270px;}
+.appthaReview .form-add ul.data-table li{clear: both;}
+.appthaReview .form-add ul.data-table li.group {padding: 3px 0;}
+.appthaReview .form-add ul.data-table li label{float: left;font-weight: normal; margin-bottom:6px; }
+.appthaReview .form-add ul.data-table .starContainer{float: right;}
+.appthaReview .form-add ul.data-table li .fk-give-star{margin:0;}
+.appthaReview .form-add .buttons-set{margin: 0;padding: 0;border: 0;}
+.appthaReview .form-add .buttons-set button.button{
+
+}
+.appthaReview .form-add .buttons-set button.button:hover{
+
+}
+.appthaReview .form-add .buttons-set button.button span{}
+
+.block .review-details{padding: 0 9px;}
+.block .review-details h5{font: normal 12px Arial, sans-serif;margin: 0; padding-bottom: 5px;}
+.block .review-details h6{font: italic 12px Arial, sans-serif;margin: 0;}
+.block.recently-reviewed ul li{border-top: solid 1px rgb(219, 219, 219);}
+.block.recently-reviewed ul li:first-child{border-top: none;}
+
+.appthaReview .box-reviews.box-reviews-detail .reivew-header h3{}
+.appthaReview .box-reviews.box-reviews-detail .review-details{padding:0 0 15px;clear: both;}
+.appthaReview .box-reviews.box-reviews-detail .review-header{margin:0 0 10px;}
+.appthaReview .box-reviews.box-reviews-detail .reivew-header h5.nickName{text-align:right}
+ul.ratings-table{ margin-top:10px; }
+ul.ratings-table li:first-child{border: none;padding-left: 0;}
+ul.ratings-table li{float: left;margin-right: 10px;border-left: solid 1px #ccc;padding-left: 10px;min-width: 100px;}
+ul.ratings-table li label {  float: left;  display: block; font-weight: normal;  padding-right: 5px;  font-size: 13px;  text-transform: none;}
+ul.ratings-table li .rating-box{float: left; position:relative; top:3px; }
+
+.block.recently-reviewed .block-title strong {background: url(../images/recentReviews.gif) no-repeat 0 1px;padding-left: 21px;}
+
+/*april5 2013*/
+.product-collateral { padding:25px; }
+.product-collateral .box-collateral { clear: both; }
+
+.product-view { margin-top: 10px;}
+.product-view.list-view{ margin-top: 0 !important;}
+#inner_review .review-details{padding: 10px 0 10px 0;}
+#inner_review .report_grid{padding:0 0 10px 0;}
+#inner_review .fright{float: right;}
+
+ul#avrg_rating{margin: 0; padding: 5px 0; float: left;background: inherit;}
+ul#avrg_rating li{float: none;overflow: hidden;padding: 0;border-left: 0; margin: 0; margin-bottom:2px; }
+ul#avrg_rating li label{width: 150px;}
+#error_message{clear: both;margin: 3px 0 0;font-size: 11px;font-weight: bold;color: #eb340a;}
+.success_msg{color:green; font-weight: normal;}
+.result_content {  color: green;  font-weight: normal;  font-size: 13px; margin-bottom: 10px;}
+span.vote_review{color: #e26703;}
+small.slash{color: #1e7ec8;}
+textarea#txtMsg{width: 217px;}
+
+.empty_content{padding: 5px;}
+#review_details{text-align: right;}
+#review_details button.button{clear: both; margin-top: 8px;}
+h2.review_title{float: left; margin-bottom: 15px; font-size:18px; font-family:arialbold; }
+.all-reviews.fright{clear:both;margin:0 0 10px 0}
+span.nickName{ text-transform: capitalize;}
+#customer-reviews h3{ font-size: 15px !important; margin: 0px !important; font-weight: bold !important; font-family:arialbold !important;  text-transform: capitalize !important;}
+#customer-reviews h2{font-size: 15px !important; font-weight: bold; font-family:arialbold;   border-bottom: 1px solid #ccc;}
+#review-form h3{ font-size:14px; text-transform: none; }
+#review-form h2 {  font-size: 16px;}
+#review-form label{ font-size:14px; }
+.form-add h5 {  font-size: 14px;  font-weight: 600; text-transform:none; }
+.form-add h2{ font-family: arialbold; }
+.amazereviews-index-view .product-view{ padding:0; }
+.amazereviews-index-index .main{ background: none; }
+.amazereviews-index-index .product-view .product-collateral{ padding:0; }
+.amazereviews-index-index .col-main{ background: #fff; padding:20px; }
+.amazereviews-index-index .col2-right-layout .col-main{ background: #fff; padding:20px; }
+.amazereviews-index-view .main{ background: none; }
+.amazereviews-index-view .product-view .product-collateral{ padding:0; }
+.amazereviews-index-view .col-main{ background: #fff; padding:20px; }
+.amazereviews-index-view .col2-right-layout .col-main{ background: #fff; padding:20px; }
+#review-form .data-table li.group {    clear: both;    margin-bottom: 10px;}
+#review-form .data-table li{ margin-bottom: 0; }
+
+@media only screen and (max-width: 760px){ 	
+	.appthaReview .line{margin: 10px 0px; float: left;}
+	.input-box textarea{ width: 100%;}
+	
+}

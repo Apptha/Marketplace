@@ -1,0 +1,351 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+.clear{clear:both; height:0; font-size:0}
+.clearfix:after{ clear:both;  display:block;  content:"";  height:0;  visibility:hidden}
+.clearfix{ display:inline-block}
+
+* html .clearfix{ height:1%}
+.clearfix{ display:block}
+li.clearfix{ display:list-item}
+
+.logo-onepage{ background: transparent url(images/onestepcheckout.png) no-repeat scroll 100% 0;width:528px;height:48px;margin:0 auto;}
+.onepage-page-title{margin:16px 0 17px 5px;overflow: hidden;width: 100%;}
+.login-reg{width:100%;border-bottom: 2px solid #4e4e4e;margin:17px 0 10px 0;font-weight:bold;}
+.onepage li{list-style: none; display: inline-block;}
+.onepage .form-list .input-box { width:auto;}
+.apptha_co-form .input-box{width:auto;}
+.apptha_co-form .apptha_checkout_column-1, .apptha_co-form .apptha_checkout_column-2, .apptha_co-form .apptha_checkout_column-3{width:31%;box-sizing: border-box;float:left; padding:0 8px 0 0;margin: 0 10px 0 0; background: transparent url(images/line-gradient.gif) no-repeat scroll 100% 0;}
+.apptha_co-form .apptha_checkout_column-3{margin: 0; background: none; padding:0; width:34%;box-sizing: border-box;}
+.apptha_co-form .apptha_checkout_column-2{margin-right: 14px; }
+
+.apptha_co-form .onepage .page-title{border: 0; margin-bottom: 10px;}
+.onepage .form-list{width: 100%;padding:0;box-sizing: border-box;}
+
+.billing-bg {width:31px;height:41px;background: transparent url(images/1.png) no-repeat scroll 100% 0;display:block;float:left;margin-right:5px; }
+.shipping-method-bg {width:31px;height:41px;background: transparent url(images/2.png) no-repeat scroll 100% 0;display:block;float:left;margin-right:5px; }
+.payment-bg {width:31px;height:41px;background: transparent url(images/3.png) no-repeat scroll 100% 0;display:block;float:left;margin-right:5px; }
+.review-bg {width:31px;height:41px;background: transparent url(images/tick-icon.png) no-repeat scroll 100% 0;display:block;float:left;margin-right:5px; }
+.shipment-methods { padding-left:10px; }
+.shipment-methods label{ color: #181818;}
+/* .ship-address{ float: left !important;} */
+/* .address-checkbox { float: left !important; margin-top: 2px; } */
+
+.gift-messages {padding-left: 9px; margin: 12px 0 0;}
+.guest-reg{padding:0 0 5px 3px;display:block;color: #E87403;font-weight: bold;}
+.apptha_checkout-payment-method-load {padding-left: 7px;}
+.apptha_checkout-review-load {padding:0 0 10px 0; }
+#billing-new-address-form{margin: 0;}
+#billing-new-address-form .billing-address-container{width: 268px;}
+.col-1 .control {float:left;padding:0 10px 0 0;}
+.apptha_onepage-shipping_method dd {font-weight:bold; color: #181818; }
+.shipment-methods dd {margin-bottom: 5px;}
+.product-total {border-top:1px solid #ccc;border-bottom: 1px solid #ccc;}
+.col-1 .control label {padding:0 0 0 5px;}
+#advice-required-entry-ccsave_expiration{width:100px;}
+.fields.cust_name .validation-advice{width:auto;}
+.name-lastname label {margin: 0;}
+
+.apptha_checkout-review-load .onestepcheckout-summary {display:table;}
+.apptha_checkout-review-load .onestepcheckout-summary tr th { border-bottom: 1px solid #ccc; }
+#onepage-login{padding: 0 0 20px 0;}
+.apptha_onepage-billing{padding: 0;}
+.apptha_onepage-billing .customer-name .input-box input.input-text{float:left;padding: 2px 2px;border-image: initial;}
+.apptha_onepage-billing .wide .input-box input.input-text{width:220px;}
+.apptha_onepage-billing .wide .input-box .address-select{width:220px;}
+.apptha_onepage-billing .wide label{width:220px;}
+
+.apptha_onepage-shipping{padding: 0 0 20px 0;}
+.apptha_onepage-shipping .wide .input-box input.input-text{width:220px;}
+.apptha_onepage-shipping .wide .input-box .address-select{width:220px;}
+.apptha_onepage-shipping .wide label{width:220px;}
+
+.apptha_onepage-shipping_method{padding: 0 0 20px 0;}
+.apptha_onepage-payment{padding: 0 0 20px 0;}
+.apptha_onepage-review{padding: 0 0 20px 0;}
+
+.shipment-methods .shipping_info{margin:10px 0;}
+.onestepcheckout-shippinginfo{width: 96%;border:1px solid #ccc;box-sizing: border-box;}
+.onestepcheckout-shippinginfo thead tr th{border-bottom:  1px solid #ccc;padding: 0 3% 5px;font-weight: bold;}
+.onestepcheckout-shippinginfo tbody tr td{padding: 0 3% 5px;}
+.onestepcheckout-shippinginfo tbody .rate-right {text-align: left;}
+.onestepcheckout-shippinginfo tbody .rate-center {text-align: left; padding-left:5px; }
+.apptha_onepage_bg_fade{background-color: #555;box-sizing: border-box;height:100%;left: 0;margin: 0;padding: 0;position: fixed;top: 0;bottom:0;width: 100%;z-index: 1000;}
+.apptha_onepage_bg_fade a{display: inline-block; width: 100%; height: 100%; cursor: default;}
+.apptha_onepage-review .onestepcheckout-summary th.name, th.qty, th.total{width:75px; font-weight: bold; color: #181818;}
+.apptha_onepage-review .onestepcheckout-summary thead{border-bottom:  1px solid #ccc;}
+.apptha_onepage-review .onestepcheckout-summary tr.items td{ border-bottom: 1px solid #ccc; padding: 5px 0;}
+.apptha_onepage-review .onestepcheckout-summary tr.items td{width:75px;}
+.apptha_onepage-review .onestepcheckout-totals tr td{width:90px;}
+.apptha_onepage-review .onestepcheckout-totals tr td{border-bottom: 1px solid #ccc; padding: 5px 0;}
+.apptha_onepage-checkout-shipping-method-additional-load .input-box input{width:176px;}
+.apptha_onepage-checkout-shipping-method-additional-load .input-box textarea{width:176px;}
+.agree label{padding-left: 5px;}
+.page-title h1{color:#333;text-align: left; font-size: 22px; line-height: 30px;}
+.loading-ajax, .please-wait-loading{background-image: url(images/ajax-loader.gif);background-repeat: no-repeat;}
+div.loading-ajax { height: 50px;text-align: center;background-position: center center;}
+
+div.please-wait-loading {height:40px;text-align: center;background-position: 50% 0; margin:5% 0;}
+.load-wait{color:#E87403;}
+div.wait{height:80px;float:right;}
+button.btn-class{padding: 10px;background-color:#FF5C00;float:left;}
+
+/* login-popup design */
+a.close{float:right;}
+.apptha_onepage_gift-form{background:#fff;box-sizing: border-box;padding:10px;border:2px solid #828282;min-height:160px;width: 290px;border-radius:7px; height: auto;}
+.clear{clear: both;}
+.onestepcheckout-error{color:red;font-weight: normal;}
+button.login-btn{background-color: #66A094;padding: 5px;font-weight: bold;color:#fff;border:none;}
+.button-set {border: none;margin: 0;}
+
+/* login-popup design */
+.input-box .v-fix #ccsave_expiration{width:152px;}
+.onestepcheckout-summary .total{text-align: right}
+.onestepcheckout-totals .product-total .value .price{float:right !important}
+.grand-total .value .price{float:right !important}
+.apptha_checkout-review-table-wrapper tr{border-bottom:1px solid #ccc;}
+.apptha_checkout-review-table-wrapper tr th{padding:2% 0;}
+.apptha_checkout-review-table tr td{border-bottom:1px solid #ccc;padding: 5px 2px 5px 2px; color: #181818;}
+.apptha_checkout-review-table .cart-price .price{width: 100%;text-align: right;display: block;}
+.apptha_checkout-review-table tr td .product-name{ color: #181818; padding-right: 5px;}
+.appptha_checkout-review-table tr td.grandtotal{ color: #333;}
+caption, th, td{font-weight:normal;}
+.onestepcheckout-coupons{margin: 0 0 10px 0; overflow: hidden;}
+.onestepcheckout-coupons button.button{float: right;}
+.onestepcheckout-coupons .apptha_coupon_remove{margin-right: 10px;}
+.sp-methods select.month{width:152px;}
+
+/*user name,password same line design*/
+.form-list .field{margin-right: 0;width: auto;}
+.form-list .field select{width: 260px; }
+.form-list .fields.shipping_countrey .field select{width: 254px; }
+.form-list .fields.address input.input-text{margin-bottom: 10px;}
+.fields.shipping_countrey {clear: both;}
+.form-list .dob{width:100%;}
+.form-list .dob input{width:50px;}
+.apptha_onepage-billing .form-list input.input-text{width:120px; padding: 3px 2px;box-sizing: border-box;}
+.apptha_onepage-billing .form-list .fields input.input-text{width: 254px; }
+.apptha_onepage-billing .form-list select {padding: 2px 2px; width: 254px;box-sizing: border-box;}
+
+/* First name - Last name */
+.apptha_co-form .customer-name .name-firstname{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name .name-firstname .input-text{width:120px; }
+.apptha_co-form .customer-name .name-lastname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_co-form .customer-name .name-lastname .input-text{width:120px; }
+
+/* Prefix - First name - Last name */
+.apptha_co-form .customer-name-prefix .name-prefix{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix .name-prefix .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix .name-firstname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_co-form .customer-name-prefix .name-firstname .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix .name-lastname{float:left; width:262px; margin: 0; padding-top: 8px}
+.apptha_co-form .customer-name-prefix .name-lastname .input-text{width:255px; }
+
+
+/* Prefix - First name - Last name - Suffix */
+.apptha_co-form .customer-name-prefix-suffix .name-prefix{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix-suffix .name-prefix .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix-suffix .name-firstname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_co-form .customer-name-prefix-suffix .name-firstname .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix-suffix .name-lastname{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix-suffix .name-lastname .input-text{width:255px; }
+.apptha_co-form .customer-name-prefix-suffix .name-lastname{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix-suffix .name-lastname .input-text{width:255px; }
+
+/* First name - Middle Name - Last name */
+.apptha_co-form .customer-name-middlename .name-firstname{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-middlename .name-firstname .input-text{width:120px; }
+.apptha_co-form .customer-name-middlename .name-middlename{float:left;margin-right: 0; width:135px; margin-left: 4px;}
+.apptha_co-form .customer-name-middlename .name-middlename .input-text{width:120px; }
+.apptha_co-form .customer-name-middlename .name-lastname{float:left;padding-top: 8px; width:262px; margin: 0;}
+.apptha_co-form .customer-name-middlename .name-lastname .input-text{width:255px; }
+
+/* Prefix - First name - Middle Name - Last name */
+.apptha_co-form .customer-name-prefix-middlename .name-prefix{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix-middlename .name-prefix .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix-middlename .name-firstname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_co-form .customer-name-prefix-middlename .name-firstname .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix-middlename .name-middlename{float:left;margin-right: 8px; width:120px;}
+.apptha_co-form .customer-name-prefix-middlename .name-middlename .input-text{width:120px; }
+.apptha_co-form .customer-name-prefix-middlename .name-lastname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_co-form .customer-name-prefix-middlename .name-lastname .input-text{width:120px; }
+
+/* Prefix - First name - Middle Name - Last name-Suffix */
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-prefix, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-prefix{float:left;margin: 0 8px 0 0; width:120px;}
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-prefix .input-text, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-prefix .input-text{width:120px; }
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-firstname, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-firstname{float:left;padding-left: 6px; width:120px; margin: 0;box-sizing: border-box;}
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-firstname .input-text, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-firstname .input-text{width:120px; }
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-middlename, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-middlename{float:left;margin-right: 8px;margin-bottom:0; width:120px; padding-top: 8px;}
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-middlename .input-text, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-middlename .input-text{width:120px; }
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-lastname, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-lastname{float:left;padding-left: 6px; width:120px; margin: 0; padding-top: 8px;box-sizing: border-box;}
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-lastname .input-text, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-lastname .input-text{width:120px; }
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-suffix, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-suffix{float:left;padding-top: 8px; width:262px; margin: 0;}
+.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-suffix .input-text, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-suffix .input-text{width:255px; }
+.apptha_shipping-new-address-form input[type="text"]{width:254px;}
+.apptha_register-customer-password{padding-right: 9px;}
+.apptha_register-customer-password, .apptha_register-customer-confirmpassword{float:left;width:125px;}
+
+.form-list input.city-input{width: 253px;}
+.form-list select.country-input{width: 253px;}
+.apptha_co-form #register-customer-newsletter .field{ width: 250px;}
+
+/*Checkout box css*/
+.fieldsbilling{float:left;width:134px;}
+.field-set{padding:0 0 0 8px;line-height: 20px;}
+.form-list .customer-dob .dob-day, .form-list .customer-dob .dob-month{width:86px;}
+.form-list .dob-field .customer-dob .dob-year { width:90px; }
+.dob-month input{width: 50px;}
+.checkout-agreements .agreement-content {overflow: auto;padding: 10px;color: #555;}
+.agree-check{ float: left; margin-top: 3px;}
+
+
+.form-list .customer-dob .dob-day input.input-text, .form-list .customer-dob .dob-month input.input-text{width: 60px;}
+.form-list .customer-dob .dob-year input.input-text {width: 80px;}
+
+.form-list .input-city-field .input-box{ width: 255px;}
+.form-list input.input-city{ width: 255px;}
+.form-list .input-country-field { width: 262px;}
+.form-list .input-country-field select{ width: 260px;}
+
+.form-list .input-company-field{ width: 262px;}
+.form-list .input-company-field .input-company{ width: 255px;}
+.form-list .input-city-field-ship{ width: 255px;}
+.form-list .input-city-field-ship .input-box{ width: 255px;}
+.form-list input.input-city-ship{ width: 255px;}
+.form-list .input-country-field-ship { width: 262px;}
+.form-list .input-country-field-ship select{ width: 260px;}
+
+.onestepcheckout-comments {margin: 0 0 10px 0;font-weight: bold;}
+.onestepcheckout-comments textarea {margin-top: 2px;width: 100%;}
+.onestepcheckout-toc-terms {margin-left: 5px;margin-right:0;margin-top: 0;overflow: auto;padding-right: 10px; text-align:justify;}
+.onestepcheckout-terms-popup {background:#fff;padding:10px;border:2px solid #828282;border-radius:7px;width:500px;overflow:auto; height:300px;box-sizing: border-box;}
+p.close{float:right;}
+.onestepcheckout-enable-terms{ padding-bottom:10px; margin: 0 0 10px 0; position:relative; }
+.onestepcheckout-enable-terms input{ position:relative; top:2px;  }
+.gift-messages input{ position:relative; top:2px; } 
+.gift-messages-form input{position:relative; top:2px; }
+.apptha_onepage-shipping_method input{ position:relative; top:2px; }
+.apptha_onepage_terms-condition .close {    background: none;    top: 10px;    right: 5px;}
+
+.onestepcheckout-summary,.onestepcheckout-totals {border-collapse: collapse;}
+table.onestepcheckout-summary {width: 100%;}
+table.onestepcheckout-summary td.name {width: 55%;}
+table.onestepcheckout-summary td.qty,table.onestepcheckout-summary th.qty{width: 10%;text-align: center;}
+table.onestepcheckout-summary td.total,table.onestepcheckout-summary th.total{width: 32%;text-align: right;}
+table.onestepcheckout-totals {width: 100%;margin-bottom: 20px;}
+table.onestepcheckout-totals tr.grand-total td {font-weight: bold;}
+table.onestepcheckout-totals td.value {width: 35%;text-align: right;}
+table.onestepcheckout-totals tr.grand-total td {font-weight: bold;}
+table.onestepcheckout-totals td.title {width: 65%;text-align: right;}
+table.onestepcheckout-totals td.value {width: 35%;text-align: right;}
+
+.onepage li.dob-field { width: 262px; clear: both;}
+.onepage li.dob-field .field{ clear: both; width: 262px; float: none;}
+
+.onepage li.gender-2column { width: 125px;float: left;}
+.onepage li.gender-2column .input-text{ clear: both; width: 120px; float: none;}
+
+.onepage li.tax-2column { width: 125px; float: left; padding-left: 9px;margin: 0 0 12px;box-sizing: border-box;}
+.onepage li.tax-2column .input-text{ clear: both; width: 120px; float: none;}
+
+.onepage li.tax-1column { width: 262px;}
+.onepage li.tax-1column .input-text{width: 255px;}
+
+.onepage li.gender-1column { width: 262px;}
+.onepage li.gender-1column select{width: 255px;}
+
+.gift-messages-form .item .details .form-list .field { width: 196px; }
+
+#shipping-new-address-form .shipping-company{ width: 262px;}
+#shipping-new-address-form .shipping-company .input-box .input-text{width: 255px;}
+#shipping-new-address-form .shipping-address-field{ width: 262px;}
+#shipping-new-address-form .shipping-address-field .input-box .input-text{ width: 255px; }
+#shipping-new-address-form .wide{ width: 262px;}
+#shipping-new-address-form .wide .input-box .input-text{ width: 255px; }
+#shipping-new-address-form .shipping-city-field .input-box .input-text{ width: 254px; }
+#shipping-new-address-form input.input-text{padding: 2px 3px  }
+
+.cart .page-title{clear:both;}
+.onestepcheckout-enable-terms label{ padding-top: 3px; }
+.onestepcheckout-enable-terms em{ color:#EB340A }
+.apptha_onepage-billing #billing-address-select{width: 260px;}
+
+.fields.newsletter-lable input[type="checkbox"]{float: left;margin:1px 5px 0 0;}
+#register-customer-newsletter{clear: both;}
+.onestepcheckout-coupons input.input-text{ margin-bottom: 5px;}
+.onestepcheckout-coupons .apptha_onepage_couponcode{width: 100%;}
+.onestepcheckout-coupons .apptha_onepage_coupon_err_msg{color: #df280a;}
+.apptha_onepage_terms-condition{display:none;position: fixed;z-index: 99999;}
+
+.onestepcheckout-feedback{padding: 5px 0;}
+.onestepcheckout-feedback-freetext{padding: 10px 0;}
+.apptha_id_feedback_freetext{width:100%;}
+.apptha_onepage_id_feedback_freetext_div label{font-weight: bold;}
+#iframe-warning{text-align:left;}
+.apptha_onepage-review, .apptha_onepage-billing, .apptha_onepage-shipping_method, .apptha_onepage-payment{width: 100%;}
+
+@media screen and (min-width : 886px) and (max-width : 980px) {
+    .apptha_co-form .apptha_checkout_column-1{clear: both; width: 290px;}
+    .apptha_co-form .apptha_checkout_column-2{  width: 280px;background: none;}
+    .apptha_co-form .apptha_checkout_column-3{clear: both; width: 90%;background: none;}
+}
+
+@media screen and (min-width : 460px) and (max-width : 885px) {
+    .apptha_co-form .apptha_checkout_column-1{clear: both; width: 290px;background: none;}
+    .apptha_co-form .apptha_checkout_column-2{  width: 290px;background: none;}
+    .apptha_co-form .apptha_checkout_column-3{clear: both; width: 90%;background: none;}
+    .onestepcheckout-terms-popup {width: 420px;}
+    .apptha_onepage_terms-condition{top:10px; z-index: 99999;}
+    .onestepcheckout-terms-popup {width: 280px;}
+}
+@media screen and (min-width : 270px) and (max-width : 580px) {
+    .apptha_co-form .apptha_checkout_column-3{clear: both; width: auto;}
+    .onestepcheckout-terms-popup {width: 280px;margin:0 auto;}
+}
+
+@media screen and (max-width: 459px) {
+    .apptha_co-form .apptha_checkout_column-1{clear: both; margin: 0 auto; width: auto;background: none;}
+    .apptha_co-form .apptha_checkout_column-2{clear: both; margin: 0 auto; width: auto;background: none;}
+    .apptha_co-form .apptha_checkout_column-3{clear: both; margin: 0 auto; width: auto;background: none;}
+    .onestepcheckout-terms-popup {width: 250px;}
+}
+
+@media screen and (min-width : 270px) and (max-width : 799px) {
+	.apptha_onepage-billing .form-list input.input-text{width:254px;}
+	.onepage li.tax-2column{padding-left: 0;}
+	.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix{width:255px;}
+	.apptha_billing-new-address-form .input-box select, .apptha_shipping-new-address-form .input-box select{width:254px;}	 
+}
+
+@media screen and (min-width : 800px) and (max-width : 1024px) {
+	.onepage li.tax-2column{padding-left: 0;}
+	.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .field, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .field{width:100%;}
+	.apptha_billing-new-address-form .input-box input[type=text], .apptha_shipping-new-address-form .input-box input[type=text], .apptha_onepage-billing .form-list input.input-text{width:100%}
+	.apptha_billing-new-address-form .customer-name-prefix-middlename-suffix .name-firstname, .apptha_shipping-new-address-form .customer-name-prefix-middlename-suffix .name-firstname, .apptha_co-form .customer-name .name-lastname{padding-left: 0;}
+}	

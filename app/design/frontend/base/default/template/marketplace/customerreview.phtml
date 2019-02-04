@@ -1,0 +1,69 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+ ?>
+    <h2> <?php echo $this->__('Seller Reviews'); ?></h2>
+    <?php
+    $collection = $this->getCollection();
+    if (count($collection) > 0) {
+        foreach ($collection as $_collection) {
+            ?>
+            <div class="all_review_container">   
+                <div class="all_reviews_details">
+                    <p class="all_reviews_block">
+                        <?php
+                        $id = $_collection['seller_id'];
+                        $store_name = Mage::getModel('marketplace/sellerreview')->getSellerInfo($id);
+                        ?>            
+             <label class="all_review_rating" style="width:<?php echo round($_collection['rating'] * 20); ?>%;"></label>
+             
+                    </p>
+                    <b><?php echo $store_name . '</br>'; ?></b>                 
+                    <span>
+                        <?php $date = $_collection['created_at'];
+                        echo $new_date = date('M j, Y', strtotime($date)) . '</br>';
+                        ?>               
+                    </span>
+                </div> 
+                <p class="all_reviews_comments">
+            <?php echo $review = $_collection['review'] . '</br>'; ?> 
+                </p>
+            </div>
+        <?php
+        }
+        echo $this->getPagerHtml();
+    } else {
+        echo $this->__('You have not review any seller');
+    }
+}
+?>

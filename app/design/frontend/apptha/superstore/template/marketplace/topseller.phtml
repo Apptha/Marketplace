@@ -1,0 +1,120 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$model = Mage::getModel ( 'customer/customer' )->getCollection ()->addAttributeToFilter ( 'customerstatus', 1 );
+$id = array ();
+if ($model->getSize () > 0) { 
+foreach ( $model as $_model ) {
+$id [] = $_model ['entity_id'];
+}
+}
+if(count($id)){
+$collection = Mage::getModel ( 'marketplace/sellerprofile' )->topSeller ( $id );
+$titleArray=array();
+foreach ( $collection as $_collection ) {
+ $titleArray[]=   $_collection['store_title'];
+    
+}
+$storeTitles = array_filter($titleArray);
+$count = count ( $collection );
+}else{
+$collection = array();
+$count = 0;
+}
+if ($count > 0 && !empty($storeTitles)) {
+?>
+ 
+<div class="seller-block-logo-inner">
+<h2 class="home_pdt_name">
+<span class="icon">icon</span>
+<?php echo $this->__('Top<br>Sellers'); ?>
+</h2>
+<div class="<?php if($count>6){
+    echo 'slider-carousel'; 
+} else {
+    echo 'no-slider'; 
+} ?>">
+
+   
+        <?php
+
+foreach ( $collection as $_collection ) { 
+?>
+ <div class="slider"> 
+
+<?php $seller_id = $_collection ['seller_id'];
+$target_path = 'marketplace/seller/displayseller/id/' . $seller_id;
+$mainUrlRewrite = Mage::getModel ( 'core/url_rewrite' )->load ( $target_path, 'target_path' );
+$getRequestPath = $mainUrlRewrite->getRequestPath ();
+$get_requestPath = Mage::getUrl ( $getRequestPath ); ?>
+<?php if(!empty($_collection['store_title'])){?>
+<div class="product_image_div">
+<a href="<?php echo $get_requestPath; ?>"
+title="<?php echo $_collection['store_title']; ?>">
+<?php if (strpos ( $_collection ['store_logo'], '.' ) ) {?>
+<img alt="" src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $_collection['store_logo']; ?>" />
+<?php }  else { ?>
+<img alt="" src="<?php echo $this->getSkinUrl('images/home-store-logo.png'); ?>" /> 
+<?php  } ?>
+</a>
+</div><?php }?>
+</div>
+<?php } ?>
+       </div>
+       </div>
+<?php
+
+}
+?>
+ <script type="text/javascript">
+$mp = jQuery.noConflict();
+$mp(document).ready(function(){
+	// Checking whether desktop or not
+	if(window.innerWidth <= 800 && window.innerHeight <= 600) {
+		$mp('.slider-carousel').bxSlider({
+			infiniteLoop: false,
+			hideControlOnEnd:true,
+			minSlides: 1,
+			moveSlides: 4,
+			slideMargin: 10
+			});
+	  } else {
+	  $mp('.slider-carousel').bxSlider({
+			  infiniteLoop: false,
+			  hideControlOnEnd:true,
+			  minSlides: 3,
+			  maxSlides: 4,
+			  slideWidth: 280,
+			  slideMargin: 5
+			  });
+	  }
+});
+</script>

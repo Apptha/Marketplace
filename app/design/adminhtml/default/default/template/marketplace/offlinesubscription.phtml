@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ */ 
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+
+<script type="text/javascript" src="<?php echo $this->getJsUrl('prototype/validation.js') ?>"></script>
+</head>
+<body>
+<?php 
+$sellerId = $this->getRequest()->getParam('id');
+
+$currencyCode = Mage::app()->getStore()->getCurrentCurrencyCode(); 
+$currencySymbol = Mage::app()->getLocale()->currency( $currencyCode )->getSymbol();  ?>
+<div class="offline-list-plans">
+<?php 
+$subscriptionList = $this->getSubscriptionPlanList();
+$count = count($subscriptionList);
+?>
+<h2><?php echo $this->__('Select a Subscription Plan');?></h2>
+<table  style="border: 0px solid #ccc;" >
+<tr class="admin-offlinesubscription">
+<th><?php echo $this->__('Plan Name')?></th>
+<th><?php echo $this->__('Subscription Period')?></th>
+<th><?php echo $this->__('Validity Period')?></th>
+<th><?php echo $this->__('Subscription Fee').'('.$currencySymbol.')'?></th>
+<th><?php echo $this->__('Number of Products Allowed')?></th>
+<th><?php echo $this->__('Offer Period');?></th>
+<th><?php echo $this->__('Offer Validity Period'); ?></th>
+<th><?php echo $this->__('Subscribe')?></th>
+</tr>
+<?php if($count>=1){ ?>
+<?php 
+foreach($subscriptionList as $list){ 
+$invoiceFirst = $sellerId;
+$subscriptionPlanTrim = $list->getPlanName ();
+$invoiceSecond = substr ( $subscriptionPlanTrim, 0, 4 );
+$invoiceThird = rand ( 1, 100000000000 );
+$invoiceId = $invoiceFirst . $invoiceSecond . $invoiceThird;
+?>
+<tr class="offline-data_subscription">
+<td><?php echo $list->getPlanName();?></td>
+<td><?php if ($list->getSubscriptionPeriod()==1){ echo 'Monthly'; } else { echo 'Yearly'; }?></td>
+<td><?php echo $list->getValidityPeriod();?></td>
+<td><?php echo $list->getYearlyFee();?></td>
+<td><?php echo $list->getProductCount();?></td>
+<td><?php if($list->getOfferPeriod()==1){ echo 'Monthly'; } elseif($list->getOfferPeriod()==2) { echo 'Yearly';}?>
+<td><?php echo $list->getOfferValidityPeriod();?>
+<td><a href="<?php echo Mage::helper('adminhtml')->getUrl('marketplaceadmin/adminhtml_subscription/saveOfflineSubscription', array('sellerid' => $sellerId, 'id' =>$list->getPlanId(),'invoice' =>$invoiceId));?>"><img src="<?php echo Mage::getBaseUrl('skin') . "frontend/default/market_place/images/subscribe.jpg"; ?>" alt="Edit" height="35" width="150"/></a></td>
+</tr>
+<?php 
+}
+?>
+<?php } else { ?>
+	<tr class="offline-data_subscription">
+	<td colspan="9"><?php echo $this->__('No Subscription Plan Added');?></td>
+	</tr>
+<?php }?>
+</table>
+
+</div>
+
+</body>
+</html>

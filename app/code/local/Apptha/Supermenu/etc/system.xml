@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+  * Super Menu Module System Configuration File
+  */
+-->
+ <!-- 
+    config tab start
+     -->
+<config>
+    <tabs>
+        <Apptha translate="label" module="supermenu">
+            <label>Apptha</label>
+            <sort_order>100</sort_order>
+        </Apptha>
+    </tabs>
+    <sections>
+        <supermenu translate="label" module="supermenu">
+            <label>Super Menu</label>
+            <tab>Apptha</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>200</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general translate="label">
+                    <label>General</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label comment">
+                            <label>Enable</label>                           
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <ajax_load_content translate="label comment">
+                            <label>Load content through ajax</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ajax_load_content>            
+                        <display_empty_categories translate="label comment">
+                            <label>Display empty categories</label>
+                            <comment><![CDATA[An empty category is a category that has no products]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </display_empty_categories>
+                        <max_level translate="label comment">
+                            <label>Visible menu depth</label>
+                            <comment><![CDATA[e.g. 1, 2, 3, 4 (0 - disable limits). For example, if you set this value to <b>2</b>, only second level categories will be displayed]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </max_level>
+                        <show_home_link translate="label">
+                            <label>Show the link "Home"</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </show_home_link>
+                        <non_breaking_space translate="label comment">
+                            <label>Replace spaces with non-breaking spaces</label>
+                            <comment><![CDATA[Insert <b>&amp;nbsp;</b> instead of a space in a name of a menu item]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </non_breaking_space>                       
+                    </fields>
+                </general>
+                <columns translate="label">
+                    <label>Columns</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>15</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <count translate="label comment">
+                            <label>Number of columns</label>
+                            <comment>e.g. 1, 2, 3. The maximum number of columns in the popup</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </count>
+                        <divided_horizontally translate="label comment">
+                            <label>Split categories left to right into columns</label>
+                            <comment><![CDATA[Next Sub-category is placed to the next column]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </divided_horizontally>
+                         <!-- 
+    divided horizontally tab ends
+     -->
+                        <integrate translate="label comment">
+                            <label>Merge small subcategories</label>
+                            <comment><![CDATA[Merge small subcategory lists into one column (except the extream left categories)]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </integrate>
+                    </fields>
+                </columns>
+                 <!-- 
+    popup tab start
+     -->
+                <popup translate="label">
+                    <label>Popup settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <width translate="label comment">
+                            <label>Width</label>
+                            <comment>in pixels, (0 - no fixed width)</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </width>
+                        <top_offset translate="label comment">
+                            <label>Top offset</label>
+                            <comment>in pixels, (0 - to calculate the offset automatically)</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </top_offset>
+                         <!-- 
+                         top offset end
+    delay dispalying tab start
+     -->
+                        <delay_displaying translate="label comment">
+                            <label>Delay before displaying</label>
+                            <comment>in milliseconds</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </delay_displaying>
+                         <!-- 
+                         delay dispaly ends
+    delay hiding tab start
+     -->
+                        <delay_hiding translate="label comment">
+                            <label>Delay before hiding</label>
+                            <comment>in milliseconds</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </delay_hiding>
+                    </fields>
+                </popup>
+            </groups>
+        </supermenu>
+         <!-- 
+    super menu tab ends
+     -->
+    </sections>
+</config>
+ <!-- 
+    config tab ends
+     -->

@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+ -->
+<layout version="0.1.0">
+	<marketplaceadmin_adminhtml_manageseller_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Manage Seller</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_manageseller" name="manageseller" />
+		</reference>
+	</marketplaceadmin_adminhtml_manageseller_index>
+	<marketplaceadmin_adminhtml_order_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Orders</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_order" name="order" />
+		</reference>
+	</marketplaceadmin_adminhtml_order_index>
+	 <marketplaceadmin_adminhtml_sidebar_index>
+        <reference name="content">
+            <block type="marketplace/adminhtml_sidebar" name="appthasidebarslider" />
+        </reference>
+    </marketplaceadmin_adminhtml_sidebar_index>
+	<marketplaceadmin_adminhtml_orderview_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>View Order Details</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_orderview" name="orderview" />
+		</reference>
+	</marketplaceadmin_adminhtml_orderview_index>
+	<marketplaceadmin_adminhtml_commission_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Commission</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_commission" name="order" />
+		</reference>
+	</marketplaceadmin_adminhtml_commission_index>
+	<marketplaceadmin_adminhtml_paymentinfo_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Payment Details</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_Paymentinfo" name="paymentinfo" />
+		</reference>
+	</marketplaceadmin_adminhtml_paymentinfo_index>
+	<marketplaceadmin_adminhtml_products_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Products</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_products" name="products" />
+		</reference>
+	</marketplaceadmin_adminhtml_products_index>
+	<marketplaceadmin_adminhtml_sellerreview_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Reviews and Ratings</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_sellerreview" name="sellerreview" />
+		</reference>
+	</marketplaceadmin_adminhtml_sellerreview_index>
+	<marketplaceadmin_adminhtml_commission_addcomment>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Manage Seller</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_commission_edit" name="add_comment" />
+		</reference>
+	</marketplaceadmin_adminhtml_commission_addcomment>
+	<marketplaceadmin_adminhtml_manageseller_setcommission>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Manage Seller</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_manageseller_edit" name="set_commission" />
+		</reference>
+	</marketplaceadmin_adminhtml_manageseller_setcommission>
+	<marketplaceadmin_adminhtml_subscription_index>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Subscription plans</title>
+            </action>
+            
+            <action method="addCss">
+                <stylesheet>marketplace/marketplace.css</stylesheet>
+            </action>       
+        </reference>
+        <reference name="content">          
+            <block type="marketplace/adminhtml_subscription" name="subscribe" template="marketplace/subscription.phtml"/>   
+        </reference>
+    </marketplaceadmin_adminhtml_subscription_index>
+    <marketplaceadmin_adminhtml_sellersubcriptionplans_index>
+        <reference name="head">
+            <action method="setTitle" translate="title">
+                <title>Seller subcription plans</title>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="marketplace/adminhtml_sellersubcriptionplans" name="sellersubcriptionplans" />
+        </reference>
+    </marketplaceadmin_adminhtml_sellersubcriptionplans_index>
+    	<marketplaceadmin_adminhtml_managezipcodes_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>Manage Zipcodes</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_managezipcodes" name="managezipcodes" template="marketplace/upload.phtml"/>
+		</reference>
+	</marketplaceadmin_adminhtml_managezipcodes_index>
+	
+	<marketplaceadmin_adminhtml_zipcodes_index>
+		<reference name="head">
+			<action method="setTitle" translate="title">
+				<title>View Zipcodes</title>
+			</action>
+		</reference>
+		<reference name="content">
+			<block type="marketplace/adminhtml_zipcodes" name="zipcodes" />
+		</reference>
+	</marketplaceadmin_adminhtml_zipcodes_index>
+	 <marketplaceadmin_adminhtml_zipcode_index>
+        <reference name="content">
+            <block type="marketplace/adminhtml_zipcode" name="zipcodeavailability" />
+        </reference>
+    </marketplaceadmin_adminhtml_zipcode_index>
+</layout>

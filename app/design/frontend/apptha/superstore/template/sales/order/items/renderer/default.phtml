@@ -1,0 +1,567 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Display item order details for customer.
+ */
+
+$_item = $this->getItem();
+$orderItem = $_item;
+$orderId = $this->getOrder()->getId();
+$productId = $_item->getProductId();
+/**
+ * Getting the view order status for particular order.
+ */
+$orderStatus = Mage::helper('marketplace/vieworder')->getOrderStatus($orderId,$productId);
+$shippingStatus = 0;
+?>
+<?php 
+/**
+ * Diplay the order product details. 
+ */
+?>
+<tr class="border" id="order-item-row-<?php echo $_item->getId() ?>">
+	<?php 
+		/**
+		 * Dispaly the order product name.
+		 */	
+	?>
+    <td><h3 class="product-name"><?php echo $this->escapeHtml($_item->getName()) ?></h3>
+    	<?php 
+    	/**
+    	 * Display the product custom options
+    	 */?>
+        <?php if($_options = $this->getItemOptions()): ?>
+        <dl class="item-options">
+        <?php foreach ($_options as $_option) : ?>
+            <dt><?php echo $this->escapeHtml($_option['label']) ?></dt>
+            <?php if (!$this->getPrintStatus()): ?>
+                <?php $_formatedOptionValue = $this->getFormatedOptionValue($_option) ?>
+                <dd<?php if (isset($_formatedOptionValue['full_view'])): ?> class="truncated"<?php endif; ?>>
+                    <?php echo $_formatedOptionValue['value'] ?>
+                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                    <div class="truncated_full_value">
+	                    <?php
+	                    /**
+	                     * Dispaly custom option label and the selected option value. 
+	                     */ 
+	                    ?>
+                        <dl class="item-options">
+                            <dt><?php echo $this->escapeHtml($_option['label']) ?></dt>
+                            <dd><?php echo $_formatedOptionValue['full_view'] ?></dd>
+                        </dl>
+                    </div>
+                    <?php endif; ?>
+                </dd>
+            <?php else: ?>
+                <dd>
+                    <?php echo nl2br($this->escapeHtml( (isset($_option['print_value']) ? $_option['print_value'] : $_option['value']) )) ?>
+                </dd>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </dl>
+        <?php endif; ?>
+        <?php 
+        /**
+         * Get product additional information
+         */
+        $addtInfoBlock = $this->getProductAdditionalInformationBlock(); ?>
+        <?php if ($addtInfoBlock) :?>
+            <?php echo $addtInfoBlock->setItem($_item)->toHtml(); ?>
+        <?php endif; ?>
+        <?php 
+        /**
+         * Product description.
+         */
+        echo $this->escapeHtml($_item->getDescription()) ?>
+        <?php 
+        /**
+         * Container for the gift message for a product.
+         */
+        if($this->helper('giftmessage/message')->getIsMessagesAvailable('order_item', $_item) && $_item->getGiftMessageId()): ?>
+            <a href="#" id="order-item-gift-message-link-<?php echo $_item->getId() ?>" class="gift-message-link" onclick="return giftMessageToogle('<?php echo $_item->getId() ?>')"><?php echo $this->__('Gift Message') ?></a>
+        <?php endif; ?>
+    </td>
+    <?php 
+    /**
+     * Product SKU details.
+     */
+    ?>
+    <td data-rwd-label="<?php echo $this->__('SKU') ?>"><?php echo $this->escapeHtml(Mage::helper('core/string')->splitInjection($this->getSku())) ?></td>
+    <?php 
+    /**
+     * Display product price.
+     */
+    ?>
+    <td class="a-right" data-rwd-label="<?php echo $this->__('Price') ?>">
+        <?php if ($this->helper('tax')->displaySalesBothPrices() || $this->helper('tax')->displaySalesPriceExclTax()): ?>
+        	<?php 
+        	/**
+        	 * Calculate the price exclude the tax price.
+        	 */
+        	?>
+            <span class="price-excl-tax">
+                <?php if ($this->helper('tax')->displaySalesBothPrices()): ?>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-price">
+                    <?php endif; ?>
+                    	<?php 
+                    	/**
+                    	 * Calculate the exclude tax amount.
+                    	 */?>
+                        <span class="label"><?php echo $this->__('Excl. Tax'); ?>:</span>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                    <span class="cart-tax-total" onclick="taxToggle('eunit-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                <?php else: ?>
+                    <span class="cart-price">
+                <?php endif; ?>
+					<?php 
+					/**
+					 * Display the price based on the price format.
+					 * 
+					 */?>
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(0, 1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <?php echo $this->getOrder()->formatPrice($this->getItem()->getPrice() + $this->getItem()->getWeeeTaxAppliedAmount() + $this->getItem()->getWeeeTaxDisposition()); ?>
+                    <?php else: ?>
+                    	<?php 
+                    	/**
+                    	 * Dispaly price with out the tax amount.
+                    	 */
+                   		?>
+                        <?php echo $this->getOrder()->formatPrice($this->getItem()->getPrice()) ?>
+                    <?php endif; ?>
+
+                </span>
+
+
+                <?php if (Mage::helper('weee')->getApplied($this->getItem())): ?>
+					<?php 
+					/**
+					 * Calcualte the item tax details of the order products.
+					 */?>
+                    <span class="cart-tax-info" id="eunit-item-tax-details<?php echo $this->getItem()->getId(); ?>" style="display:none;">
+                        <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 1, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php 
+                            /**
+                             * Display the tax title in the view order page.
+                             */?>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><small><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount']); ?></small></span>
+                            <?php endforeach; ?>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 4, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php endif; ?>
+                    </span>
+
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-tax-total" onclick="taxToggle('eunit-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                            <span class="nobr"><?php echo Mage::helper('weee')->__('Total'); ?>:<br /> <?php echo $this->getOrder()->formatPrice($this->getItem()->getPrice()+$this->getItem()->getWeeeTaxAppliedAmount()+$this->getItem()->getWeeeTaxDisposition()); ?></span>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </span>
+            <br />
+        <?php endif; ?>
+        <?php if ($this->helper('tax')->displaySalesBothPrices() || $this->helper('tax')->displaySalesPriceInclTax()): ?>
+            <span class="price-incl-tax">
+                <?php if ($this->helper('tax')->displaySalesBothPrices()): ?>
+                   <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-price">
+                    <?php endif; ?>
+                        <span class="label"><?php echo $this->__('Incl. Tax'); ?>:</span>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php $_incl = $this->helper('checkout')->getPriceInclTax($this->getItem()); ?>
+                <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                    <span class="cart-tax-total" onclick="taxToggle('unit-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                <?php else: ?>
+                    <span class="cart-price">
+                <?php endif; ?>
+
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(0, 1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <?php echo $this->getOrder()->formatPrice($_incl + Mage::helper('weee')->getWeeeTaxInclTax($_item)); ?>
+                    <?php else: ?>
+                        <?php echo $this->getOrder()->formatPrice($_incl-$this->getItem()->getWeeeTaxDisposition()) ?>
+                    <?php endif; ?>
+
+                </span>
+
+
+                <?php if (Mage::helper('weee')->getApplied($this->getItem())): ?>
+
+                    <span class="cart-tax-info" id="unit-item-tax-details<?php echo $this->getItem()->getId(); ?>" style="display:none;">
+                        <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 1, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount_incl_tax']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><small><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount_incl_tax']); ?></small></span>
+                            <?php endforeach; ?>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 4, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['amount_incl_tax']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php endif; ?>
+                    </span>
+
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-tax-total" onclick="taxToggle('unit-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                            <span class="nobr"><?php echo Mage::helper('weee')->__('Total incl. tax'); ?>:<br /> <?php echo $this->getOrder()->formatPrice($_incl + Mage::helper('weee')->getWeeeTaxInclTax($_item)); ?></span>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
+    </td>
+    <?php 
+    /**
+     * Display quantity for order product.
+     */?>
+    <td class="a-right" data-rwd-label="<?php echo $this->__('Qty') ?>">
+        <span class="nobr">
+            <?php if ($this->getItem()->getQtyOrdered() > 0): ?>
+            <?php 
+            /**
+             * Display the ordered product quantity.
+             */
+            echo $this->__('Ordered'); ?>: <strong><?php echo $this->getItem()->getQtyOrdered()*1 ?></strong><br />
+        <?php endif; ?>
+        <?php 
+        /**
+         * Display quantity of products is shipped.
+         */
+        if ($this->getItem()->getQtyShipped() > 0): ?>
+            <?php echo $this->__('Shipped'); ?>: <strong><?php echo $this->getItem()->getQtyShipped()*1 ?></strong><br />
+        <?php endif; ?>
+        <?php 
+        /**
+         * Display quantity of products is cancelled.
+         */
+         ?>
+        <?php if ($this->getItem()->getQtyCanceled() > 0 || $orderStatus == 'canceled'): ?>
+            <?php echo $this->__('Canceled'); ?>: <strong><?php 
+            if($orderStatus == 'canceled'){
+            echo round($this->getItem()->getQtyOrdered());	
+            }else{
+            echo $this->getItem()->getQtyCanceled()*1;	
+            }
+            ?></strong><br />
+        <?php endif; ?>
+        <?php 
+        /**
+         * Display refund quantity of products.
+        */
+        if ($this->getItem()->getQtyRefunded() > 0): ?>
+            <?php echo $this->__('Refunded'); ?>: <strong><?php echo $this->getItem()->getQtyRefunded()*1 ?></strong><br />
+        <?php endif; ?>
+        </span>
+    </td>
+    <?php 
+    /**
+     * Display subtotal and tax details.
+     */
+    ?>
+    <td class="a-right" data-rwd-label="<?php echo $this->__('Subtotal') ?>">
+        <?php if ($this->helper('tax')->displaySalesBothPrices() || $this->helper('tax')->displaySalesPriceExclTax()): ?>
+            <span class="price-excl-tax">
+            <?php 
+            /**
+             * Display the sales both the price.
+             */
+            ?>
+            <?php if ($this->helper('tax')->displaySalesBothPrices()): ?>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-price">
+                    <?php endif; ?>
+                    <?php 
+                    /**
+                     * Product excludeing tax amount.
+                     */?>
+                        <span class="label"><?php echo $this->__('Excl. Tax'); ?>:</span>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php 
+                /**
+                 * Exclude amount with tax details.
+                 */?>
+                <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                    <span class="cart-tax-total" onclick="taxToggle('esubtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                <?php else: ?>
+                    <span class="cart-price">
+                <?php endif; ?>
+					<?php 
+					/**
+					 * Total amount for the each row of product.
+					 */
+					?>
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(0, 1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <?php echo $this->getOrder()->formatPrice($this->getItem()->getRowTotal()+$this->getItem()->getWeeeTaxAppliedRowAmount()+$this->getItem()->getWeeeTaxRowDisposition()); ?>
+                    <?php else: ?>
+                        <?php echo $this->getOrder()->formatPrice($this->getItem()->getRowTotal()) ?>
+                    <?php endif; ?>
+
+                </span>
+
+
+                <?php
+				/**
+				 * Tax calulation for the items.
+				 */
+                
+                if (Mage::helper('weee')->getApplied($this->getItem())): ?>
+
+                    <span class="cart-tax-info" id="esubtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>" style="display:none;">
+                        <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 1, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><small><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount']); ?></small></span>
+                            <?php endforeach; ?>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 4, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php endif; ?>
+                    </span>
+					<?php 
+					/**
+					 *  Subtotal items with the tax details.
+					 */
+					 ?>
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-tax-total" onclick="taxToggle('esubtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                            <span class="nobr"><?php echo Mage::helper('weee')->__('Total'); ?>:<br /> <?php echo $this->getOrder()->formatPrice($this->getItem()->getRowTotal()+$this->getItem()->getWeeeTaxAppliedRowAmount()+$this->getItem()->getWeeeTaxRowDisposition()); ?></span>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </span>
+            <br />
+        <?php endif; ?>
+        <?php 
+        /**
+         * Display sales price include tax.
+         */
+         ?>
+        <?php if ($this->helper('tax')->displaySalesBothPrices() || $this->helper('tax')->displaySalesPriceInclTax()): ?>
+            <span class="price-incl-tax">
+            	<?php 
+            	/**
+            	 * Display the sales both price include tax.
+            	 */
+            	?>
+                <?php if ($this->helper('tax')->displaySalesBothPrices()): ?>
+                   <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-price">
+                    <?php endif; ?>
+                    	<?php 
+                    	/**
+                    	 * Display the include tax amount of the product.
+                    	 * 
+                    	 */
+                    	?>
+                        <span class="label"><?php echo $this->__('Incl. Tax'); ?>:</span>
+                    <?php if (!Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php 
+                /**
+                 * Subtoatal item along with tax details.
+                 */
+                 ?>
+                <?php $_incl = $this->helper('checkout')->getSubtotalInclTax($this->getItem()); ?>
+                <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                    <span class="cart-tax-total" onclick="taxToggle('subtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                <?php else: ?>
+                    <span class="cart-price">
+                <?php endif; ?>
+                <?php 
+                /**
+                 * Total for the each row of products, include tax amount. 
+                 */
+                 ?>
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), array(0, 1, 4), 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <?php echo $this->getOrder()->formatPrice($_incl + Mage::helper('weee')->getRowWeeeTaxInclTax($_item)); ?>
+                    <?php else: ?>
+                        <?php echo $this->getOrder()->formatPrice($_incl-$this->getItem()->getWeeeTaxRowDisposition()) ?>
+                    <?php endif; ?>
+
+                </span>
+			
+				
+                <?php if (Mage::helper('weee')->getApplied($this->getItem())): ?>
+					<?php 
+					/**
+					 * Subtotal for the item tax details.
+					 */?>
+                    <span class="cart-tax-info" id="subtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>" style="display:none;">
+                        <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 1, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount_incl_tax']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                           <?php 
+                           /**
+                            * Row amount includeing the tax.
+                            */?>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><small><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount_incl_tax']); ?></small></span>
+                            <?php endforeach; ?>
+                        <?php elseif (Mage::helper('weee')->typeOfDisplay($this->getItem(), 4, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                            <small>
+                            <?php foreach (Mage::helper('weee')->getApplied($this->getItem()) as $tax): ?>
+                                <span class="nobr"><?php echo $tax['title']; ?>: <?php echo $this->getOrder()->formatPrice($tax['row_amount_incl_tax']); ?></span>
+                            <?php endforeach; ?>
+                            </small>
+                        <?php endif; ?>
+                    </span>
+					<?php 
+					/**
+					 * Total cost for the item include tax amount.
+					 */
+					 ?>
+                    <?php if (Mage::helper('weee')->typeOfDisplay($this->getItem(), 2, 'sales') && (float)$this->getItem()->getWeeeTaxAppliedAmount()): ?>
+                        <span class="cart-tax-total" onclick="taxToggle('subtotal-item-tax-details<?php echo $this->getItem()->getId(); ?>', this, 'cart-tax-total-expanded');">
+                            <span class="nobr"><?php echo Mage::helper('weee')->__('Total incl. tax'); ?>:<br /> <?php echo $this->getOrder()->formatPrice($_incl + Mage::helper('weee')->getRowWeeeTaxInclTax($_item)); ?></span>
+                        </span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
+    <?php
+    /**
+     * Enable/disable status for order cancel request checking.
+     * 
+     * Based on this configuration, we can give cancel order option for the customer.
+     */
+    $orderCancelStatusFlag = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/order_cancel_request');
+    if($orderCancelStatusFlag == 1){
+    ?>
+    </td>
+    <td class="a-center">
+    <?php 
+    /**
+     * Check order is canceled or not.
+     */  
+    if($orderStatus == 'canceled'){
+    echo Mage::helper('marketplace')->__('Canceled');	
+    }elseif($orderItem->getQtyRefunded() >=  $orderItem->getQtyOrdered()){
+	/**
+	 * Chack and display the item is refunded or not.
+	 */
+    echo $this->__('Refunded');	
+    }else{
+    if($orderItem->getQtyShipped() <  $orderItem->getQtyOrdered() && $orderItem->getIsVirtual() != 1){
+	$shippingStatus = 1;
+    }
+    /**
+     * Get the login customerId.
+     */
+    if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+    	$customerData = Mage::getSingleton('customer/session')->getCustomer();
+    	$loggedInCustomerId = $customerData->getId();
+    }else{
+    	$loggedInCustomerId = 0;
+    }
+    /**
+     * Check the shipping status, based on that we can provide a cancel request and return option.
+     */    
+    if($shippingStatus == 1){ 
+    $statusCancel = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,0);
+    $statusRefund = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,1);
+    if($statusCancel == 1 || $statusRefund == 1){
+    echo $this->__('Item Cancel Request Sent');	
+    }else{
+		/**
+		 * Link for display cancel order item popup.
+		 */
+    ?>   
+    <a href="javascript:void(0);" onclick="showCancelOrderItemsPopup('<?php echo $orderItem->getProductId(); ?>','<?php echo $this->__('Cancel Item'); ?>');"  class="show_cancel_order_item_link link-print" >
+    <?php echo $this->__('Cancel Item'); ?></a>   
+    <?php 
+    }
+    }else{
+	/**
+	 * Get the order status and refund request is sent or not.
+	 */
+    $statusCancel = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,0);
+    $statusRefund = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,1);
+    /**
+     * Check that orde cancel and refund status and display the status of the request.
+     */
+    if($statusCancel == 1 || $statusRefund == 1){
+    	echo $this->__('Item Return Request Sent');
+    }else{
+		/**
+		 * Link for display cancel order item popup.
+		*/
+    ?>
+    <a href="javascript:void(0);" onclick="showCancelOrderItemsPopup('<?php echo $orderItem->getProductId(); ?>','<?php echo $this->__('Return Item'); ?>');"  class="show_cancel_order_item_link link-print" >
+    <?php echo $this->__('Return Item'); ?></a> 
+    <?php
+    }
+    }	
+    }    
+    ?>
+    </td>
+    <?php } ?>  
+</tr>

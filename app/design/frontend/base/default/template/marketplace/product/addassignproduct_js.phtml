@@ -1,0 +1,131 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<script type="text/javascript" >
+    function addMarketPlaceDownloadableSamplesRow(value) {
+        var selectSampleOption = $("marketplace_download_sample_row_CCC").innerHTML.replace(/CCC/g, marketplaceDownloadableSampleRow);
+        $(value).insert(selectSampleOption);
+        marketplaceDownloadableSampleRow = marketplaceDownloadableSampleRow + 1;
+    }
+    function removeMarketPlaceDownloadableSamplesRow(value) {
+        value.up('tr').remove();
+    }
+    function addMarketPlaceDownloadableLinksRow(value) {
+        var selectLinkOption = $("marketplace_download_link_row_CCC").innerHTML.replace(/CCC/g, marketplaceDownloadableLinkRow);
+        $(value).insert(selectLinkOption);
+        marketplaceDownloadableLinkRow = marketplaceDownloadableLinkRow + 1;
+    }
+    function removeMarketPlaceDownloadableLinksRow(value) {
+        value.up('table').remove();
+    }
+
+    // Hiding existing sample, link and link sample files name
+    function hideOldFileName(id)
+    {
+        var hide_div = id + '-old';
+        $(hide_div).hide();
+    }
+                            
+// For text editor
+bkLib.onDomLoaded(function() {
+    new nicEditor({iconsPath: '<?php echo $this->getSkinUrl('marketplace/nicEditorIcons.gif'); ?>'}).panelInstance('description');
+
+});
+                            
+var addProductForm = new VarienForm('addassign_product_form', true);
+
+    $('sku').observe('keyup', function(event) {
+    checkSkuValiationForProduct();      
+    });
+    $('sku').observe('blur', function(event) {    
+    var selectedProductId = $('selected_product_id').getValue();
+    if(selectedProductId == ''){
+            checkSkuValiationForProduct();
+        }      
+    });
+    function checkSkuValiationForProduct(){
+        var inputsku = $('sku').getValue();
+        var emptycheck = inputsku.replace(/^\s+/, '').replace(/\s+$/, '');
+        var sku = inputsku.trim().length;
+        if (sku === 0 && emptycheck === '') {
+            $('empty-text').setStyle({display: 'block'});
+            $('available').setStyle({display: 'none'});
+            $('not-available').setStyle({display: 'none'});
+        } else {
+
+               $('available').setStyle({display: 'none'});
+               $('not-available').setStyle({display: 'none'});
+               $('empty-text').setStyle({display: 'none'});
+            
+               $('category-loading').setStyle({display:'block'});
+            new Ajax.Request("<?php echo Mage::getBaseUrl(); ?>marketplace/product/checksku/", {
+                method: "get",
+                parameters: {sku: inputsku},
+                onSuccess: successFunc
+            });
+        }
+    }
+    
+    function successFunc(response) {
+      $('category-loading').hide(); 
+        var inputsku = $('sku').getValue();
+      var sku = inputsku.length;     
+      
+      if (sku === 0) {
+          $('empty-text').setStyle({display: 'block'});
+          $('not-available').setStyle({display: 'none'});
+          $('available').setStyle({display: 'none'});
+          return;
+      } 
+      
+        var content = response.responseText;
+        if (content == 0) {
+            $('category-loading').setStyle({display:'none'});
+            $('available').setStyle({display: 'block'});
+            $('not-available').setStyle({display: 'none'});
+            $('empty-text').setStyle({display: 'none'});
+        }
+        else {
+            $('category-loading').setStyle({display:'none'});
+            $('available').setStyle({display: 'none'});
+            $('not-available').setStyle({display: 'block'});
+            $('empty-text').setStyle({display: 'none'});
+        }
+    }
+
+    function updateShippingPriceValue(){
+        if($('seller_shipping')){
+            var selected = $('seller_shipping').select("option[selected]")[0].innerHTML;
+            if (selected != 'Shipping Cost') {
+                    $('national_shipping_price').value = '';
+                                $('international_shipping_price').value = '';
+                                }}
+    }
+</script>

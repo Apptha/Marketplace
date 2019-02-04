@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_FacebookStore
+ * @version    	0.1.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ * */
+ -->
+<config>
+    <modules>
+        <Apptha_Facebookstore>
+            <version>0.1.1</version>
+        </Apptha_Facebookstore>
+    </modules>
+    <frontend>
+        <translate>
+            <modules>
+                <Apptha_Facebookstore>
+                    <files>
+                        <default>Apptha_Facebookstore.csv</default>
+                    </files>
+                </Apptha_Facebookstore>
+            </modules>
+        </translate>
+        <routers>
+            <facebookstore>
+                <use>standard</use>
+                <args>
+                    <module>Apptha_Facebookstore</module>
+                    <frontName>facebookstore</frontName>
+                </args>
+            </facebookstore>
+        </routers>
+        <layout>
+            <updates>
+                <facebookstore>
+                    <file>facebookstore.xml</file>
+                </facebookstore>
+            </updates>
+        </layout>
+
+    </frontend>
+    <admin>
+        <routers>
+            <facebookstore>
+                <use>admin</use>
+                <args>
+                    <module>Apptha_Facebookstore</module>
+                    <frontName>facebookstore</frontName>
+                </args>
+            </facebookstore>
+        </routers>
+    </admin>
+    <adminhtml>
+        <menu>
+            
+        </menu>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <Apptha_Facebookstore>
+                            <title>Facebookstore Module</title>
+                            <sort_order>10</sort_order>
+                        </Apptha_Facebookstore>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <layout>
+            <updates>
+                <facebookstore>
+                    <file>facebookstore.xml</file>
+                </facebookstore>
+            </updates>
+        </layout>
+    </adminhtml>
+    <global>
+        <models>
+            <facebookstore_adminhtml>
+              <class>Apptha_Facebookstore_Adminhtml_Model</class>
+            </facebookstore_adminhtml>
+            <facebookstore>
+                <class>Apptha_Facebookstore_Model</class>
+                <resourceModel>facebookstore_mysql4</resourceModel>
+            </facebookstore>
+<!--            <facebookstore_mysql4>
+                <class>Apptha_Facebookstore_Model_Mysql4</class>
+                <entities>
+                    <facebookstore>
+                        <table>facebookstore</table>
+                    </facebookstore>
+                </entities>
+            </facebookstore_mysql4>-->
+        </models>
+        <events>
+
+        </events>
+        <resources>
+            <facebookstore_setup>
+                <setup>
+                    <module>Apptha_Facebookstore</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </facebookstore_setup>
+            <facebookstore_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </facebookstore_write>
+            <facebookstore_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </facebookstore_read>
+        </resources>
+        <blocks>
+            <facebookstore>
+                <class>Apptha_Facebookstore_Block</class>
+            </facebookstore>
+        </blocks>
+        <helpers>
+            <facebookstore>
+                <class>Apptha_Facebookstore_Helper</class>
+            </facebookstore>
+        </helpers>
+    </global>
+</config>

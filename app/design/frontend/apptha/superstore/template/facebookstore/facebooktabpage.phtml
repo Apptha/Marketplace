@@ -1,0 +1,253 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_FacebookStore
+ * @version    	0.1.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ * */
+?>
+<?php
+//Get the Base url of the current store 
+$getBase           = Mage::app()->getStore()->getBaseUrl();
+$sellerId = $this->getRequest()->getParam('sellerid');
+$facebookStore = Mage::getModel ( 'marketplace/facebookstore' )->load ( $sellerId, 'seller_id' );
+$enableBanner = $facebookStore['banner_enable'];
+$enableFacebook = $facebookStore['facebook_enable'];
+$facebookAppId = $facebookStore['facebook_appid'];
+$facebookAppCanvas = $facebookStore['facebook_appcanvas'];
+$facebookAppSecret = $facebookStore['facebook_appsecret'];
+$bannerImages = $facebookStore['bannername'];
+//$bannerImages = explode(',', $bannerImages);
+$bannerImageSelected = $facebookStore['banner_selected'];
+// Get Face book app id
+$appId              = $facebookStore['facebook_appid'];
+if(empty($appId)){
+    $appId=Mage::getStoreConfig("facebookstore/faceconnect/facebook_app_id");
+}
+
+
+//Get Banner Image 
+$app_banner_option  = Mage::getStoreConfig('facebookstore/banner_type/app_banner_option');
+
+// Face Book share image url
+$skinBaseUrl        = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN).'frontend/default/default/facebookstore/images/shareb.gif';
+
+// Get the redirect url for view page
+$baseUrl            = $getBase.'facebookstore/index/defaultdisplay/sellerid/'.$sellerId;
+
+//Get Url for Face book Share page redirection
+$link               = Mage::helper("core/url")->getCurrentUrl();
+
+//Get Url for Indexpage 
+$indexUrl            = $getBase.'facebookstore/index/productdisplay/sellerid/'.$sellerId  ; ?>
+
+
+<div id="fb-root"></div>
+<script type="text/javascript" src="https://connect.facebook.net/en_US/all.js"></script>
+<script>
+FB.init({
+appId : '<?php $appId ;?>',
+status : true, // check login status
+cookie : true, // enable cookies to allow the server to access the session
+xfbml : true // parse XFBML
+});
+FB.Canvas.setSize({height:auto});
+</script>
+
+
+<?php // Display Banner Image  ?>
+<div id="page_app">
+<?php if ($app_banner_option) { 
+   
+	$imagelist      = Mage::getStoreConfig('facebookstore/banner_type/image_list');
+    $images         = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA).'banner_images'.DS.'default'.DS.$bannerImages;
+    $currentUrl     = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);?>
+    <div class='mag_banner_middle'>
+        <img src='<?php echo $images;?>' title='' width='100%' height='310' alt="banner image"/>
+    </div>
+<?php } ?>
+
+<?php //Get Base Url,Store Categories
+ $helper            = Mage::helper('catalog/category'); 
+ $categories        = $helper->getStoreCategories();
+ if(count($categories) > 0) { ?>
+    
+<?php //Display category ?>
+<div class="menu_toolbar">
+    <ul>
+        
+<?php //Link for Category ?>
+        <li><a href="<?php echo $indexUrl; ?>"><i class="home_menu"></i></a></li>
+<?php foreach ($categories as $_category) { ?>
+           
+<?php //Get Sub category List 
+$_category        = Mage::getModel('catalog/category')->load($_category->getId());
+$_subcategories   = $_category->getChildrenCategories();
+if (count($_subcategories) > 0) { 
+
+//Display Category Name ?>
+<li>
+    <a href="<?php echo $getBase.'facebookstore/index/productdisplay/sellerid/'.$sellerId.'?catid='.$_category->getId();?>" class="drops"><?php echo $_category->getName();  ?> <span class="caret"></span></a>                                       
+        <ul class="licious" style="display:none;">
+            
+<?php //Display sub Catogory          
+  foreach ($_subcategories as $_subcategory) { ?>
+                               
+<?php //Get Sub category Id               
+$subCategoryId  = $_subcategory->getId(); ?>
+ <li>
+       
+    <?php //Link for Sub Category ?>           
+    <a href="<?php echo $getBase.'facebookstore/index/productdisplay/sellerid/'.$sellerId.'?catid='.$subCategoryId;?>">
+
+        <?php //Display Sub Category name               
+            echo $_subcategory->getName(); ?>
+
+    </a>
+</li>
+<?php  }  ?>
+</ul> 
+<?php  } else { 
+    //If there is no sub category then this part will be executed ?>
+        <li>
+           <a href="<?php echo $getBase.'facebookstore/index/productdisplay/sellerid/'.$sellerId.'?catid='.$_category->getId();?>" class="drops"><?php echo $this->__($_category->getName());  ?></a>                             
+
+        </li>    
+<?php } ?>                         
+ </li>
+ 
+<?php  }  ?>
+ </ul>
+<div class="right_search">
+    <form id="search"> 
+    <input type="text" class="" placeholder="<?php echo $this->__('Search'); ?>" id="searchbar" name="searchTerm" value=""/>
+       <div class="search-icon">
+           <img src="<?php echo $this->getSkinUrl('facebookstore/images/search_icon.png'); ?>" alt=""/>
+       </div>
+    </form>
+</div>
+<div class="clear"></div>
+</div>
+<?php  }     ?>
+ 
+<?php //Get Product Collection 
+$collection   = $this->getCollection();
+$count        = count($collection); 
+if (!empty($count)) { ?> 
+<ul class="products_row" id="box">     
+<?php $i = 1;
+foreach ($collection as $_product) {
+        
+//Get Product Id 
+$productId     = $_product->getId();
+     
+//Get Product Short Description
+$shortDesc     = $_product->getShortDescription();
+    
+//Get special Price 
+$splPrice       = $_product->getSpecialPrice();
+
+//Get Product Price
+$productPrice   = $_product->getPrice();
+     $productUrl=$_product->getProductUrl();
+//Display Product Name ?>
+<li class="product_container <?php if($i==3){ echo 'nomargin'; $i=0;} ?>">
+    <span class="envelope">
+        <span class="inner_box">
+            
+<?php //Get Product Image 
+            $productImage = $_product->getImageUrl();
+ //Link for Product View Page ?>
+            <a href="<?php echo $baseUrl.'?pid='.$productId?>" class="shop-img_container">
+
+<?php //Display Product Image ?>
+                <img class="shop-img" src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(183); ?>" width="183" height="183" alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" />
+            </a>
+
+<?php //Display Product Name
+
+            $wordsCount   =   strlen($_product->getName()); ?>
+            <a class="product_title" href="<?php echo $baseUrl.'?pid='.$productId?>">
+            <?php if($wordsCount>20){ 
+                    echo $this->__(substr($_product->getName(), 0, 20).'...'); } else { echo $_product->getName(); }?> 
+            </a> 
+
+<?php //Get Product Id and pass it with link url ?>
+            <a class="product_price" href="<?php echo $baseUrl.'?pid='.$productId?>"> <?php //Display Special Special price if available otherwise display Product price?>
+                <span>
+                   <?php if(!empty($splPrice)) { ?>                    
+                        <span class="price">
+                            <del><?php echo Mage::helper('core')->currency($productPrice, true, false);?></del>
+                            <?php echo Mage::helper('core')->currency($splPrice, true, false);?>
+                        </span>
+                    <?php } else  { ?>
+                        <span class="price">
+                    <?php echo Mage::helper('core')->currency($productPrice, true, false); ?>
+                        </span>
+                    <?php } ?>
+                 
+                </span>
+            </a>
+<?php //Face book Share button ?>
+           <span class="social_grid"> 
+                <?php $fbUrl = 'http://www.facebook.com/dialog/feed?app_id=' .$appId.'&amp;description='.strip_tags($shortDesc).'&amp;picture='.$productImage.'&amp;name='.$_product->getName().'&amp;redirect_uri='.$link.'&amp;link='.$link;?>               
+                    <a style="margin-right: 5px;" title="<?php echo $this->__('Share with Facebook'); ?>" href="<?php echo $fbUrl; ?>" target="_blank">
+                <?php echo $this->__('Share'); ?> </a>
+                
+            <?php // Facebook Like Button ?>    
+                <script type="text/javascript">
+                    (function(d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/en_US/all.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                    }(document, 'script', 'facebook-jssdk'));
+                </script>
+<!--                <iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo $baseUrl.'?pid='.$productId.'&amp;description='.strip_tags($shortDesc).'&amp;picture='.$productImage?>&amp;layout=button_count&amp;show_faces=false&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border: none; overflow: hidden; width: 75px; height: 25px;" allowTransparency="true" > </iframe>-->
+            <div class="fb-like" style="border: none;width: 75px; height: 25px" data-href="<?php echo $baseUrl.'?pid='.$productId.'&amp;description='.strip_tags($productShort).'&amp;picture='.$productImage.'&amp;name='.$productName; ?>" data-width="200" data-height="21" data-colorscheme="light" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false" allowTransparency="true"></div>
+            
+            </span>
+<?php //Quick view box ?>
+            
+        </span>
+    </span></li>
+ <?php $i = $i+1; ?>
+<?php }  ?> 
+ <div class="clear"></div>
+ </ul>
+<?php  } 
+      else
+      {
+        echo '<h5>'.$this->__('There is no products to show').'</h5>';
+      }
+?>
+  <div class="clear"></div>
+<?php //Pagination 
+ echo $this->getPagerHtml(); ?>
+</div>
+
+
+

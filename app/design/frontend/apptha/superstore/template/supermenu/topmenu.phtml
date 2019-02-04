@@ -1,0 +1,88 @@
+<?php 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+$menuData = Mage::helper('supermenu')->getSuperMenuData(); 
+extract($menuData); ?>
+<div class="nav-container">
+    <div id="supermenu-loading" class="<?php echo $_rtl ? ' rtl' : ''; ?>">
+        <div class="menu">
+            <div class="parentMenu menu0">
+                <a href="javascript:;">
+                    <span><?php echo $this->__('Loading...'); ?></span>
+                </a>
+            </div>
+        </div>
+        <div class="clearBoth"></div>
+    </div>
+    <div id="supermenu" class="<?php echo $_rtl ? ' rtl' : ''; ?>" style="display:none;">
+        <div class="menu">
+            <div class="parentMenu menu0">
+                <a href="javascript:;">
+                    <span><?php echo $this->__('Loading...'); ?></span>
+                </a>
+            </div>
+        </div>
+       
+        <div class="clearBoth"></div>
+    </div>
+    <div id="supermenu-mobile" class="<?php echo $_rtl ? ' rtl' : ''; ?>" style="display:none;">
+        <div id="menu-button" onclick="MenuButtonToggle()" style="display:none !important;">
+            <a href="javascript:void(0);">
+                <span><?php echo $this->__('Menu'); ?></span>
+            </a>
+        </div>
+        <div id="menu-content" style="display:block !important;">
+            <div id="menu-mobile-loading" class="menu-mobile level0">
+                <div class="parentMenu">
+                    <a href="javascript:;">
+                        <span><?php echo $this->__('Loading...'); ?></span>
+                    </a>
+                </div>
+            </div>
+            <div class="clearBoth"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+var CUSTOMMENU_POPUP_WIDTH = <?php echo $_popupWidth; ?>;
+var CUSTOMMENU_POPUP_TOP_OFFSET = <?php echo $_popupTopOffset; ?>;
+var CUSTOMMENU_POPUP_DELAY_BEFORE_DISPLAYING = <?php echo $_popupDelayBeforeDisplaying; ?>;
+var CUSTOMMENU_POPUP_DELAY_BEFORE_HIDING = <?php echo $_popupDelayBeforeHiding; ?>;
+var CUSTOMMENU_RTL_MODE = <?php echo $_rtl; ?>;
+var SupermenuTimerShow = {};
+var SupermenuTimerHide = {};
+var ActiveMenu = null;
+var MenuAjaxUrl = '<?php echo $_menuAjaxUrl; ?>';
+var PopupMenuContent = '';
+SupermenuMobileToggle();
+//]]>
+</script>

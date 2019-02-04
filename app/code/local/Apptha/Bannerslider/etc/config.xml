@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+ -->
+<config>
+   <!-- Banner slider version -->
+   <modules>
+      <Apptha_Bannerslider>
+         <version>0.1.1</version>
+      </Apptha_Bannerslider>
+   </modules>
+   <global>
+      <!-- Initialize the bannerslider block -->
+      <blocks>
+         <bannerslider>
+            <class>Apptha_Bannerslider_Block</class>
+         </bannerslider>
+      </blocks>
+      <!-- Initialize the bannerslider helper -->
+      <helpers>
+         <bannerslider>
+            <class>Apptha_Bannerslider_Helper</class>
+         </bannerslider>
+      </helpers>
+      <!-- Initialize the banner slider model -->
+      <models>
+         <bannerslider>
+            <class>Apptha_Bannerslider_Model</class>
+            <resourceModel>bannerslider_mysql4</resourceModel>
+         </bannerslider>
+         <!-- Initialize the banner slider sql -->
+         <bannerslider_mysql4>
+            <class>Apptha_Bannerslider_Model_Mysql4</class>
+            <entities>
+               <bannerslider>
+                  <table>appthabannerslider</table>
+               </bannerslider>
+            </entities>
+         </bannerslider_mysql4>
+      </models>
+      <resources>
+         <!-- Banner slider setup -->
+         <bannerslider_setup>
+            <setup>
+               <module>Apptha_Bannerslider</module>
+            </setup>
+            <!-- Banner slider core set up -->
+            <connection>
+               <use>core_setup</use>
+            </connection>
+         </bannerslider_setup>
+         <!-- Banner slider write permission -->
+         <bannerslider_write>
+            <connection>
+               <use>core_write</use>
+            </connection>
+         </bannerslider_write>
+         <!-- Banner slider read permission -->
+         <bannerslider_read>
+            <connection>
+               <use>core_read</use>
+            </connection>
+         </bannerslider_read>
+      </resources>
+   </global>
+   <admin>
+      <routers>
+         <bannerslider>
+            <use>admin</use>
+            <args>
+               <module>Apptha_Bannerslider</module>
+               <frontName>bannerslideradmin</frontName>
+            </args>
+         </bannerslider>
+      </routers>
+   </admin>
+   <adminhtml>
+      <!-- Banner slider admin layout file -->
+      <layout>
+         <updates>
+            <bannerslider>
+               <file>appthabannerslider.xml</file>
+            </bannerslider>
+         </updates>
+      </layout>
+      <!-- Language file translation -->
+      <translate>
+         <modules>
+            <Apptha_Bannerslider>
+               <files>
+                  <default>Apptha_Bannerslider.csv</default>
+               </files>
+            </Apptha_Bannerslider>
+         </modules>
+      </translate>
+   </adminhtml>
+</config>

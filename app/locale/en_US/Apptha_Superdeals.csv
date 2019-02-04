@@ -1,0 +1,167 @@
+//Deal Page,
+,
+Most Viewed Deals,Most Viewed Deals
+Deal Of The Day,Deal of The Day
+Top Selling Deals,Top Selling Deals
+No items for this category,No items for this category
+Currently no deals available. Select Some Other Category.,Currently no deals available. Select Some Other Category.
+All Categories,All Categories
+All Active Deals,All Active Deals
+Today,Today
+This Week,This Week
+This Month,This Month
+Age,Age
+Add to Cart,Add to Cart
+Out of stock,Out of stock
+Add to Wishlist,Add to Wishlist
+Add to Compare,Add to Compare
+Save:,Save:
+Discount:,Discount:
+On Sale!,On Sale!
+Deals,Deals
+Days,Days
+Filters:,Filters:
+Period,Period
+Category,Category
+,
+,
+//Deal Report Menu,
+,
+Super Deal Orders,Super Deal Orders
+Super Deal Reports,Super Deal Reports
+,
+//Admin Apptha Section,
+,
+Apptha,Apptha
+Apptha Section,Apptha Section
+Super Deals Settings,Super Deals Settings
+Super Deals,Super Deals
+Enable or disable Super deals,Enable or disable Super deals
+Emails,Emails
+,
+//Emails,
+,
+Deals Reports,Deals Reports
+Enable or disable emails for deal expirations and summary reports,Enable or disable emails for deal expirations and summary reports
+Email Alerts,Email Alerts
+Specify the email address to which the deal expirations alerts and summary reports will be sent,Specify the email address to which the deal expirations alerts and summary reports will be sent
+Remind Deals Before,Remind Deals Before
+Select number of days to receive alert before deal expires,Select number of days to receive alert before deal expires
+Deal Report Template,Deal Report Template
+Deal Reminder Template,Deal Reminder Template
+,
+//Timer,
+Days,Days
+Timer Settings,Timer Settings
+Timer,Timer
+Enable or disable Timer for deals,Enable or disable Timer for deals
+Timer Title,Timer Title
+Enter title for timer (Eg: Offer Ends),Enter title for timer (Eg: Offer Ends)
+Apply Custom Settings,Apply Custom Settings
+Enable or disable to apply custom settings for Timer and Discounts,Enable or disable to apply custom settings for Timer and Discounts
+Label Color,Label Color
+Pick color for label,Pick color for label
+Price Color,Price Color
+Pick color for price,Pick color for price
+Font Size (View Page),Font Size (View Page)
+Enter font size for label (Range 10px - 50px),Enter font size for label (Range 10px - 50px)
+Timer Color,Timer Color
+Pick color for timer,Pick color for timer
+Timer Title Color,Timer Title Color
+Pick title color for timer,Pick title color for timer
+Timer Font Size (Deal Page),Timer Font Size (Deal Page)
+Enter font size for timer in deal page (Range 10px - 50px),Enter font size for timer in deal page (Range 10px - 50px)
+Timer Font Size (View Page),Timer Font Size (View Page)
+Enter font size for timer in view page (Range 10px - 50px),Enter font size for timer in view page (Range 10px - 50px)
+,
+//Topselling sideblock,
+,
+Top Selling Deals Sideblock,Top Selling Deals Sideblock
+Left Sideblock,Left Sideblock
+Enable or disable Top Selling Sideblock in left,Enable or disable Top Selling Sideblock in left
+Right Sideblock,Right Sideblock
+Enable or disable Top Selling Sideblock in right,Enable or disable Top Selling Sideblock in right
+Number of Products to Display,Number of Products to Display
+Enter the number of products to display (Range 1 to 10),Enter the number of products to display (Range 1 to 10)
+,
+//Mostviewed sideblock,
+,
+Most Viewed Deals Sideblock,Most Viewed Deals Sideblock
+Left Sideblock,Left Sideblock
+Enable or disable Most Viewed Deals Sideblock in left,Enable or disable Most Viewed Deals Sideblock in left
+Right Sideblock,Right Sideblock
+Enable or disable Most Viewed Deals Sideblock in right,Enable or disable Most Viewed Deals Sideblock in right
+Number of Products to Display,Number of Products to Display
+Enter the number of products to display (Range 1 to 10),Enter the number of products to display (Range 1 to 10)
+,
+//Deal of the day sideblock,
+,
+Deal of the Day Sideblock,Deal of the Day Sideblock
+Left Sideblock,Left Sideblock
+Enable or disable Deal of the Day Sideblock in left,Enable or disable Deal of the Day Sideblock in left
+Right Sideblock,Right Sideblock
+Enable or disable Deal of the Day Sideblock in right,Enable or disable Deal of the Day Sideblock in right
+,
+,
+//Super Deals Order Grid,
+,
+Product Id,Product Id
+Order #,Order #
+Purchased On,Purchased On
+Customer Name,Customer Name
+Email,Email
+Product Name,Product Name
+Quantity,Quantity
+Original Price,Original Price
+Deal Price,Deal Price
+Status,Status
+,
+//Super Deals Report Grid,
+,
+Deal ID,Deal ID
+Product ID,Product ID
+Product Name,Product Name
+SKU,SKU
+Original Price,Original Price
+Deal Price,Deal Price
+Total Quantity Sold,Total Quantity Sold
+Total G.T. (Base),Total G.T. (Base)
+Discount Offered,Discount Offered
+Deal Start Date,Deal Start Date
+Deal End Date,Deal End Date
+N/A,N/A
+,
+//Email Template,
+//Reports mail template,
+,
+S.no,S.no
+Product Name,Product Name
+Total Quantity Sold,Total Quantity Sold 
+Deal Start date,Deal Start date
+Deal End Date,Deal End Date
+,
+,
+//Notification mail template,
+,
+S.no,S.no
+Product Name,Product Name
+Total Quantity Sold,Total Quantity Sold
+Original Price,Original Price
+Deal Price,Deal Price
+Deal Start Date,Deal Start Date
+Deal End Date,Deal End Date
+SEO Settings,SEO Settings
+Title,Title
+Keyword,Keyword
+Description,Description
+License Key Configuration,License Key Configuration
+,
+//Slider,
+,
+Have you checked out this offer?,Have you checked out this offer?
+Enable Slide,Enable Slide
+Enable or disable Slider in the bottom,Enable or disable Slider in the bottom
+Slide order,Slide order
+Select the order in which the slide progress,Select the order in which the slide progress
+Number of products to slide,Number of products to slide
+Enter the number of products to slide (Range 1 to 10),Enter the number of products to slide (Range 1 to 10)

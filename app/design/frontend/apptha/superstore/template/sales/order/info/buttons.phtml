@@ -1,0 +1,114 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<style>
+body.customer-account .my-account .cancel_order_items_popup .button{position: inherit;top: inherit;right: 0;}
+</style>
+
+<?php  $_order = $this->getOrder() ?>
+<?php if($this->helper('rss/order')->isStatusNotificationAllow()): ?>
+    <a href="<?php echo $this->helper('rss/order')->getStatusHistoryRssUrl($_order) ?>" class="link-rss f-none"><?php echo $this->__('Subscribe to Order Status') ?></a>
+    <span class="separator">|</span>
+<?php endif; ?>
+<?php if ($this->helper('sales/reorder')->canReorder($_order)) : ?>
+    <a href="<?php echo $this->getReorderUrl($_order) ?>" class="link-reorder"><?php echo $this->__('Reorder') ?></a>
+    <span class="separator">|</span>
+<?php endif ?>
+<a href="<?php echo $this->getPrintUrl($_order) ?>" class="link-print" onclick="this.target='_blank';"><?php echo $this->__('Print Order') ?></a>
+<?php
+$orderCancelStatusFlag = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/order_cancel_request');
+if($orderCancelStatusFlag == 1){
+?>
+<?php echo $this->getChildHtml(); ?>
+<?php $customerData = Mage::getSingleton('customer/session')->getCustomer(); 
+ $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+?>
+      
+<div class="account-create cancel_order_items_popup" id="cancel_order_items_popup" style="display:none;">
+<div class="account-create cancel_order_items_popup-inner">
+<h3>
+<span id="cancel_helper_title_for_buyer"></span>
+<a href="javascript:void(0);" onclick="hideCancelOrderItemsPopup()" style="float: right;">X</a>
+</h3>
+   <form action="<?php echo $this->getUrl('marketplace/order/cancel');?>" method="post" >
+        <div class="fieldset">
+            <input type="hidden" name="success_url" value="<?php echo $currentUrl; ?>">
+            <input type="hidden" name="error_url" value="<?php echo $currentUrl; ?>">
+            <ul class="form-list">
+            	<li>
+                	<div class="field name-firstname">
+	                    <label for="email_address" class="required"><em>*</em><?php
+	                     echo $this->__('Reason'); ?></label>
+	                    <div class="input-box">
+	                        <textarea  name="reason" id="cancel_item_reason_box_for_buyer"  class="input-text required-entry"></textarea>
+	                    </div>
+	                 </div>   
+                </li>	
+                <li class="fields">				    
+                <input type="hidden" id="cancel_product_for_seller" name="products[]" value=""  class="input-text">
+			    </li>
+			</ul>
+        </div>
+        <div class="buttons-set">
+        	<input type="hidden" name="customer_id" value="<?php echo $customerData->getId();?>" class="input-text">
+        	<input type="hidden" name="order_id" value="<?php echo $_order->getId();?>" class="input-text">
+            <p class="required">* <?php echo $this->__('Required Fields'); ?></p>            
+        </div>
+         <input class="button" type="submit" value="<?php echo $this->__('Submit'); ?>" />
+        <a class="button" href="javascript:void(0);" onclick="hideCancelOrderItemsPopup();"><?php echo $this->__('Cancel'); ?></a>       
+    </form>
+    <script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('cancel_order_items_popup', true);
+        //]]>
+
+    function showCancelOrderItemsPopup(product_id,process){
+    $('cancel_order_items_popup').show(); 
+    $('cancel_item_reason_box_for_buyer').value = '';     
+    $('cancel_product_for_seller').value = product_id; 
+    $('cancel_helper_title_for_buyer').innerHTML = process;
+    $('cancel_item_reason_box_for_buyer').focus()        	
+    }   
+
+    function hideCancelOrderItemsPopup(){
+    $('cancel_order_items_popup').hide();           	
+    }       
+    
+    document.observe('click', function(e, el) {
+    if ( ! e.target.descendantOf('cancel_order_items_popup') && e.element().id != 'show_cancel_order_item_popup' && e.element().hasClassName('show_cancel_order_item_link') != 1) {
+    $('cancel_order_items_popup').hide();  
+    }
+    });
+     
+    </script>
+    </div>
+</div>
+<?php } ?>

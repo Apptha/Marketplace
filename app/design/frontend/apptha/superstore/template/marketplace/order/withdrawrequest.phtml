@@ -1,0 +1,58 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+?>
+<div class="page-title sellers_store" id="mp_order_transaction"><h1><?php echo $this->__('Send Withdrawal Request to Admin'); ?></h1>
+    <?php //Display remaining amount and received amount from admin ?>
+    <div class="top_amount">
+        <span class="right_space">
+            <?php echo $this->__('Total Amount Received') ?> : <b><?php echo Mage::helper('marketplace/marketplace')->getAmountReceived(); ?></b>
+        </span>
+        <span>
+            <?php echo $this->__('Amount Pending') ?> :  <b><?php echo Mage::helper('marketplace/marketplace')->getAmountRemaining(); ?></b>
+        </span>
+    </div> 
+</div>
+<?php
+// Display transaction history of the seller
+
+$loginId = Mage::getSingleton('customer/session')->isLoggedIn();
+$groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+$getGroupId = Mage::helper('marketplace')->getGroupId();
+$customer = Mage::getSingleton("customer/session")->getCustomer();
+$customer_status = $customer->getCustomerstatus();
+if ($groupId == $getGroupId && $loginId && $customer_status != 2) { ?>
+<form action="<?php echo $this->getSendRequestUrl(); ?>" class="withdraw-form">
+<label for="req_message"><?php echo $this->__("Message:");?></label>
+<textarea id="req_message" required name="req_message"></textarea>
+<input type="hidden" id="pending-amount" name="pending-amount" value="<?php echo Mage::helper('marketplace/marketplace')->getAmountRemaining(); ?>"></input>
+<button title="Send" class="button right mp_addnew_pdt"> <span><span><?php echo $this->__('Send'); ?> </span></span></button>
+</form>
+	
+<?php } ?>

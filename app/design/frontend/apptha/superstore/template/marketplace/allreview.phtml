@@ -1,0 +1,219 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Get seller id from url
+ */
+$id = $this->getRequest()->getParam('id');
+/**
+ * Seller data collection to display seller store name
+ */
+$sellerData = Mage::getModel('marketplace/sellerreview')->getSellerInfo($id);
+/**
+ * Seller review collection
+ */
+$displayReview = $this->getCollection();
+/**
+ * Check display review count is greater than zero
+ */
+if (count($displayReview) > 0) {
+    ?>
+    <h3><?php echo $this->__('Reviews and Ratings of %s', $sellerData); ?> </h3> 
+    <?php
+    foreach ($displayReview as $_displayReview) {
+        $cus_id = $_displayReview['customer_id'] . '</br>';
+        $customerData = Mage::getModel('customer/customer')->load($cus_id)->getData();
+        ?>
+        <div class="all_review_container">   
+            <div class="all_reviews_details">
+                <p class="all_reviews_block">
+                    <?php
+                    /**
+                     * Display seller rating
+                     */
+                    if ($_displayReview['rating'] == 1) {
+                        ?>
+                        <label class="all_review_rating" style="width:20%;"></label>
+                    <?php } elseif ($_displayReview['rating'] == 2) { ?>
+                        <label class="all_review_rating" style="width:40%;"></label>
+                    <?php } elseif ($_displayReview['rating'] == 3) { ?>
+                        <label class="all_review_rating" style="width:60%;"></label>
+                    <?php } elseif ($_displayReview['rating'] == 4) { ?>
+                        <label class="all_review_rating" style="width:80%;"></label>
+                    <?php } else { ?>
+                        <label class="all_review_rating" style="width:100%;"></label>
+                    <?php } ?>   
+                </p>
+                <b><?php echo $customerData['firstname'] . '</br>'; ?></b>                 
+                <span>
+                    <?php $date = $_displayReview['created_at'];
+                    echo $new_date = date('M j, Y', strtotime($date)) . '</br>';
+                    ?>               
+                </span>
+            </div> 
+            <p class="all_reviews_comments <?php if(strlen($_displayReview['review']) > 700){?> product_review <?php } ?>">
+        <?php echo $_displayReview['review'] . '</br>'; ?> 
+            </p>
+            <span class="read-more" <?php if(strlen($_displayReview['review']) < 700){?> style='display:none;' <?php } ?>>Read More</span>
+        </div>
+        <div class="clear"></div>
+        <?php
+    }
+}
+/**
+ * Display pagination
+ */
+echo $this->getPagerHtml();
+/**
+ * Checking whether seller review enabled by admin
+ */
+$active = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/displayproductpage');
+if ($active == 1) {
+    $url = Mage::getModel('marketplace/sellerreview')->backUrl($id);
+}
+/**
+ * Check the customer is logged in already
+ * if so get the customer details like
+ * customer id
+ * customer orders
+ * Orders end date
+ * orders items
+ */
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+    $customer_id = Mage::getSingleton('customer/session')->getId();
+    $orders = Mage::helper('marketplace/common')->allowReview($customer_id);
+    $order_id = $orders->getFirstItem()->getId();
+    $end_date = $orders->getFirstItem()->getCreatedAt();
+    $current_date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+    $days = abs(strtotime($current_date) - strtotime($end_date));
+    $years = floor($days / (365 * 60 * 60 * 24));
+    $months = floor(($days - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
+    $diff = floor(($days - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+    $order = Mage::getModel('sales/order')->load($order_id);
+    $items = $order->getAllItems();
+    $getitem = array_slice($items, -1, 1, true);
+    foreach ($getitem as $item) {
+        $product_id = $item->getProductId();
+        $products = Mage::getModel('catalog/product')->load($product_id);
+        $product_seller = $products->getSellerId();
+        $checkReview = Mage::getModel('marketplace/sellerreview')->checkReview($customer_id, $id, $product_id);
+        /**
+         * Check the difference is less than or equal to 30 
+         * and product seller is equal to current id
+         * and check review is equal to empty
+         * and the customer logged in currently
+         * if so then get the values like
+         * logged customer id
+         * customer name
+         * posted prodcut id
+         */
+        $logged_customer_id = Mage::getSingleton('customer/session')->getId();
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        $customer_name = $customer->getName();
+        $id = $this->getRequest()->getParam('id');
+        $customer_id = $this->getRequest()->getParam('cus');
+        $product_id = $this->getRequest()->getParam('product');
+        
+        if ($diff <= 30 && $product_seller == $id && $checkReview == '' && $product_id) {     
+                    ?>                    
+                    <div class="mp_rate_feedback"><h3 class="home_pdt_name"><span><?php echo $this->__('Rate and leave feedback for seller store'); ?></span></h3>
+                        <!--<h4><?php echo $this->__('Item Bought'); ?></h4>-->  
+                        <p class="mp_seller_product">
+                            <a href="<?php echo $products->getProductUrl(); ?>">
+                                <span><?php $products = Mage::getModel('catalog/product')->load($product_id);
+                    echo $products->getName();
+                    ?>
+                                </span>
+                                <img src="<?php echo Mage::helper('catalog/image')->init($products, 'image')->resize(250, 250); ?>" alt="" />
+                            </a>
+                        </p>
+                        <div class="mp_seller_rating">
+                            <form action='<?php echo $this->saveReviewUrl(); ?>'id="seller_review" method="post" >                                
+                                <p class="mp_seller_comments">
+                                    <label for="sellername"> <?php echo $this->__('Name:'); ?>  </label>
+                                    <input type="text" value="<?php echo $customer_name; ?>" readonly />
+                                </p>
+                                <p class="mp_seller_comments">
+                                    <label for="feedback"> <?php echo $this->__('Feedback about seller:'); ?>  </label>
+                                    <textarea id="feedback" rows="9" cols="49" name="feedback" class="input-text required-entry"></textarea>
+                                </p>
+                                <input type="hidden" name="seller_id" value="<?php echo $id; ?>"/>
+                                <input type="hidden" name="customer_id" value="<?php echo $customer_id; ?>"/>
+                                <input type="hidden" name="product_id" value="<?php echo $product_id; ?>"/>
+                                <label class="mp_seller_left" for="rating"><?php echo $this->__('Rate Seller:'); ?>  </label>
+                                <ul class="mp_seller_rate_options">
+                                    <li class="user-rating" id="set-user-rating"></li>
+                                    <li><input type="radio" id="rate1" name="rating" value="1" class="validate-one-required" style="display:none;" ><a href="javascript:void(0);" class="rate-1" onclick="setRating(1);"></a></li>
+                                    <li><input type="radio" id="rate2" name="rating" value="2" class="validate-one-required" style="display:none;"><a href="javascript:void(0);" class="rate-2" onclick="setRating(2);"></a></li>
+                                    <li><input type="radio" id="rate3" name="rating" value="3" class="validate-one-required" style="display:none;"><a href="javascript:void(0);" class="rate-3" onclick="setRating(3);"></a></li>
+                                    <li><input type="radio" id="rate4" name="rating" value="4" class="validate-one-required" style="display:none;"><a href="javascript:void(0);" class="rate-4" onclick="setRating(4);"></a></li>
+                                    <li><input type="radio" id="rate5" name="rating" value="5" class="validate-one-required" style="display:none;"><a href="javascript:void(0);" class="rate-5" onclick="setRating(5);"></a></li>
+                                </ul>   
+                                <br />
+                                <button type="submit" class="button"  title="<?php echo $this->__('Submit Review') ?>" name="submit_review" id="submit_review" >
+                                <span><span><?php echo $this->__('Submit') ?></span></span></button> 
+                            </form>
+                        </div>
+                        <div class="clear"></div>                        
+                    </div>
+                    <?php
+                }            
+        }
+    }
+/**
+ * Display back button
+ */
+$url = Mage::getModel('marketplace/sellerreview')->backUrl($id);
+?>
+<a href="<?php echo $url; ?>">
+<?php echo $this->__('Back'); ?></a>
+<script type="text/javascript">
+    var dataForm = new VarienForm('seller_review');
+    function setRating(value) {
+        SetWidth = (value * 20) + '%';
+        $('set-user-rating').setStyle({width: SetWidth});
+        $('rate' + value).checked = true;
+    }
+</script>
+
+<script>
+$jno = jQuery.noConflict();
+
+    $jno('span.read-more').click(function(){
+        $jno(this).prev('p.product_review').css({
+        	   'height' : 'auto',
+        	   'overflow' : 'visible'
+        	});
+    	$jno(this).prev('p.product_review').next('span.read-more').css({
+      	   'display' : 'none'
+      	});
+    });
+</script>

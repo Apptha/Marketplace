@@ -1,0 +1,115 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * Shoping cart sidebar
+ *
+ * @var Mage_Checkout_Block_Cart_Minicart $this
+ */
+?>
+
+<?php
+$_cartQty = $this->getSummaryCount();
+if(empty($_cartQty)) {
+    $_cartQty = 0;
+}
+?>
+<div id="minicart-error-message" class="minicart-message"></div>
+<div id="minicart-success-message" class="minicart-message"></div>
+
+<div class="minicart-wrapper">
+
+    <p class="block-subtitle">
+        <?php echo $this->__('Recently added item(s)') ?>
+        <a class="close skip-link-close" href="#" title="<?php echo $this->__('Close'); ?>">&times;</a>
+    </p>
+
+    <?php $_items = $this->getRecentItems() ?>
+    <?php $countItems = count($_items); ?>
+    <?php if($countItems): ?>
+        <div>
+            <ul id="cart-sidebar" class="mini-products-list">
+                <?php foreach($_items as $_item): ?>
+                    <?php echo $this->getItemHtml($_item) ?>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            decorateList('cart-sidebar', 'none-recursive');
+            $j('document').ready(function() {
+                var minicartOptions  = {
+                    formKey:           "<?php echo $this->getFormKey();?>"
+                }
+                var Mini = new Minicart(minicartOptions);
+                Mini.init();
+            });
+        </script>
+
+        <div id="minicart-widgets">
+            <?php echo $this->getChildHtml('cart_promotion') ?>
+        </div>
+        <div class="block-content">
+            <p class="subtotal">
+                <?php if ($this->canApplyMsrp()): ?>
+                    <span class="map-cart-sidebar-total"><?php echo $this->__('ORDER TOTAL WILL BE DISPLAYED BEFORE YOU SUBMIT THE ORDER'); ?></span>
+                <?php else: ?>
+                    <span class="label"><?php echo $this->__('Cart Subtotal:') ?></span> 
+                    <?php echo Mage::helper('checkout')->formatPrice($this->getSubtotal()) ?>
+                    <?php if ($_subtotalInclTax = $this->getSubtotalInclTax()): ?>
+                        <br />(<?php echo Mage::helper('checkout')->formatPrice($_subtotalInclTax) ?> 
+                        <?php echo Mage::helper('tax')->getIncExcText(true) ?>)
+                    <?php endif; ?>
+                <?php endif; ?>
+            </p>
+        </div>
+
+
+        <?php if($_cartQty && $this->isPossibleOnepageCheckout()): ?>
+            <div class="minicart-actions">
+                <a class="cart-link" href="<?php echo $this->getUrl('checkout/cart'); ?>">
+                    <?php echo $this->__('View Shopping Cart'); ?>
+                </a>
+                <ul class="checkout-types minicart">
+                    <?php echo $this->getChildHtml('extra_actions') ?>
+                    <li>
+                        <a title="<?php echo $this->__('Checkout') ?>" class="button checkout-button" 
+                        href="<?php echo $this->getCheckoutUrl() ?>">
+                            <?php echo $this->__('Proceed To Checkout') ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        <?php endif ?>
+
+    <?php else: ?>
+        <p class="empty"><?php echo $this->__('You have no items in your shopping cart.') ?></p>
+
+    <?php endif ?>
+</div>

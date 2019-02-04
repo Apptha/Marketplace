@@ -1,0 +1,679 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to display the Order Details
+ */
+/**
+ * Get order id from the params.
+ */
+$orderId = $this->getRequest()->getParam('orderid');
+/**
+ * Get the order details.
+ */
+$orderDetails = Mage::getModel('sales/order')->load($orderId);
+$checkOrderStatusArr = array();
+/**
+ * Get the customer session.
+ */
+$customerData = Mage::getSingleton('customer/session')->getCustomer();
+$loggedInCustomerId = $customerData->getId();
+/**
+ * Getting order product ids
+ */
+/**
+ * Checking manage order enable for seller
+ */
+$orderStatusFlag = Mage::getStoreConfig('marketplace/admin_approval_seller_registration/order_manage');
+
+$orderPrdouctIds = Mage::helper('marketplace/vieworder')->getOrderProductIds(Mage::getSingleton('customer/session')->getId(),$orderId);
+/**
+ * Getting canceled product ids
+ */
+$cancelOrderItemProductIds = Mage::helper('marketplace/vieworder')->cancelOrderItemProductIds(Mage::getSingleton('customer/session')->getId(),$orderId);
+
+/**
+ * check the cancel order item from the order product.
+ */
+$orderAndCancelDiff = array_diff($orderPrdouctIds,$cancelOrderItemProductIds);
+$orderAndCancelDiffCount = count($orderAndCancelDiff);
+
+$invoiceStatus = $invoiceId =  0;
+/**
+ * Get order invoice collection.
+ */
+foreach ($orderDetails->getInvoiceCollection() as $invoice){
+foreach($invoice->getAllItems() as $item){	
+$itemProductId = $item->getProductId();
+if(in_array($itemProductId,$orderPrdouctIds)){
+$invoiceId = $invoice->getId();
+$invoiceStatus = 1;
+break 2; 	
+}			
+}
+}
+
+$shipmentStatus = $shipmentId =  0;
+/**
+ * Get order shippment collection.
+ */
+foreach ($orderDetails->getShipmentsCollection() as $shipment){
+	foreach($shipment->getAllItems() as $item){
+		$itemProductId = $item->getProductId();
+		if(in_array($itemProductId,$orderPrdouctIds)){
+			$shipmentId = $shipment->getId();
+			$shipmentStatus = 1;
+			break 2;
+		}
+	}
+}
+
+
+/**
+ * Get order created date.
+ */
+$statusRefundRequest = $statusCancelRequest = 0;
+$created_date = date('M j, Y', strtotime($orderDetails['created_at']));
+?>
+
+<div class="page-title sellers_store">
+    <h1><?php echo $this->__('Order Id #') . $orderDetails['increment_id'];
+    /**
+     * Get all product details from the order.
+     */
+    foreach($orderDetails->getAllItems() as $item){
+    	$itemProductId = $item->getProductId();
+    	$orderItem = $item;
+    	if(in_array($itemProductId,$orderPrdouctIds) && !in_array($itemProductId,$cancelOrderItemProductIds)){
+        if($statusRefundRequest == 0){
+        $statusRefundRequest = Mage::getModel('marketplace/order')->getItemRequestStatus($itemProductId,$orderId,$loggedInCustomerId,2);
+        }
+        if($statusCancelRequest == 0){
+        $statusCancelRequest = Mage::getModel('marketplace/order')->getItemRequestStatus($itemProductId,$orderId,$loggedInCustomerId,3);
+        }
+    		$checkOrderStatusArr[] = Mage::helper('marketplace/vieworder')->checkOrderStatusForSeller($orderItem);
+    	} 	
+    }  
+    /**
+     * Check ordfer cancel count.
+     * 
+     * if count is grater than zero show order status as cancelled.
+     */
+    if($orderAndCancelDiffCount > 0){  
+    echo ' '.Mage::helper('marketplace/vieworder')->getOrderStatusForSeller($orderDetails,$checkOrderStatusArr);
+    }else{
+    echo ' '.$this->__('Canceled');	
+    }
+	
+    /**
+     * Check if any refund occurred for the particular order.
+     * 
+     */
+    $refundStatus = Mage::helper('marketplace/vieworder')->checkRefundedOrNot($checkOrderStatusArr);
+        
+    ?>
+    
+<?php 
+/**
+ * Check the invoice status and order status flag.
+ */
+if($invoiceStatus == 1 && $orderStatusFlag == 1){
+?>
+<span class="separator">|</span>
+<a href="<?php echo Mage::getUrl('sales/order/printInvoice').'invoice_id/'.$invoiceId; ?>" onclick="this.target='_blank'" class="link-print"><?php echo $this->__('Print Invoice'); ?></a>
+<?php } ?>        
+<?php 
+/**
+ * Check the invoice status and order status flag.
+ */
+if($shipmentStatus == 1 && $orderStatusFlag == 1){
+?>
+<?php
+/**
+ * link for print shipment.
+ */ 
+?>
+<span class="separator">|</span>
+<a href="<?php echo Mage::getUrl('sales/order/printShipment').'shipment_id/'.$shipmentId; ?>" onclick="this.target='_blank'" class="link-print"><?php echo $this->__('Print Shipment'); ?></a>
+<?php } ?> 
+
+</h1>
+</div>
+
+<?php
+/**
+ * Display shipping address
+ */
+?>
+<div class="col2-set order-info-box">
+    <div class="col-1">
+        <div class="box">
+            <div class="box-title">
+                <h2><?php echo $this->__('Customer Shipping Address'); ?> </h2>
+            </div>
+            <div class="box-content">
+                <?php
+                /**
+                 * Display the shipping address.
+                 * Name
+                 * street
+                 * city
+                 * postcode
+                 * region
+                 * telephone
+                 */
+                $addr_entity_id = $orderDetails['shipping_address_id'];
+                $shippingaddress = Mage::getModel('sales/order_address');
+                $shippingaddress->load($addr_entity_id);
+                $shipaddgetdat = $shippingaddress->getData();
+                if (!empty($shipaddgetdat)) {
+                    echo $shipaddgetdat['firstname'] . ' ' . $shipaddgetdat['lastname'] . '<br/>';
+                    echo $shipaddgetdat['street'] . '<br/>';
+                    echo $shipaddgetdat['city'] . ', ';
+                    echo $shipaddgetdat['postcode'] . '<br/>';
+                    if($shipaddgetdat['region'] != '-'){
+                    echo $shipaddgetdat['region'] . '<br/>';
+                    }                    
+                    $countryName = Mage::getModel('directory/country')->load($shipaddgetdat['country_id'])->getName();
+                    if( $countryName != '-'){
+                    echo $countryName. '<br/>';	
+                    }
+                    echo 'T:' . ' ' . $shipaddgetdat['telephone'] . '<br/>';
+                    echo 'F:' . ' ' . $shipaddgetdat['fax'] . '<br/>';
+                } else {
+                    echo $this->__('Shipping Address Not Applicable');
+                }
+                /**
+                 * Display Shipping Method
+                 */
+                ?>          
+            </div>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="box">
+            <div class="box-title">
+                <h2><?php echo $this->__('Shipping Method'); ?></h2>
+            </div>
+            <div class="box-content"><?php
+            	/**
+            	 * Display the shipping description.
+            	 */
+                if (isset($orderDetails['shipping_description'])) {
+                    echo $orderDetails['shipping_description'];
+                } else {
+					/**
+					 * Show error message, If shipping methos is not applicable.
+					 */
+                    echo $this->__('Shipping Method Not Applicable');
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+/**
+ * Display Billing Address
+ */
+?>
+<div class="col2-set order-info-box">
+    <div class="col-1">
+        <div class="box">
+            <div class="box-title">
+                <h2><?php echo $this->__('Customer Billing Address'); ?></h2>
+            </div>
+            <div class="box-content">
+                <?php
+                /**
+                 * Display customer billing address
+                 * Name
+                 * Street
+                 * city
+                 * postcode
+                 * region
+                 * telephone number
+                 * 
+                 */
+                $biladdr_entity_id = $orderDetails['billing_address_id'];
+                $billingaddress = Mage::getModel('sales/order_address');
+                $billingaddress->load($biladdr_entity_id);
+                $billaddgetdat = $billingaddress->getData();
+                echo $billaddgetdat['firstname'] . ' ' . $billaddgetdat['lastname'] . '<br/>';
+                echo $billaddgetdat['street'] . '<br/>';
+                echo $billaddgetdat['city'] . ', ';
+                echo $billaddgetdat['postcode'] . '<br/>';
+                if($billaddgetdat['region'] != '-'){
+                echo $billaddgetdat['region'] . '<br/>';
+                }
+                $countryName = Mage::getModel('directory/country')->load($billaddgetdat['country_id'])->getName();
+                if( $countryName != '-'){
+                	echo $countryName. '<br/>';
+                }
+                echo 'T:' . ' ' . $billaddgetdat['telephone'] . '<br/>';
+                echo 'F:' . ' ' . $billaddgetdat['fax'] . '<br/>';
+                ?>
+            </div>
+        </div>
+    </div>
+    <?php
+    /**
+     * Display Payment Method
+     */
+    ?>   
+    <div class="col-2">
+        <div class="box box-payment">
+            <div class="box-title">
+                <h2><?php echo $this->__('Payment Method'); ?></h2>
+            </div>
+            <div class="box-content">
+                <?php echo $orderDetails->getPayment()->getMethodInstance()->getTitle();
+                $paymentCode = $orderDetails->getPayment()->getMethodInstance()->getCode(); 
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php 
+/**
+ * Get the seller shipping enabled status
+ */
+$sellerShippingEnabled = Mage::getStoreConfig ( 'carriers/apptha/active' );
+/**
+ * Get the delivery schedule enabled status
+ */
+$deliveryScheduleEnable = Mage::getStoreConfig ( 'deliveryschedule/general/delivery_schedule_enabled' );
+if ($deliveryScheduleEnable == 1) {
+/**
+ * If delivery schedule is enabled means delivery details are display into seller dashboard
+ */
+$checkEmpty = $orderDetails->getShippingDeliverySchedule();
+if($checkEmpty && $checkEmpty != "") { ?>
+<div class="col2-set order-info-box">
+ <div class="box box-payment">
+<div class="box-title">
+        <h2><?php echo Mage::helper ( 'deliveryschedule' )->__ ('Delivery Schedule Information') ?></h2>
+        </div>
+        <div class="box-content">
+         <?php 
+         /**
+          * Display shipping delivery schedule information
+          */
+                    $deliveryDates = $orderDetails->getShippingDeliveryDate();
+                    $deliveryTypes = $orderDetails->getShippingDeliverySchedule();
+                    $deliveryTimes = $orderDetails->getShippingDeliveryTime();
+                    echo "<strong>".Mage::helper ( 'deliveryschedule' )->__ ('Shipping Delivery Schedule')." :- </strong></br>".$orderDetails->getShippingDeliverySchedule();
+                    if ($orderDetails->getShippingDeliveryDate()!='') {
+                        echo "</br><strong>".Mage::helper ( 'deliveryschedule' )->__ ('Shipping Delivery Date')." :- </strong></br>".date("M d Y",strtotime($deliveryDates))." ".$deliveryTimes;
+                        echo "</br>";
+                    }
+                    else {
+						/**
+						 * Display messgae if delivery schedule is empty.
+						 */
+                        echo "<strong>".Mage::helper ( 'deliveryschedule' )->__ ('Shipping Delivery Schedule')." :- </strong> N/A";
+                        }
+                    ?><?php 
+                    /**
+                     * Check the delivery schedule module, comment section active status from admin.
+                     */
+                    if (Mage::getStoreConfig ( 'deliveryschedule/general/delivery_comment_enabled' ) == 1) {
+                    if ($orderDetails->getShippingDeliveryComments()!='') {
+                        echo "<strong>".Mage::helper ( 'deliveryschedule' )->__ ('Comments')." :- </strong></br>".$orderDetails->getShippingDeliveryComments();
+                        }
+                    else {
+						/**
+						 * Delivery schedule comment is empty, show content message as N/A.
+						 */
+                        echo "<strong>".Mage::helper ( 'deliveryschedule' )->__ ('Comments')." :- </strong> N/A";
+                        }
+                    }
+                ?>
+                </div>
+                </div>
+</div>
+<?php }
+} ?>
+<?php
+/**
+ * Display Items Ordered
+ */
+?>  
+<h2><?php echo $this->__('Items Ordered'); ?></h2><p class="order-date"><?php echo $this->__('Order Date:') . $created_date; ?></p>
+<?php 
+/**
+ * Checking for virtual or paid
+ */
+$flagForUpdateShipping = $flagForUpdateInvoice = 0;
+?>
+<form id="shippment_update_info" method="POST" action="<?php echo $this->getShipPostUrl($orderId); ?>">
+	<input type="hidden" name="order_id" value="<?php echo $orderId; ?>" >
+	<table class="data-table" id="my-orders-table" summary="<?php echo $this->__('Items Ordered') ?>">    
+	    <thead>
+	        <tr>
+	            <th><?php echo $this->__('Product Name') ?></th>    
+	            <th class="a-center"><?php echo $this->__('Qty') ?></th>
+	            <th class="a-center"><?php echo $this->__('Price') ?></th> 
+	            <?php  
+	            /**
+	             * Check the delivery schedule and seller shipping methods are enabled or not
+	             */
+	            if ($deliveryScheduleEnable == 1 && $sellerShippingEnabled == 1) { ?>
+	            <!-- 
+	               If enabled means display delivery cost label into seller dashboard
+	             -->
+	            <th class="a-center"><?php echo Mage::helper ( 'deliveryschedule' )->__ ('Delivery Cost') ?></th> 
+	            <?php } ?>
+	            <th class="a-center"><?php echo $this->__('Amount') ?><p class='incl-shippment'>(Incl. shippment)</p></th>
+	            <th class="a-center"><?php echo $this->__('Status') ?></th>	 
+	            <?php if($orderStatusFlag == 1){          	
+	            	if($statusRefundRequest == 1 || $statusCancelRequest == 1){
+	            	?>      
+	            <th class="a-center"><?php echo $this->__('Action') ?></th>
+	            <?php }
+	            } ?>	            	              
+	        </tr>
+	    </thead>            
+	    <tbody> 
+	    <?php 
+	    $totalAmount = 0;
+	    $totalSellerAmount =0;
+	    $i = 0;
+	    /**
+	     * Display all items in the order.
+	     */
+	    foreach($orderDetails->getAllItems() as $item){
+            $displayAttribute = $attributeLabel = $attributeValue = $parentId = "";
+            $j = 0;
+            if($j == 0) {
+            $options = $item->getProductOptions();
+            if(isset($options['attributes_info'])){
+            $customOptions = $options['attributes_info'];
+            }
+            $productTypee = $item->getProductType();
+            if($productTypee == 'configurable'){         
+                $attributeLabel = $customOptions[0][label];
+                $attributeValue = $customOptions[0][value];
+                $j++;
+            }
+        }
+        if(!empty($attributeLabel)){
+            $displayAttribute = " (".$attributeLabel." - ".$attributeValue.")";
+        }  
+        $itemProductId = $item->getProductId();
+	    if(in_array($itemProductId,$orderPrdouctIds)){
+$sellerOrderData =  $this->getOrderProductData(Mage::getSingleton('customer/session')->getId(),$orderId,$itemProductId);
+$totalAmount = $totalAmount + $sellerOrderData->getSellerAmount() - $sellerOrderData->getSellerShippingAmount();	
+
+/**
+ * Checking for create shipping
+ */
+$orderItem = $item;
+if($orderItem->getIsVirtual() != 1 && $orderItem->getQtyShipped() <  $orderItem->getQtyOrdered() && !in_array($itemProductId,$cancelOrderItemProductIds)){
+$flagForUpdateShipping = 1;
+}
+
+/**
+ * Checking for create invoice
+ */
+$particularItemShippedNotInvoiced = 0;
+if($orderItem->getQtyShipped() >=  $orderItem->getQtyOrdered() && $orderItem->getQtyInvoiced() <  $orderItem->getQtyOrdered() && !in_array($itemProductId,$cancelOrderItemProductIds)){
+$particularItemShippedNotInvoiced = 1;
+}
+
+
+/**
+ * Checking for create invoice
+ */
+if($orderItem->getQtyInvoiced() <  $orderItem->getQtyOrdered() && !in_array($itemProductId,$cancelOrderItemProductIds)){
+$flagForUpdateInvoice = 1;
+}
+if($item->getProductType() == "simple"){
+    $parentId = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $item->getProductId () );
+}
+if(!$parentId){
+?>	     	
+	        <tr>
+	             <td><?php echo $item->getName().$displayAttribute; ?></td>
+	            <td class="a-center">
+	            	<?php echo round($item->getQtyOrdered(),2); ?>
+	            	<input type="hidden" style="width: 30px;"class="input-text qty-item" name="shipment[items][<?php echo $item->getId(); ?>]" value="<?php echo $item->getQtyOrdered(); ?>" >
+	            </td>
+	            <td class="a-center"><?php
+	            $orderCurrencySymbol = Mage::helper('marketplace')->orderCurrencySymbol($orderId);
+	            echo $orderCurrencySymbol.number_format(round($sellerOrderData->getProductAmt(), 2), 2);?></td>
+	            <?php 
+	            $product = Mage::helper ( 'marketplace/marketplace' )->getProductInfo ( $item->getProductId () );
+	            $productTypeId=$product->getTypeId();
+	            /**
+	             * Check the delivery schedule and seller shipping methods are enabled or not
+	             */
+	            if ($deliveryScheduleEnable == 1 && $sellerShippingEnabled == 1) { ?>
+	             <!-- 
+	               If enabled means display delivery cost into seller dashboard
+	             -->
+	            <!-- 
+	            If check $i is zero which is delivery cost display once a time for same order
+	             -->
+	            <td class="a-center"><?php if($i == 0){ echo $orderCurrencySymbol.number_format(round($orderDetails->getShippingDeliveryCost(), 2), 2);} ?></td>
+	            <?php  } ?>
+	            <?php 
+	            $baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode();
+	            if($orderCurrencySymbol == $baseCurrencyCode){
+	            	$shippingAmount = number_format(round($sellerOrderData->getSellerShippingAmount(), 2), 2);
+	            }else{
+	            	$orderCurrencyCode = Mage::helper('marketplace')->orderCurrencyCode($orderId);
+	            	 
+	            	$currencyRates = Mage::getModel('directory/currency')
+	            	->getCurrencyRates($baseCurrencyCode, array($orderCurrencyCode));
+	            	$shippingAmount = number_format(round(($currencyRates[$orderCurrencyCode] * $sellerOrderData->getSellerShippingAmount()), 2), 2);
+	            }
+	            $productPrice = $sellerOrderData->getSellerAmount() - $sellerOrderData->getSellerShippingAmount();
+	            $sellerAmount = $productPrice+$shippingAmount;//number_format(round(($productPrice +  $shippingAmount), 2), 2);
+	            $totalSellerAmount =  $totalSellerAmount+ $sellerAmount;
+	            ?>
+	            <?php 
+	            $getOrderId = $sellerOrderData->getOrderId();
+	            $orderdedQuantity = $sellerOrderData->getProductQty();
+	            $orderDetails = Mage::getModel('sales/order')->load($getOrderId);
+	            $isVirtual=$orderDetails->getIsVirtual();
+	            if($isVirtual==0){
+	                $shippingId = $orderDetails->getShippingAddress()->getCountry();
+	            }
+	            else{
+	                $shippingId = $orderDetails->getBillingAddress()->getCountry();
+	            }
+	            $shipMehtod = $orderDetails->getShippingMethod();
+	         
+	            $sellerProfile = Mage::getModel ( 'marketplace/sellerprofile' )->load ( Mage::getSingleton('customer/session')->getId(), 'seller_id' );
+	            $sellerDefaultCountry = $sellerProfile['country'];
+	             $nationalShippingPrice = $orderdedQuantity * $sellerProfile['national_shipping_cost'];
+	             $internationalShippingPrice = $orderdedQuantity * $sellerProfile['international_shipping_cost'];
+	             $typeIdArray=array("virtual","downloadable");
+	            
+	            ?>
+	            <?php 
+	               if( $shipMehtod =='apptha_apptha'){
+                         if ($sellerDefaultCountry == $shippingId && $nationalShippingPrice != ''&&(!(in_array($productTypeId,$typeIdArray))))
+                    { ?>
+                    <?php
+                    $nationalShippingPricesSum+=$nationalShippingPrice;
+                    $sellerAmount = $sellerAmount + $nationalShippingPrice; 
+                    $totalSellerAmount=$totalSellerAmount+$nationalShippingPricesSum;
+                    ?>
+	            <td class="a-center"><?php echo $orderCurrencySymbol.$sellerAmount;?></td>
+	            
+	            
+	            <?php }
+                    else if ($sellerDefaultCountry != $shippingId && $internationalShippingPrice != ''&&(!(in_array($productTypeId,$typeIdArray))))
+                    {?>
+                    <?php 
+                    $internationalShippingPriceSum+=$internationalShippingPrice;
+                    $sellerAmount = $internationalShippingPrice+$sellerAmount;
+                    $totalSellerAmount=$totalSellerAmount+$internationalShippingPrice;
+                    ?>
+	            <td class="a-center"><?php echo $orderCurrencySymbol.$sellerAmount;?></td>
+	            
+	            <?php  }else{?>
+	                   
+	                    <td class="a-center"><?php echo $orderCurrencySymbol.$sellerAmount;?></td>
+	                   
+	               <?php } }else {?>
+	            
+	            <td class="a-center"><?php echo $orderCurrencySymbol.$sellerAmount;?></td>
+	            
+	            
+	            <?php }?>
+	            <?php ?>
+	            <?php ?>
+	          
+	            <td class="a-center"><?php 
+	            if(in_array($itemProductId,$cancelOrderItemProductIds)){
+                echo $this->__('Canceled');	   
+	            }else{
+	            if($particularItemShippedNotInvoiced == 0 || $orderItem->getIsVirtual() == 1){
+	            echo $item->getStatus();
+                }else{
+	            echo $this->__('Shipped');
+                }	
+	            }
+	            ?>	           
+	            </td>
+	            <?php if($orderStatusFlag == 1){ ?>
+	            <td class="a-center">
+	            <?php if($orderItem->getQtyInvoiced() >=  $orderItem->getQtyOrdered()){
+	            if($orderItem->getQtyRefunded() >=  $orderItem->getQtyOrdered()){		        
+	            ?>
+	            <?php echo $this->__('Refunded'); ?>
+	          	<?php
+	          	}else{
+				/**
+				 * Check refund request status.
+				 */
+                $status = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,4);
+                if($status == 1){
+                echo $this->__('Refund Request Sent');	
+                }else{
+                $statusRefund = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,2);
+                $statusCancel = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,3);
+                if($statusRefund == 1 || $statusCancel == 1){
+                ?>
+	            <a onclick="return confirm('<?php echo $this->__('Are you sure want to send refund request?'); ?>');" href="<?php echo Mage::getUrl('marketplace/shipment/refund').'id/'.$orderId.'/item/'.$itemProductId; ?>"><?php echo $this->__('Refund Request'); ?></a>
+	            <?php
+	            }	
+	            }	
+	          	} 
+	            }else{
+				/**
+				 * Check cancel order status.
+				 */
+                if(!in_array($itemProductId,$cancelOrderItemProductIds)){
+                $statusRefundItem = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,2);
+                $status = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,3);
+	            if($status == 1 || $statusRefundItem){
+                ?>
+	            <a onclick="return confirm('<?php echo $this->__('Are you sure want to cancel?'); ?>');" href="<?php echo Mage::getUrl('marketplace/shipment/cancel').'id/'.$orderId.'/item/'.$itemProductId; ?>"><?php echo $this->__('Cancel'); ?></a>
+	            <?php }
+                }
+                } ?>	            
+	            </td>
+	            <?php } ?>	  
+	     	         
+	        </tr>  
+	     <?php } }
+	     $i++;
+} ?>   
+	    </tbody>
+	</table>
+
+    <div class="shipment_update_total_orders">
+    <?php 
+    /**
+     * Display order total.
+     */
+    
+    ?>
+	<span><b><?php echo Mage::helper('marketplace')->__('Order Total'); ?></b></span>
+	<span><b><?php echo $orderCurrencySymbol. number_format($totalSellerAmount,2);?></b></span>
+	
+		<?php
+/**
+ * Check whether seller order refunded or not
+ */
+if($refundStatus != 1 && $orderAndCancelDiffCount > 0 && $orderStatusFlag == 1){
+?>	
+<div class="product_track_buttons">
+<?php 
+/**
+ * Update shipping button.
+ */
+?>
+<?php if($flagForUpdateShipping == 1 && $orderStatusFlag == 1){ ?>
+<a class="button" href="#" onclick="shipping.show(event);return false;"><?php echo $this->__('Update Shipping'); ?></a>
+<?php }else{ ?>
+<span class="hide_effect_button">
+<?php echo $this->__('Update Shipping'); ?>
+</span>
+<?php } ?>
+<?php
+/**
+ * Generate invoice button.
+ */
+if($flagForUpdateInvoice == 1 && $orderStatusFlag == 1){ ?>
+<a class="button" href="<?php echo Mage::getUrl('marketplace/shipment/invoice').'id/'.$orderId; ?>"><?php echo $this->__('Invoice'); ?></a>
+<?php }else{ ?>
+<span class="hide_effect_button">
+<?php echo $this->__('Invoice'); ?>
+</span>
+<?php } ?>
+</div>
+<?php } ?>	
+	
+	</div>
+
+		<div id="shipping_tracking" style="display:none;">	
+		<?php echo $this->getChildHtml('marketplace_shipping_tracking'); ?>
+		<input id="send_email" name="shipment[send_email]" value="1" type="hidden">
+		<input id="notify_customer" name="shipment[comment_customer_notify]" value="1" type="hidden" >				
+	    </div> 
+</form>
+<script type="text/javascript">
+    var shipment = new VarienForm('shippment_update_info');
+</script>
+<div class="buttons-set mp_view_order_back"><a href="<?php echo Mage::helper('marketplace/url')->getManageOrderUrl(); ?>"><small><< </small><?php echo $this->__('Back to Orders'); ?> </a></div>
+<?php if($orderDetails->getOnestepcheckoutCustomercomment()) {?>
+<ul class="shipment_comment">
+			<li>
+				<p><span style="font-size:16px ; font-weight:bold;margin-top:10px;width: 100%;"><?php echo $this->__('About This Order:');?></span></p>
+			</li>		
+			
+			<li>      <?php echo $orderDetails->getOnestepcheckoutCustomercomment()?>
+			</li>
+</ul>
+<?php  }?>

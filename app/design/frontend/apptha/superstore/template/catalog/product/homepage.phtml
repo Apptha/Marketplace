@@ -1,0 +1,103 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Home page template
+ */
+?>
+<?php 
+/**
+ * Quick link block
+ */
+$coreHelper = $this->helper('core');
+?>
+<div class="quick-links"><?php echo $this->getLayout()->createBlock('marketplace/homepageblocks')->setTemplate('homepageblocks/quickview.phtml')->toHtml(); ?></div>
+<?php 
+/**
+ * Banner Slider
+ */
+?>
+<?php echo $this->_getChildHtml('home'); ?>
+<?php 
+/**
+ * Category add links
+ */
+?>
+<div class="category-ads"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_category_ads')->toHtml() ?></div>
+
+<div class="offer-ads"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_offer_ads')->toHtml() ?></div>
+<?php 
+/**
+ * Deal of the day block
+ */
+?>
+<div class="deal-products"><?php echo $this->getLayout()->createBlock('marketplace/homepageblocks')->setTemplate('homepageblocks/dealoftheday.phtml')->toHtml(); ?></div>
+<?php 
+/**
+ * Site-policy
+ */
+?>
+<div class="site-policy"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_company_site_policy')->toHtml() ?></div>
+<?php 
+/**
+ * Selected categories sub category link block
+ */
+?>
+<div class="fashion-block"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('apptha_fashion_block')->toHtml() ?></div>
+<?php
+/**
+* Block for featured Categories Displaying in the home page.
+*/
+?>
+<?php 
+/**
+ * Seller logo
+ */
+?>
+<div class="seller-block-logo"><?php echo $this->getLayout()->createBlock('marketplace/topseller')->setTemplate('marketplace/topseller.phtml')->toHtml() ?></div>
+
+<?php 
+/**
+ * Best Sellers and Latest products block
+ */
+?>
+<div class="best-sellers-new-products"><?php echo $this->getLayout()->createBlock('marketplace/homepageblocks')->setTemplate('homepageblocks/bestandnew.phtml')->toHtml(); ?></div>
+
+<script type="text/javascript"> 
+var $jQ = jQuery.noConflict(); 
+var floatNav = $jQ('.float-nav'),
+mainContent = $jQ('.main-content');
+function openNavMenu(id) { 
+var floatNavMenu = $jQ('#'+id); 
+if (floatNavMenu.hasClass('closed')){
+	floatNavMenu.removeClass('closed');
+} else {
+	floatNavMenu.addClass('closed'); } 
+	} </script>
+	<?php $totslidecount = ''; ?>

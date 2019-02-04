@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<layout version="0.1.0">
+
+<!--
+Default layout, loads most of the pages
+-->
+
+    <default>
+
+        <!-- Mage_Newsletter -->
+        <reference name="footer">
+            <block type="newsletter/subscribe" name="footer.newsletter" as="newsletter" before="footer_store_language" template="newsletter/subscribe.phtml"/>
+        </reference>
+    </default>
+
+<!--
+Customer account pages, rendered for all tabs in dashboard
+-->
+
+    <customer_account>
+        <!-- Mage_Newsletter -->
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="newsletter"><name>newsletter</name><path>newsletter/manage/</path><label>Newsletter Subscriptions</label></action>
+        </reference>
+        <remove name="left.newsletter"/>
+    </customer_account>
+
+    <newsletter_manage_index translate="label">
+        <label>Customer My Account Newsletter Subscriptions</label>
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="customer/newsletter" name="customer_newsletter">
+                <block type="page/html_wrapper" name="customer.newsletter.form.before" as="form_before" translate="label">
+                    <label>Newsletter Subscription Form Before</label>
+                </block>
+            </block>
+        </reference>
+    </newsletter_manage_index>
+
+</layout>

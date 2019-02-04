@@ -1,0 +1,60 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+#facebox {position: fixed;top: 10% !important;left: 0 !important;right: 0 !important;bottom: 0 !important;z-index: 100;	text-align: left;margin: auto !important;width:50%;}
+#facebox .popup {position: relative;	border: 3px solid rgba(0, 0, 0, 0);	-webkit-border-radius: 5px;	-moz-border-radius: 5px;border-radius: 5px;	-webkit-box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);-moz-box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);}
+#facebox .content {display: table;	padding: 10px;	background: #fff;	-webkit-border-radius: 4px;	-moz-border-radius: 4px;border-radius: 4px;}
+#facebox .content>p:first-child {margin-top: 0;}
+#facebox .content>p:last-child {margin-bottom: 0;}
+#facebox .close {position: absolute;top:16px;right:16px;padding: 2px;background: transparent;}
+#facebox .close img {opacity: 0.3;}
+#facebox .close:hover img {opacity: 1.0;}
+#facebox .loading {text-align: center;}
+#facebox .image {text-align: center;}
+#facebox img {	border: 0;	margin: 0;}
+#facebox_overlay {position: fixed;	top: 0px;left: 0px;	height: 100%;width: 100%;}
+.facebox_hide {z-index: -100;}
+.facebox_overlayBG {background-color: #000;	z-index: 99;}
+.marketplace-seller-displayseller .popup .content .main-container{margin-top:0px !important;}
+/* Product Quick View CSS */
+.best-sellers-new-products .slider .quickview, .marketplace-seller-displayseller .products-grid li.item .quickview, .catalog-category-view .products-grid li.item .quickview, .catalogsearch-result-index .products-grid li.item .quickview, .cms-home .deal-products .slider .quickview, .marketplace-seller-displayseller .slider .quickview, .superdeals-index-index .slider .quickview	{visibility: hidden;position: absolute;	right: 0;left: 0;text-align: center;width: 40px;height: 40px;top: 0px;margin: auto;opacity: 0;	-webkit-transition: all 0.3s ease-in-out;-moz-transition: all 0.3s ease-in-out;	-o-transition: all 0.3s ease-in-out;transition: all 0.3s ease-in-out;border-radius: 50%;background: #fe5621 url("../images/icon_sprite.png") no-repeat 4px -1648px;}
+.best-sellers-new-products .slider:hover .quickview, .marketplace-seller-displayseller .products-grid li.item:hover .quickview, .catalog-category-view .products-grid li.item:hover .quickview, .catalogsearch-result-index .products-grid li.item:hover .quickview, .cms-home .deal-products .slider:hover .quickview, .marketplace-seller-displayseller .slider:hover .quickview, .superdeals-index-index .slider:hover .quickview	{visibility: visible !important;opacity: 1;	background: #fe5621 url("../images/icon_sprite.png") no-repeat 4px	-1648px;top: 100px;}
+.best-sellers-new-products .slider .quickview:hover, .marketplace-seller-displayseller .products-grid li.item .quickview:hover, .catalog-category-view .products-grid li.item .quickview:hover, .catalogsearch-result-index .products-grid li.item .quickview:hover, .cms-home .deal-products .slider .quickview:hover, .marketplace-seller-displayseller .slider .quickview:hover, .superdeals-index-index .slider .quickview:hover	{background: #fff url("../images/icon_sprite.png") no-repeat -26px	-1648px;-webkit-transition: all 0.1s ease-in-out;-moz-transition: all 0.1s ease-in-out;	-o-transition: all 0.1s ease-in-out;transition: all 0.1s ease-in-out;}
+.best-sellers-new-products .slider .quickview .btn-quickview, .marketplace-seller-displayseller .products-grid li.item .quickview .btn-quickview, .catalog-category-view .products-grid li.item .quickview .btn-quickview, .catalogsearch-result-index .products-grid li.item .quickview .btn-quickview, .cms-home .deal-products .slider .quickview .btn-quickview, .marketplace-seller-displayseller .slider .quickview .btn-quickview, .superdeals-index-index .slider .quickview .btn-quickview{	visibility: hidden;	position: absolute;	top: -34px;	left: -20px;right: -20px;color: #fff;font-weight: normal;vertical-align: middle;padding: 5px 0px;background-color: rgba(0, 0, 0, 0.9);border-radius: 6%;opacity: 0;	-webkit-transition: all 0.1s ease-in-out;-moz-transition: all 0.1s ease-in-out;	-o-transition: all 0.1s ease-in-out;transition: all 0.1s ease-in-out;font-size: 12px;}
+.best-sellers-new-products .slider .quickview .btn-quickview:before, .marketplace-seller-displayseller .products-grid li.item .quickview .btn-quickview:before, .catalog-category-view .products-grid li.item .quickview .btn-quickview:before, .catalogsearch-result-index .products-grid li.item .quickview .btn-quickview:before, .cms-home .deal-products .slider .quickview .btn-quickview:before, .marketplace-seller-displayseller .slider .quickview .btn-quickview:before, .superdeals-index-index .slider .quickview .btn-quickview:before	{border-left: 6px solid transparent;	border-right: 6px solid transparent;border-top: 6px solid rgba(0, 0, 0, 0.8);content: "";bottom: -6px;position: absolute;	left: 42%;}
+.best-sellers-new-products .slider .quickview:hover .btn-quickview, .marketplace-seller-displayseller .products-grid li.item .quickview:hover .btn-quickview, .catalog-category-view .products-grid li.item .quickview:hover .btn-quickview, .catalogsearch-result-index .products-grid li.item .quickview:hover .btn-quickview, .cms-home .deal-products .slider .quickview:hover .btn-quickview, .marketplace-seller-displayseller .slider .quickview:hover .btn-quickview, .superdeals-index-index .slider .quickview:hover .btn-quickview	{visibility: visible !important;opacity: 1;}
+.cms-home .deal-products .slider .quickview {top: -258px;}
+.cms-home .deal-products .slider:hover .quickview {	top: -150px;}
+.cms-home .deal-products .slider .quickview .btn-quickview {font-style: normal;}
+
+#facebox .loading img {    position: absolute;    margin: auto;    left: 0;    right: 0;    top: 0;    bottom: 0;}
+#facebox .content{background:none; display: block; height: 530px; overflow: auto; padding: 20px;}
+#facebox .popup{background:#fff;}
+
+.f-header{z-index: 99 !important;}
+.bx-wrapper .bx-next, .bx-wrapper .bx-next:hover{z-index: 10 !important;}

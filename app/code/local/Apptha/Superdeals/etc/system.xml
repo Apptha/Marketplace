@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<config>
+   <!-- Apptha tab in admin side configuration -->
+   <tabs>
+      <Apptha module="superdeals" translate="label">
+         <label>Apptha</label>
+         <sort_order>101</sort_order>
+      </Apptha>
+   </tabs>
+   <sections>
+      <!-- Super deals settings tab -->
+      <superdeals module="superdeals" translate="label">
+         <tab>Apptha</tab>
+         <label>Super Deals Settings</label>
+         <sort_order>200</sort_order>
+         <show_in_default>1</show_in_default>
+         <show_in_website>1</show_in_website>
+         <show_in_store>1</show_in_store>
+         <!-- 
+    Groups tab starts
+     -->
+         <groups>
+            <!-- Super deals group settings -->
+            <superdeals_group translate="label">
+               <label>Super Deals Settings</label>
+               <sort_order>200</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!--  Super deal admin active status -->
+                  <deals_enable translate="label comment">
+                     <label>Super Deals</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>40</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Super deals</comment>
+                  </deals_enable>
+               </fields>
+            </superdeals_group>
+         </groups>
+         <!-- 
+    Groups tab ends
+     -->
+         <!-- 
+    Groups tab ends
+     -->
+         <groups>
+            <!-- Email configuration for super deal group -->
+            <general translate="label" module="superdeals">
+               <label>Emails</label>
+               <frontend_type>text</frontend_type>
+               <sort_order>400</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Active status for deal expirations and summary report -->
+                  <send_email_statistics translate="label comment">
+                     <label>Deals Reports</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>10</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable emails for deal expirations and
+                                summary reports</comment>
+                  </send_email_statistics>
+                  <!-- Email alert -->
+                  <receiver_email_id translate="label comment">
+                     <label>Email Alerts</label>
+                     <frontend_type>text</frontend_type>
+                     <validate>validate-email</validate>
+                     <sort_order>30</sort_order>
+                     <comment>Specify the email address to which the deal expiration
+                                alerts and summary reports will be sent</comment>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                  </receiver_email_id>
+                  <!-- Deal end notification -->
+                  <deal_end_notification translate="label comment">
+                     <label>Remind Deals Before</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>superdeals/words</source_model>
+                     <sort_order>40</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Select number of days to receive alert before deal
+                                expires</comment>
+                  </deal_end_notification>
+                  <!-- Deal reminder email templete -->
+                  <notify_template translate="label">
+                     <label>Deal Reminder Template</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_email_template</source_model>
+                     <sort_order>60</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                  </notify_template>
+               </fields>
+            </general>
+         </groups>
+         <!-- 
+    Groups tab ends
+     -->
+         <!-- Group for timmer settings -->
+         <groups>
+            <timer translate="label">
+               <label>Timer Settings</label>
+               <sort_order>500</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Timer active status -->
+                  <show_timer translate="label comment">
+                     <label>Timer</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>1</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Timer for deals</comment>
+                  </show_timer>
+                  <!-- Timer tittle -->
+                  <timer_head translate="label comment">
+                     <label>Timer Title</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>2</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enter title for timer (Eg: Offer Ends)</comment>
+                  </timer_head>
+                  <!-- Active status for custom settings -->
+                  <!-- 
+    Custom color enable tab start
+     -->
+                  <custom_color_enable translate="label comment">
+                     <label>Apply Custom Settings</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>3</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable to apply custom settings for Timer and
+                                Discounts</comment>
+                  </custom_color_enable>
+                  <!-- 
+    Custom color enable tab ends
+     -->
+                  <!-- Label color -->
+                  <save_dis_lable_color translate="label comment">
+                     <label>Label Color</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>4</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <validate>color</validate>
+                     <show_in_store>1</show_in_store>
+                     <comment>Pick color for label</comment>
+                  </save_dis_lable_color>
+                  <!-- Price color -->
+                  <save_dis_price_color translate="label comment">
+                     <label>Price Color</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>5</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>color</validate>
+                     <comment>Pick color for price</comment>
+                  </save_dis_price_color>
+                  <!-- Font size in view page -->
+                  <save_dis_font_size translate="label comment">
+                     <label>Font Size (View Page)</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>6</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range
+                                digits-range-10-50</validate>
+                     <comment>Enter font size for label (Range 10px - 50px)</comment>
+                  </save_dis_font_size>
+                  <!-- Timer color -->
+                  <text translate="label comment">
+                     <label>Timer Color</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>7</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <validate>color</validate>
+                     <show_in_store>1</show_in_store>
+                     <comment>Pick color for timer</comment>
+                  </text>
+                  <!-- Timer title color -->
+                  <!-- 
+    heading_text_color tab start
+     -->
+                  <heading_text_color translate="label comment">
+                     <label>Timer Title Color</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>8</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>color</validate>
+                     <comment>Pick title color for timer</comment>
+                  </heading_text_color>
+                  <!-- 
+    heading_text_color tab ends
+     -->
+                  <!-- Timer font size deal page -->
+                  <save_cat_time_font_size translate="label comment">
+                     <label>Timer Font Size (Deal Page)</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>9</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <validate>color</validate>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range
+                                digits-range-10-50</validate>
+                     <comment>Enter font size for timer in deal page (Range 10px -
+                                50px)</comment>
+                  </save_cat_time_font_size>
+                  <!-- Timer font size in view page -->
+                  <save_view_time_font_size translate="label comment">
+                     <label>Timer Font Size (View Page)</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>10</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range
+                                digits-range-10-50</validate>
+                     <comment>Enter font size for timer in view page (Range 10px -
+                                50px)</comment>
+                  </save_view_time_font_size>
+               </fields>
+            </timer>
+         </groups>
+         <!-- Top selling deals sideblock -->
+         <groups>
+            <topsellingsidebar translate="label">
+               <label>Top Selling Deals Sideblock</label>
+               <sort_order>600</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Left side bar active status -->
+                  <enable_left translate="label comment">
+                     <label>Left Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>1</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Top Selling Sideblock in left</comment>
+                  </enable_left>
+                  <!-- Right side block active status -->
+                  <enable_right translate="label comment">
+                     <label>Right Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>2</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Top Selling Sideblock in right</comment>
+                  </enable_right>
+                  <!-- Config for number of products to display -->
+                  <product_count translate="label comment">
+                     <label>Number of Products to Display</label>
+                     <frontend_type>text</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>3</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range digits-range-1-10</validate>
+                     <comment>Enter the number of products to display (Range 1 to 10)</comment>
+                  </product_count>
+               </fields>
+            </topsellingsidebar>
+         </groups>
+         <!-- Active status for most viewed deals side block -->
+         <groups>
+            <mostviewedsidebar translate="label">
+               <label>Most Viewed Deals Sideblock</label>
+               <sort_order>700</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Active status for left sideblock -->
+                  <enable_left translate="label comment">
+                     <label>Left Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>1</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Most Viewed Deals Sideblock in left</comment>
+                  </enable_left>
+                  <!-- Active status for right sideblock -->
+                  <enable_right translate="label comment">
+                     <label>Right Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>2</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Most Viewed Deals Sideblock in right</comment>
+                  </enable_right>
+                  <!-- Number of products to display -->
+                  <product_count translate="label comment">
+                     <label>Number of Products to Display</label>
+                     <frontend_type>text</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>3</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range digits-range-1-10</validate>
+                     <comment>Enter the number of products to display (Range 1 to 10)</comment>
+                  </product_count>
+               </fields>
+            </mostviewedsidebar>
+         </groups>
+         <!-- Group for deal of the side bar -->
+         <groups>
+            <dealofthedaysidebar translate="label">
+               <label>Deal of the Day Sideblock</label>
+               <sort_order>800</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Active status for left sideblock -->
+                  <enable_left translate="label comment">
+                     <label>Left Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>1</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Deal of the Day Sideblock in left</comment>
+                  </enable_left>
+                  <!-- Active status for right sideblock -->
+                  <enable_right translate="label comment">
+                     <label>Right Sideblock</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>2</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Deal of the Day Sideblock in right</comment>
+                  </enable_right>
+               </fields>
+            </dealofthedaysidebar>
+         </groups>
+         <!-- Groups for slide settings -->
+         <groups>
+            <slider translate="label">
+               <label>Slide Settings</label>
+               <sort_order>900</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- Active status for slider -->
+                  <enable_slide translate="label comment">
+                     <label>Enable Slide</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>1</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Enable or disable Slider in the bottom</comment>
+                  </enable_slide>
+                  <!-- Configuration for slide order -->
+                  <slide_order translate="label comment">
+                     <label>Slide order</label>
+                     <frontend_type>select</frontend_type>
+                     <source_model>superdeals/slideorder</source_model>
+                     <sort_order>3</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <comment>Select the order in which the slide progress</comment>
+                  </slide_order>
+                  <!-- Number of products to slide -->
+                  <slide_count translate="label comment">
+                     <label>Number of products to slide</label>
+                     <frontend_type>text</frontend_type>
+                     <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                     <sort_order>2</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                     <validate>validate-digits validate-digits-range digits-range-1-10</validate>
+                     <comment>Enter the number of products to slide (Range 1 to 10)</comment>
+                  </slide_count>
+               </fields>
+            </slider>
+         </groups>
+         <!-- Group for seo settings -->
+         <groups>
+            <seosettings translate="label">
+               <label>SEO Settings</label>
+               <sort_order>1000</sort_order>
+               <show_in_default>1</show_in_default>
+               <show_in_website>1</show_in_website>
+               <show_in_store>1</show_in_store>
+               <fields>
+                  <!-- SEO title -->
+                  <seotitle translate="label comment">
+                     <label>Title</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>30</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                  </seotitle>
+                  <!-- SEO keyword -->
+                  <seokeyword translate="label comment">
+                     <label>Keyword</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>40</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                  </seokeyword>
+                  <!-- 
+    seokeyword tab ends
+     -->
+                  <!-- SEO description -->
+                  <seodescription translate="label comment">
+                     <label>Description</label>
+                     <frontend_type>text</frontend_type>
+                     <sort_order>50</sort_order>
+                     <show_in_default>1</show_in_default>
+                     <show_in_website>1</show_in_website>
+                     <show_in_store>1</show_in_store>
+                  </seodescription>
+               </fields>
+            </seosettings>
+            <!-- 
+    seosettings tab ends
+     -->
+         </groups>
+      </superdeals>
+      <!-- 
+    super deals tab ends
+     -->
+   </sections>
+</config>
+<!-- 
+    config tab ends
+     -->

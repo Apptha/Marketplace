@@ -1,0 +1,488 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<script
+src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>marketplace/nicEdit.js"
+type="text/javascript"></script>
+<script type="text/javascript">
+    document.observe("dom:loaded", function() {
+        // initially hide all containers for payment details
+        $('errormsg').hide();
+        if (document.getElementById('bank_pay').checked) {
+            $$('#paypal_id').invoke('hide');
+            
+        } else {
+            $$('#bank_payment').invoke('hide'); 
+        }
+
+    });
+</script>
+<div id="errormsg"></div>
+<?php
+if (Mage::getSingleton ( 'customer/session' )->isLoggedIn ()) {
+
+$sellerData = Mage::getSingleton ( 'customer/session' )->getCustomer ();
+$sellerId = $sellerData->getId ();
+$profileData = $this->editprofile ( $sellerId );
+}
+
+?>
+<?php 
+/**
+ * Get the Shippping type
+ */
+$shippingtypeId = Mage::helper('marketplace/marketplace')->getSellerShipping();
+$sellerShippingAttribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $shippingtypeId);
+$sellerShipping = array();
+$selectShipping = '<option value="">' . $this->__('Select') . '</option>';
+foreach ($sellerShippingAttribute->getSource()->getAllOptions() as $option) {
+    $value = $option['value'];
+    if ($value != '') {
+        $sellerShipping[$value] = $option['label'];
+        $strSelect='';
+        if($option['value'] == $profileData['shipping_cost'])
+        	$strSelect = 'selected="selected"';
+        $selectShipping .= "<option ".$strSelect." value='" . $option['value'] . "'>" . $option['label'] . "</option>";
+    }
+}
+ 
+        ?>
+<div class="page-title">
+<h1><?php echo $this->__('My Profile'); ?></h1>
+</div>
+<div class="my-account-wrapper">
+<form action="<?php echo $this->addprofile(); ?>" method="post"
+id="addprofile" class="addprofile" enctype="multipart/form-data">
+<div class="fieldset addprofile_fieldset">
+<h2 class="legend"><?php echo $this->__('Profile Information'); ?></h2>
+<ul class="form-list">
+
+
+
+<?php if( (Mage::getStoreConfig("marketplace/product/commission_mode")!="category")){
+
+  if($profileData['commission']==''|| $profileData['commission']==0){
+      $profileData['commission']=Mage::getStoreConfig("marketplace/marketplace/percentperproduct");
+      
+  }?>
+ <h6 class="commission"><?php echo $this->__('Commission in (%)');?><span> <?php echo $profileData['commission']; 
+    ?></span></h6>
+
+<?php }?>
+
+
+
+
+<!-- seller id -->
+<input type="hidden" name="seller_id" id="seller_id"
+value="<?php echo $sellerId; ?>" />
+<!-- Store Name -->
+<li class="fields">
+<div class="field">
+<label for="store_name" class="required">  <?php echo $this->__('Store Name'); ?> 
+                    <em><?php echo $this->__('*'); ?></em>
+</label>
+<div class="input-box">
+<input type="text" name="store_name" id="store_name"
+value="<?php echo $profileData['store_title']; ?>"
+class="input-text required-entry" />
+</div>
+</div>
+</li>
+<?php 
+/**
+ * 
+ * Seller Commission/Global Commission
+ */
+?>
+<?php
+/**
+ * Seller State
+ */
+?>
+<li class="fields"><label for="state" class="required"><?php echo $this->__('State'); ?> 
+<em><?php echo Mage::helper('marketplace')->__('*'); ?></em> </label>
+<div class="input-box">
+<input type="text" name="state" id="state"
+value="<?php echo $profileData['state']; ?>"
+class="input-text required-entry" />
+</div></li>             
+<li class="fields">
+<div>
+<label for="country" class="required"><?php echo Mage::helper('marketplace')->__('Country'); ?> 
+                    <em><?php echo $this->__('*'); ?></em> </label>  
+                    <?php
+$_countries = Mage::getResourceModel ( 'directory/country_collection' )->loadData ()->toOptionArray ( false )?>
+                            <?php if (count($_countries) > 0) { ?>
+                        <select name="country" id="country"
+class="validate-select" title="Country">
+<option value="">-- Please Select --</option>
+                            <?php foreach ($_countries as $_country) { ?>
+                                <option
+value="<?php echo $_country['value']; ?>"
+<?php echo $profileData['country'] == $_country['value'] ? ' selected="selected"' : ''; ?>>
+                            <?php echo $_country['label']?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
+                </div>
+</li>
+<li class="fields"><label for="contact" class="required"><?php echo $this->__('Contact Number'); ?> 
+                    <em><?php echo $this->__('*'); ?></em> </label>
+<div class="input-box">
+<input type="text" name="contact" id="contact"
+value="<?php echo $profileData['contact']; ?>"
+class="validate-phoneLax input-text required-entry" />
+</div></li>
+<?php
+/**
+ * Description
+ */
+?>               
+<li class="wide fields">
+<div>
+<label for="description"><?php echo $this->__('Description'); ?>  </label>
+<div class="input-box">
+<textarea name="description" rows="10" cols="75" id="description"
+class="validate-length maximum-length-255 textarea"
+style="width: 710px;" /><?php echo $profileData['description']; ?></textarea>
+</div>
+</div>
+</li>
+<?php if(!Mage::getStoreConfigFlag('marketplace/shipping/shippingcost')) {?>
+<li class="wide fields">
+                <div>
+                    <label for="shipping_cost"  class="required"><?php echo $this->__('Shipping Cost'); ?> <em>*</em> </label>
+                    <div class="input-box">
+                   		<select id="shipping_cost" name="shipping_cost"  class="select select input-text required-entry input-text_pro">
+                            <?php echo $selectShipping; ?>
+                        </select> 
+                    </div>
+                </div>
+            </li>
+            <li class="wide fields national-shipping-prices-li" id="shipping_price">
+                    <label for="national_shipping_cost" class="required national-shipping-prices"><em>*</em><?php echo $this->__('National Shipping Price'); ?></label>
+                    <div class="input-box national-shipping-prices-div">
+                        <input id="national_shipping_cost" name="national_shipping_cost" value="<?php echo $profileData['national_shipping_cost']?>" class="required-entry validate-zero-or-greater input-text national-shipping-prices-input" type="text" >                         
+                    </div>                   
+                    <label for="international_shipping_cost" class="required international-shipping-prices"><em>*</em><?php echo $this->__('International Shipping Price'); ?></label>
+                    <div class="input-box international-shipping-prices-div">
+                        <input id="international_shipping_cost" name="international_shipping_cost" value="<?php echo $profileData['international_shipping_cost']?>" class="required-entry validate-zero-or-greater input-text international-shipping-prices-input" type="text" >                         
+                    </div>  </li>
+           <?php }
+            /**
+            * Store Logo
+            */
+            ?>           
+<li class="fields">
+<div class="field_store_logos">
+<label for="store_logo"><?php echo $this->__('Store Logo'); ?>  </label>
+<div class="store_logos">
+<input type="file" name="store_logo" class="store_logo" id="store_logo"
+onchange="return validateFileExtension(this);" />
+<div class="clear"></div>
+<span class="market_place_image_sizes"><?php echo Mage::helper('marketplace')->__('Upload image size 150 X 110'); ?></span>
+<div style="clear: both;"></div>                  
+                        <?php if (strpos($profileData['store_logo'], '.') && !empty($profileData['store_logo'])) { ?>
+                        <img src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $profileData['store_logo']; ?>"
+alt="store logo" class="store_img" />
+<div style="clear: both;"></div>
+<input type="checkbox" name="remove_logo" value="1"> <?php echo Mage::helper('marketplace')->__('Remove'); ?>
+                    <?php } ?>                        
+                    </div>
+</div>
+</li>           
+<li class="fields">
+<div class="field_store_logos">
+<label for="store_banner"><?php echo Mage::helper('marketplace')->__('Store Banner'); ?>  </label>
+<div class="store_banner">
+<input type="file" name="store_banner" id="store_banner"
+onchange="return validateFileExtension(this);" />
+<div class="clear"></div>
+<span class="market_place_image_sizes"><?php echo $this->__('Upload image size 1100 X 234'); ?></span>
+<div style="clear: both;"></div>                  
+                        <?php if (strpos($profileData['store_banner'], '.') && !empty($profileData['store_banner'])) { ?>
+                        <img src="<?php echo Mage::getBaseUrl('media') . "marketplace/resized/" . $profileData['store_banner']; ?>"
+alt="store_banner" class="store_img" />
+<div style="clear: both;"></div>
+<input type="checkbox" name="remove_banner" value="1"> <?php echo $this->__('Remove'); ?>
+                    <?php } ?>                        
+                    </div>
+</div>
+</li>
+            <?php
+/**
+ * Twiiter Url
+ */
+?>
+          
+            <li class="fields">
+<div class="field">
+<label for="twitter_id" class="required"><?php echo $this->__('Twitter Page Url'); ?></label>
+<div class="input-box">
+<input type="text" name="twitter_id" id="twitter_id"
+value="<?php 
+$twitterId = $profileData['twitter_id'];
+echo $twitterId; ?>"
+class="input-text required-entry" /> <span><?php echo 'Ex: https://www.twitter.com/example'; ?></span>
+</div>
+</div>
+</li>
+ <?php
+/**
+ * Facebook Url
+ */
+?>
+            <li class="fields">
+<div class="field">
+<label for="facebook_id" class="required"><?php 
+$facebookLabel = Mage::helper('marketplace')->__('Facebook Page Url');
+echo $facebookLabel; ?></label>
+<div class="input-box">
+<input type="text" name="facebook_id" id="facebook_id"
+value="<?php echo $profileData['facebook_id']; ?>"
+class="input-text required-entry " /> <span><?php echo 'Ex: https://www.facebook.com/example'; ?></span>
+</div>
+</div>
+</li>  
+<?php
+/**
+ * google Url
+ */
+?>
+             <li class="fields">
+<div class="field">
+<label for="google_id" class="required"><?php echo $this->__('Google Plus Page Url'); ?></label>
+<div class="input-box">
+<input type="text" name="google_id" id="google_id"
+value="<?php 
+$googleId = $profileData['google_id'];
+echo $googleId; ?>"
+class="input-text required-entry" /> <span><?php 
+$googleMsg = 'Ex: https://plus.google.com/s/example';
+echo $googleMsg; ?></span>
+</div>
+</div>
+</li>
+<?php
+/**
+ * Linked Url
+ */
+?>
+<li class="fields">
+<div class="field">
+<label for="linked_id" class="required"><?php 
+$linkedInLable = Mage::helper('marketplace')->__('Linkedin Page Url');
+echo $linkedInLable; ?></label>
+<div class="input-box">
+<input type="text" name="linked_id" id="linked_id"
+value="<?php 
+$linkedIn = $profileData['linked_id'];
+echo $linkedIn; ?>"
+class="input-text required-entry" /> <span><?php echo 'Ex: https://www.linkedin.com/company/example'; ?></span>
+</div>
+</div>
+</li>               
+            <?php
+/**
+ * Meta Keyword
+ */
+?>
+<li class="fields">
+<div class="field">
+<label for="meta_keyword"> <?php echo Mage::helper('marketplace')->__('Meta Keyword'); ?>  </label>
+<div class="input-box">
+<textarea id="meta_keyword" name="meta_keyword" rows="5"
+cols="60" class="input-text"><?php echo $profileData['meta_keyword']; ?></textarea>
+</br>
+</br>
+</div>
+</div>
+                <?php
+/**
+ * Meta Description
+ */
+?>
+             
+<div class="field">
+<label for="meta_description"><?php echo Mage::helper('marketplace')->__('Meta Description'); ?>  </label>
+<div class="input-box">
+<textarea id="meta_description" name="meta_description" rows="5"
+cols="60" class="input-text"><?php echo $profileData['meta_description']; ?></textarea>
+</br>
+</br>
+</div>
+</div>
+</li>
+            <?php
+/**
+ * Payment Details
+ */
+?>
+           
+<li class="fields"><label class="payment_hint required"><?php echo $this->__('Process Payment via Bank/Paypal Account'); ?></label>
+<div class="field payment-snipt">
+<div class="input-box market_place_payment_process">
+<input type="radio" name="bank" id="bank_pay" class="radio"
+value="bankpayment" onclick="payment();"
+<?php
+
+if ($profileData ['bank_payment']) {
+?>
+checked="checked" <?php
+}
+?>><label for="bank_pay">
+<?php echo $this->__('Bank Payment'); ?> </label>
+<i><?php echo $this->__('[Please enter your Account number, Bank Name with Branch and IFSC code]'); ?></i>
+<textarea name="bank_payment" id="bank_payment"
+class="input-text required-entry"><?php echo $profileData['bank_payment']; ?></textarea>
+</div>
+<div class="clear"></div>
+<div class="input-box market_place_payment_process">
+<input type="radio" name="bank" id="paypal_pay" class="radio"
+value="paypal" onclick="payment();"
+<?php
+
+if ($profileData ['paypal_id']) {
+?>
+checked="checked"
+<?php
+}
+if (empty ( $profileData ['bank_payment'] ) && empty ( $profileData ['paypal_id'] )) {
+?>
+checked="checked" <?php } ?>> <label for="paypal_pay"><?php echo $this->__('Paypal Id'); ?> </label>
+<input type="text" name="paypal_id" id="paypal_id"
+value="<?php echo $profileData['paypal_id']; ?>"
+class="input-text required-entry validate-email" />
+</div>
+</div></li>
+</ul>
+</div>
+    <?php
+/**
+ * Submit button
+ */
+?>
+   
+    <div class="buttons-set">
+
+<div class="checkbox-info">
+<input id="show_profile_link" onclick="updateShowProfileLink()" type="checkbox" name="show_profile"
+value="
+<?php
+if ($profileData ['show_profile'] == 1) {
+echo '1';	
+}else{
+echo '0';	
+}
+?>
+"
+<?php
+if ($profileData ['show_profile'] == 1) {
+?>
+checked="checked" <?php } ?>> <label for="show_profile_link"><?php echo $this->__('Display your profile link in product detail page'); ?></label>
+</div>
+<button type="submit" class="button"
+title="<?php echo $this->__('Save Profile') ?>" name="save_profile"
+id="save_profile">
+<span><span><?php echo $this->__('Save Profile') ?></span></span>
+</button>
+<p class="required"><?php echo $this->__('* Required Fields') ?></p>
+</div>
+</form>
+</div>
+<?php
+/**
+ * Form validation script
+ */
+?>
+
+<script type="text/javascript">
+    var dataForm = new VarienForm('addprofile');
+    function payment() {
+        if (document.getElementById('bank_pay').checked) {
+            document.getElementById('bank_payment').show();            
+            document.getElementById('paypal_id').hide();
+            document.getElementById('paypal_id').value= '';
+            if(document.getElementById('advice-required-entry-paypal_id')){
+            document.getElementById('advice-required-entry-paypal_id').hide();
+            }
+        } else if (document.getElementById('paypal_pay').checked) {
+            document.getElementById('paypal_id').show();
+            document.getElementById('bank_payment').hide();
+            document.getElementById('bank_payment').value = '';
+            if(document.getElementById('advice-required-entry-bank_payment')){
+                document.getElementById('advice-required-entry-bank_payment').hide();
+            }
+        } 
+    }
+    function validateFileExtension(fld) {
+        if (!/(\.bmp|\.png|\.gif|\.jpg|\.jpeg)$/i.test(fld.value)) {
+            fld.form.reset();
+            fld.focus();
+            $('errormsg').show();
+            document.getElementById("errormsg").innerHTML = "Invalid file format";
+            return false;
+        }
+        return true;
+    }
+
+    function updateShowProfileLink(){
+    if(document.getElementById("show_profile_link").checked){
+    document.getElementById("show_profile_link").value = 1;
+    }else{
+    document.getElementById("show_profile_link").value = 0;
+    }	
+    }
+//<![CDATA[
+    bkLib.onDomLoaded(function() {
+        new nicEditor({iconsPath: '<?php echo $this->getSkinUrl('marketplace/nicEditorIcons.gif'); ?>'}).panelInstance('description');
+    });
+    //]]>
+</script>
+<script type="text/javascript">
+var $jq=jQuery.noConflict();
+    $('shipping_cost').observe('change', function(event) {
+        var selected = $('shipping_cost').select("option[selected]")[0].innerHTML;
+        if (selected == 'Shipping Cost') {
+            $('shipping_price').setStyle('display:block');
+        } else
+            $('shipping_price').setStyle('display:none');
+    });
+    $jq( document ).ready(function() {
+    	 var selected = $('shipping_cost').select("option[selected]")[0].innerHTML;
+    	 if (selected == 'Shipping Cost') {
+             $('shipping_price').setStyle('display:block');
+         } else
+             $('shipping_price').setStyle('display:none');
+    });
+</script>

@@ -1,0 +1,208 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to compare seller product price with others seller products
+ */
+/**
+ * Getting current product id in registry
+ */
+$productId = $this->getRequest()->getParam('id');
+$productcollection = Mage::helper('marketplace/marketplace')->getProductInfo($productId);
+?>
+<div class="clear"></div>
+<div class="back_btn">
+    <a href="<?php echo $productcollection->getProductUrl(); ?>">« 
+    <?php echo $this->__('Back to Product Information'); ?></a>
+</div>
+
+<div class="product_wrapper">
+
+    <a href="<?php echo $productcollection->getProductUrl(); ?>"> 
+    <img src="<?php echo Mage::helper('catalog/image')->init($productcollection, 'image')->resize(200, 200); ?>" alt="" /></a>
+    <div class="product_info_wr"> <h1><a href="<?php echo $productcollection->getProductUrl(); ?>">        
+                <?php echo $productcollection->getName(); ?>     </a>
+        </h1>
+        <p><?php echo $productcollection->getDescription(); ?></p></div>
+</div>
+<?php
+/**
+ * Getting current date to check the special price 
+ */
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+/**
+ * Product collection with 'compare_product_id' attribute filter
+ */
+$collection = $this->getCollection();
+$size = count($collection);
+if ($size > 0) {
+    ?>
+    <div class="compare_wrapper">
+        <div>
+            <h1><?php echo $this->__('More sellers selling this product'); ?></h1>
+            <div class="view_link"> <?php echo $this->__('Available Sellers ').$size; ?>
+            <?php 
+               
+                 foreach ($collection as $_collection) { 
+                 $price = $_collection->getPrice();
+                 $spl_price = $_collection->getSpecialPrice();
+                 $dealExpireDate = $_collection->getspecial_to_date();           
+                 if (!empty($spl_price) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) {
+                  echo $this->__('with minimum starting price is ').Mage::helper('core')->currency($spl_price, true, false);
+                  } else {
+                echo $this->__('with minimum starting price is ').Mage::helper('core')->currency($price, true, false);
+                 }        
+               break;
+             }
+             ?>
+            </div>
+        </div>
+         <table class="data-table marketplace_compare_product" id="compare_product">
+        <thead>
+            <tr>
+                <th width="20%"><?php echo $this->__('Seller Information'); ?></th>
+                <th width="60%" class="product_info_title"><?php echo $this->__('Product Information'); ?></th>
+                <th width="10%" class="padding"><?php echo $this->__('Price'); ?></th>
+                <th width="10%"><?php echo $this->__('Cart'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+           
+            foreach ($collection as $_collection) {
+                /**
+                 * Getting seller information using seller id
+                 */
+             
+                    ?>
+                    <tr>
+                        <td>
+                            <h2> <?php
+                                $sellerId = $_collection->getSellerId();
+                                $sellerInfo = Mage::getModel('marketplace/sellerprofile')->collectprofile($sellerId);                                
+                                $sellerUrl = Mage::getModel('marketplace/sellerreview')->backUrl($sellerId);?>
+                                <a href="<?php echo $sellerUrl; ?>" 
+                                title="<?php echo $sellerInfo['store_title']; ?>"> 
+                                <?php echo $sellerInfo['store_title']; ?></a>
+                                <?php
+                                /**
+                                 * Getting seller review information
+                                 */
+                                ?>
+                            </h2>
+                            <span class="all_review_container_wr">  
+                                <span class="all_reviews_details_wr"> 
+                                    <p class="all_reviews_block">
+                                    <?php  $ratingCollection = $this->averageRatings($sellerId);                             
+                                    ?>  
+                                    <label class="all_review_rating" style="width:<?php echo round($ratingCollection,2)*20; ?>%;"></label>                                     
+                                    </p>
+                                </span>
+
+                                <p class="feedback_text"> <?php
+                                    /**
+                                     * Getting seller review information
+                                     */
+                                    $reviewCount = $this->getReviewsCount($sellerId);
+                                    if ($reviewCount > 0) {                     
+                                    echo $reviewCount.$this->__(' Feedback(s)');                                       
+                                    }
+                                    /**
+                                     * Getting seller rating information
+                                     */
+                                    ?>
+                                </p>
+                            </span>
+                        </td>
+
+                        <?php
+                        /**
+                         * Display product information 
+                         */
+                        ?>
+                        <td class="product_image_compare">                            
+                            <div>                             
+                                <p>
+                                    <?php
+                                     $productName = strip_tags($_collection->getShortDescription());
+                                    $lengthProductName = strlen($productName);
+                                    $subProductName = substr($productName, 0, 130);
+                                    if ($lengthProductName >= 130) {
+                                        $productNameFix = $subProductName . "...";
+                                    } else {
+                                        $productNameFix = $productName;
+                                    }
+                                    echo $productNameFix;
+                                    ?>
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <?php
+                            $price = $_collection->getPrice();
+                            $spl_price = $_collection->getSpecialPrice();
+                            $dealExpireDate = $_collection->getspecial_to_date();
+                            if (!empty($spl_price) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) {
+                                echo '<del>' . Mage::helper('core')->currency($price, true, false) . '</del>';
+                                echo Mage::helper('core')->currency($spl_price, true, false);
+                            } else {
+                                echo Mage::helper('core')->currency($price, true, false);
+                            }
+                            ?>  
+                        </td>  
+
+                        <td>
+            <?php if ($_collection->isSaleable()) {
+            	  $productIsInStock = Mage::getModel ( 'cataloginventory/stock_item' )->loadByProduct ( $_collection->getId() )->getIsInStock ();
+            if($productIsInStock == 1){ ?>
+                                <button type="button" title="Add to Cart" class="button btn-cart mp_addtocart_button" onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($_collection); ?>');">
+                                    <span class="mp_addtocart"><?php echo $this->__('Add to Cart'); ?></span>
+                                </button>                                        
+                            <?php
+                   }else{
+                   	?>
+                   	 <p class="availability out-of-stock"><?php echo $this->__('Out of Stock'); ?></p>
+                   	<?php                    }                
+ } else { ?>
+                                <p class="availability out-of-stock"></p>
+                        <?php } ?>
+                        </td>
+                  
+                </tr>
+                <?php
+            }
+            ?>
+
+        </tbody>
+        </table>
+    </div>
+    <?php echo $this->getPagerHtml();
+}
+?>

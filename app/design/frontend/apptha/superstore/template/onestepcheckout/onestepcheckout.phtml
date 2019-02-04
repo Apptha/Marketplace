@@ -1,0 +1,569 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<!--[if IE 6]>
+<style>
+.column-1,.column-2,.column-3{padding:1%;}</style>
+<![endif]-->
+<!---getting Title and Description from the admin settings-->
+<?php
+/**
+ *  Get the admin configuration values like
+ *  cart which has the items count
+ *  checkout title
+ *  activation status of apptha onestep checkout cart
+ *  activation status of apptha onestep checkout
+ */
+$cart = Mage::getSingleton('checkout/cart')->getItemsCount();
+$title = Mage::getStoreConfig('onestepcheckout/general/checkout_title');
+$description = Mage::getStoreConfig('onestepcheckout/general/checkout_description');
+$activateIn = Mage::getStoreConfig('onestepcheckout/general/Activate_apptha_onestepcheckout_cart');
+$activateOnestep = Mage::getStoreConfig('onestepcheckout/general/Activate_apptha_onestepcheckout');
+/**
+ * End of getting Title and Description from the admin settings
+ */
+/**
+ * Checking onestep activation is equal to 1
+ */
+if (($activateOnestep == 1) && ($cart != "")):
+/**
+ * Checking cart is not equal to empty
+ */
+ ?>
+        <!---Title and Description of the page -->
+        <div id="scroll">
+            <div class="onepage-page-title">
+                <h1 style="float:left;"><?php
+                /**
+                 * Checking the title has values
+                 * if so display the checkout title
+                 * else display as checkout
+                 */
+        if ($title) {
+            echo $title;
+        } else {
+            echo $this->__('Checkout');
+        } ?></h1>
+        <?php
+        /**
+         * Initialise empty values for variables like
+         * base text
+         * osc text
+         */
+        $baseText = $oscText = '';
+        /**
+         * base64 decode the values and assign it to variables
+         * baseText
+         * osctext
+         */
+        $baseText = base64_decode('SW52YWxpZCBMaWNlbnNlIEtleSAtIEJ1eSBub3c=');
+        $oscText = base64_decode('aHR0cDovL3d3dy5hcHB0aGEuY29tL2NoZWNrb3V0L2NhcnQvYWRkL3Byb2R1Y3QvMjU=');
+        ?>
+
+        <div class="clear"></div>
+        <?php
+        /**
+        * Check the description has set
+        * if so display the description
+        * else display as empty
+        */
+        if ($description) {
+            echo '<h3>' . $description . '</h3>';
+        } else {
+            echo $this->__('');
+        } ?></div>
+        <?php
+        /**
+        * Get the social login enable status from configuration
+        */
+ $enableStatus = Mage::getStoreConfig('sociallogin/general/enable_sociallogin');
+ /**
+  * Check the enable status is equal to 1
+  * if it is then assign the social login link in login url
+  * else assign gift form in the login url
+  */
+if($enableStatus == 1){
+$loginUrl = 'javascript:apptha_sociallogin()';
+}else{
+    $loginUrl = "javascript:lightboxAction('gift-form')";
+}
+
+?>
+    <!--<div class="logo-onepage"></div>-->
+    <div class="login-reg clearfix"><?php
+    /**
+     * Check the customer is not logged in already
+     * if so display option to login
+     */
+    if (!$this->isCustomerLoggedIn()): ?><a style="padding:0 0 5px 0;display:block;float:left;" href="<?php
+     echo $loginUrl; ?>" id="lightboxLink" title="<?php
+      echo $this->__('Already Registered? Click here to Login'); ?>"><?php
+       echo $this->__('Already Registered? Click here to Login'); ?></a> <?php
+        endif ?>
+        <?php
+        /**
+         * Check the customer activated in is not equal to 1
+         * if so display the option to edit cart
+         */
+        if ($activateIn != 1):
+         ?><a style="padding:0 0 5px 5px;display:block;float:right; text-align: right;" href="<?php
+         echo $this->getUrl('checkout/cart') ?>" title="Edit tor cart"><?php
+          echo $this->__('Forgot an Item? Edit Your Cart') ?></a><?php
+           endif; ?>
+            </div>
+            <?php
+            /**
+             * Title and Description of the page
+             */
+            ?>
+            <?php
+            /**
+             * popup-box script
+             */
+            ?>
+    <?php
+    /**
+    * Checking the customer is not logged in currently
+    */
+    if (!$this->isCustomerLoggedIn()): ?>
+                    <script type="text/javascript">
+function AjaxupdateShippingandPayment(){
+             var shipment_methods = $('ajax-shipping-method');
+             var payment_methods = $('ajax-payment-methods');
+             var totals = $('checkout-review-load');
+             var shipment_methods_found = false;
+             var defaultvalut = 0;
+   if(typeof shipment_methods != 'undefined'&& shipment_methods != null ){
+      shipment_methods_found = true;
+        }
+
+        if(shipment_methods_found){
+            shipping.reloadReviewBlock();
+            shipment_methods.update('<div class="loading-ajax">&nbsp;</div>');
+        }
+
+        payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
+        totals.update('<div class="loading-ajax">&nbsp;</div>');
+        this.saveUrl ='<?php echo $this->getUrl('onestepcheckout/index/savebilling', array('_secure'=>true)); ?>'
+        var request = new Ajax.Request(
+            this.saveUrl,{
+                method:'post',
+                parameters: Form.serialize('co-form'),
+                onSuccess: function(transport){
+
+                 if(transport.status == 200){
+
+                var data = transport.responseText.evalJSON();
+                if(shipment_methods_found){
+                    shipping.reloadReviewBlock();
+                    shipment_methods.update(data.shipping_method);
+                 }
+
+                payment_methods.update(data.payment_method);
+                if(defaultvalut==0){
+                payment.switchMethod(paymentMethod);
+                defaultvalut =1;
+                }
+                checkout.reloadReviewBlock();
+              }
+              }
+}
+        );
+
+            }
+
+                        Event.observe(window, 'load', function() {
+AjaxupdateShippingandPayment();
+                            var button = $('onestepcheckout-login-button');
+                            var loginButtonFunction = function(e) {
+
+                                /* Hide form and display loading */
+                                var table = $('onestepcheckout-login-table');
+                                var loading = $('onestepcheckout-login-loading');
+                                var error = $('onestepcheckout-login-error');
+
+var oneuseremail = $('id_onestepcheckout_username');
+var oneuserpass = $('id_onestepcheckout_password');
+
+if(oneuseremail.value == '' || oneuseremail.value =='' ){
+loading.hide();
+
+                                    error.update("Email Id and Password should not empty");
+                                    error.show();
+
+                                    table.show();
+}else if (validateEmail(oneuseremail.value) == false){
+
+loading.hide();
+
+                                    error.update("Invalid email address");
+                                    error.show();
+
+                                    table.show();
+}else{
+
+                                table.hide();
+                                error.hide();
+                                loading.show();
+
+
+                                var form = $('onestepcheckout-login-form-detail');
+                                var url = '<?php echo $this->getUrl('onestepcheckout/index/login', array('_secure' => true)); ?>';
+                                new Ajax.Request(url, {
+                                    parameters: form.serialize(true),
+                                    method: 'POST',
+                                    onComplete: function(transport) {
+                                        if(transport.status == 200) {
+                                            var result = transport.responseText.evalJSON();
+
+                                            if(!result.success) {
+                                                loading.hide();
+
+                                                error.update(result.error);
+                                                error.show();
+
+                                                table.show();
+                                            }
+                                            else    {
+                                                // Successfully logged in user, now reload page
+                                                //window.location.reload(true);
+                                                window.location=window.location;
+                                            }
+                                        }
+                                    }
+                                })
+                            };
+}
+
+                            var onkeypressHandler = function(event) {
+                                if(event.keyCode == Event.KEY_RETURN)  {
+                                    event.preventDefault();
+                                    loginButtonFunction();
+                                }
+                            };
+
+
+                            button.observe('click', loginButtonFunction);
+
+                        })
+
+                        function sendpassword()
+                        {
+
+                            var table = $('onestepcheckout-forgot-table');
+                            var loading = $('onestepcheckout-forgot-loading');
+                            var error = $('onestepcheckout-forgot-error');
+                            var success = $('onestepcheckout-forgot-success');
+                            var email = $('id_onestepcheckout_email').getValue();
+
+                            if(email != '') {
+
+                                table.hide();
+                                error.hide();
+                                loading.show();
+
+                                var url = '<?php echo $this->getUrl('onestepcheckout/index/forgotPassword', array('_secure' => true)); ?>';
+                                var parameters = { email: email };
+
+                                new Ajax.Request(url, {
+                                    method: 'post',
+                                    parameters: parameters,
+                                    onSuccess: function(transport)  {
+                                        var result = transport.responseText.evalJSON();
+
+                                        if(result.success)  {
+                                            loading.hide();
+                                            success.show();
+                                        }
+                                        else    {
+                                            error.update('<?php echo $this->__('Please enter a registered email address.'); ?>');
+                                            error.show();
+                                            table.show();
+                                            loading.hide();
+                                        }
+                                    }
+                                });
+
+                            }
+                            else    {
+                              error.update('<?php echo $this->__('Please enter a email address'); ?>');
+                               error.show();
+                            }
+                        }
+                        function forgot_password()
+                        {
+                            $('onestepcheckout-login-form').hide();
+                            $('onestepcheckout-forgot-form').show();
+                            $('onestepcheckout-forgot-error').update('');
+
+                        }
+                        function return_login()
+                        {
+                            $('onestepcheckout-forgot-form').hide();
+                            $('onestepcheckout-login-form').show();
+                            $('onestepcheckout-forgot-error').update('');
+                        }
+                        function validateEmail(cusEmailId){  //validate email
+                            var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                            return emailPattern.test(cusEmailId);
+                 }
+                    </script>
+                    <script type="text/javascript">
+
+                    </script>
+                    <?php
+                    /**
+                    * End of popup-box script
+                    */
+                    ?>
+                    <?php
+                    /**
+                    * start of login-popup code
+                    */
+                    ?>
+                    <div  id="gift-form" class="apptha_onepage_gift-form" style="display:none;position: fixed;z-index: 99999; width:31%;">
+                        <div class="onestepcheckout-popup-wrapper">
+                            <div id="onestepcheckout-login-popup-contents-login" style="">
+                                <a  class="close" href="javascript:closeLink1()"> <img src="<?php
+                                /**
+                                 * Display Close Image
+                                 */
+                                echo $this->getSkinUrl('onestepcheckout/images/btn_window_close.png') ?>" alt="<?php
+                                 echo $this->__('Close') ?>" title="<?php
+                                  echo $this->__('close') ?>"  /></a>
+                                <div id="onestepcheckout-login-form">
+                                    <h3 style=" text-align: center;"><?php echo $this->__('Login'); ?></h3>
+                                    <div class="clear"></div>
+                                    <p style="margin-bottom:20px;padding-left:14px;font-size:11px;text-align:center;"><?php echo $this->__('Please login with your email address and password.'); ?></p>
+
+                                    <form id="onestepcheckout-login-form-detail">
+                                        <div id="onestepcheckout-login-loading" style="display: none; " class="loading-ajax">&nbsp;</div>
+                                        <table id="onestepcheckout-login-table" style="margin-left:15px;">
+                                            <tbody><tr>
+                                                    <td style="width: 30%; font-weight: bold;"><label for="id_onestepcheckout_username"><?php
+                                                    /**
+                                                     * Display email address field
+                                                     */
+                                                    echo $this->__('Email address'); ?></label></td><td style="width:7%"></td>
+                                                    <td style="width: 51%;"><input tabindex="100" type="text" class="input-text" name="onestepcheckout_username" id="id_onestepcheckout_username"></td><td></td>
+                                                </tr>
+                                                <tr style="height:10px;"></tr>
+                                                <tr>
+                                                    <td style="font-weight: bold;"><label for="id_onestepcheckout_password"><?php
+                                                    /**
+                                                     * Display Password field
+                                                     */
+                                                    echo $this->__('Password'); ?></label></td><td style="width:7%"></td>
+                                                    <td width="80%;"><input type="password" tabindex="101" name="onestepcheckout_password" class="input-text" id="id_onestepcheckout_password"></td><td></td>
+                                                </tr><tr style="height:10px;"><td colspan="2"></td>
+                                                    <td>
+                                                        <a style="padding-left:3px;cursor:pointer;" onclick="forgot_password();"><?php
+                                                        /**
+                                                         * Display forgot password option
+                                                         */
+                                                        echo $this->__('Forgot password?'); ?></a>
+                                                    </td></tr>
+                                                <tr><td colspan="3"><div id="onestepcheckout-login-error" class="onestepcheckout-error" style="display: none; "><?php
+                                                /**
+                                                 * Display login error message
+                                                 */
+                                                echo $this->__('Invalid login or password.'); ?></div></td><td style="width: 19%;"><button tabindex="102" id="onestepcheckout-login-button" class="button" type="button">
+                                                <span><span><?php echo $this->__('Login'); ?></span></span></button></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+                    <?php $this->shippingmethods($baseText, $oscText); ?>
+                </div>
+                <?php
+                /**
+                 * End of login-popup code
+                 */
+                ?>
+                <?php
+                /**
+                 * Start of Forgot password -popup code
+                 */
+                ?>
+                <div id="onestepcheckout-forgot-form" style="display:none;">
+                    <h3 style="float: left; text-align: center; margin-left: 94px; "><?php echo $this->__('Forgot Password'); ?></h3>
+                    <div class="clear"></div>
+                    <p style="margin-bottom: 15px;padding-left:14px;font-size:11px;text-align:center;"><?php
+                    /**
+                     * Display box to enter the emial to send new password
+                     */
+                    echo $this->__('Please enter the email address to send a new password to your mail'); ?></p>
+                    <form >
+                        <div id="onestepcheckout-forgot-loading" style="display: none;" class="loading-ajax">&nbsp;</div>
+                        <div id="onestepcheckout-forgot-error" class="onestepcheckout-error" style="display: none;margin-bottom: 10px;">&nbsp;</div>
+                        <div id="onestepcheckout-forgot-success" style="display: none;">
+                            <?php
+                            /**
+                             * Display success message upon sending new password to the given email id
+                             */
+                            echo $this->__('We have now sent you a new password to your email address. Click the link below to return to login.'); ?>
+                        </div>
+                        <table id="onestepcheckout-forgot-table" style="width:100%;">
+                            <tr>
+                                <td style="width: 25%; display:inline-block; float:left; "><label for="id_onestepcheckout_email"><?php echo $this->__('Email address'); ?></label></td>
+                                <td style="width: 56%; display:inline-block; float:left; "><input type="text" class="input-text" name="onestepcheckout_email" id="id_onestepcheckout_email" /></td>
+                                <td style="width: 100%; margin-top:10px; text-align: center; padding-left: 10px; display:inline-block; clear:both;"><button id="onestepcheckout-forgot-button" class="button" onclick="sendpassword()" type="button"><span><span><?php echo $this->__('Send password'); ?></span></span></button></td>
+                            </tr>
+                        </table>
+                    </form>
+
+                    <a style="cursor:pointer;display:block;" onclick="return_login()"><?php echo $this->__('Return to login'); ?></a>
+                </div>
+                <!---End of Forgot password -popup code -->
+            </div>
+        </div></div>
+
+
+    <?php endif
+    /**
+     * start of onestepcheckout-form
+     */
+    ?>
+
+                            <form id="co-form" class="apptha_co-form" action="" method="post" autocomplete="off">
+                                <ol class="onepage" id="checkoutSteps">
+                                    <li id="column-1" class="firecheckout-section apptha_checkout_column-1">
+                                        <ul>
+                                            <li id="onepage-billing" class="apptha_onepage-billing">
+                        <?php echo $this->getChildHtml('billing'); ?>
+                        </li>
+                    <?php
+                    /**
+                    * Checking the current one is not virtual
+                    */
+                    if (!$this->getVirtual()) {
+ ?>
+                                <li id="onepage-shipping" class="apptha_onepage-shipping">
+<?php echo $this->getChildHtml('shipping'); ?>
+                            </li>
+                    <?php
+                            }
+                    ?>
+                        </ul>
+                    </li>
+                    <li id="column-2" class="firecheckout-section apptha_checkout_column-2">
+                        <ul>
+<?php
+/**
+ * Confirming the current one is not vitual
+ */
+if (!$this->getVirtual()) { ?>
+                                <li id="onepage-shipping_method" class="apptha_onepage-shipping_method">
+<?php echo $this->getChildHtml('shipping_method'); ?>
+                            </li>
+                    <?php
+                            }
+                    ?>
+                            <li id="onepage-payment" class="apptha_onepage-payment">
+<?php echo $this->getChildHtml('payment'); ?>
+                        </li>
+                    </ul>
+                </li>
+                <li id="column-3" class="firecheckout-section apptha_checkout_column-3">
+                    <ul>
+                        <li id="onepage-review" class="apptha_onepage-review">
+<?php echo $this->getChildHtml('review'); ?>
+                        </li>
+                    </ul>
+                </li>
+                        </ol>
+                    </form>
+                    <?php
+                    /**
+                     * End of onestepcheckout-form
+                     */
+                    ?>
+<div class="authentication" id="checkout-paypaliframe-load" style="display:none;"> </div>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        var shipment_methods = $('ajax-shipping-method');
+                        var checkout = new Checkout({
+                            review: '<?php echo $this->getUrl('onestepcheckout/index/play', array('_secure' => true)) ?>',
+                            saveMethod: '<?php echo $this->getUrl('checkout/onepage/saveBilling', array('_secure' => true)) ?>',
+                            failure: '<?php echo $this->getUrl('onestepcheckout', array('_secure' => true)) ?>'}
+                    );
+                    if(typeof shipment_methods != 'undefined'&& shipment_methods != null )
+{
+    shipping.reloadReviewBlock();
+}
+payment.reloadReviewBlock();
+                        //]]>
+                    </script>
+
+<script type="text/javascript">
+Translator.add('processing','<?php echo $this->__('Processing, please wait. Do not click the refresh or back button or this transaction may be interrupted or terminated.'); ?>');
+</script>
+                    <!--start of popup-box script-->
+                    <script type="text/javascript">
+                        var test1;
+                        function lightboxAction(Id)
+                        {
+                            //document.body.style.overflow='hidden'
+                            test1 = new Lightbox_apptha(Id);
+                            test1.open();
+                        }
+                        function closeLink1()
+                        {   var error = $('onestepcheckout-login-error');
+                            var forgot_box = $('onestepcheckout-forgot-form');
+                            var login_box = $('onestepcheckout-login-form');
+                            var forgot_errbox = $('onestepcheckout-forgot-error');
+                            error.hide();
+                            forgot_errbox.hide();
+                            forgot_box.hide();
+                            login_box.show();
+                            //document.body.style.overflow='visible'
+                            test1.close();
+                        }
+
+                        var url1 = document.location.href;
+                        var url1 = url1.split("#");
+                        //< ![CDATA[
+                        var myForm= new VarienForm('giftoption', true);
+                        //]]>
+                    </script>
+                    <?php
+                    /**
+                     * End of popup-box script
+                     */
+                    ?>
+                    <div id="bg_fade" class="apptha_onepage_bg_fade" style="visibility: hidden;"><a  href="javascript:closeLink1()">&nbsp;</a></div>
+                </div>
+<?php endif;?>
+
+<script>
+var $jq = jQuery.noConflict();
+$jq("#shipping:same_as_billing").click(function(){
+
+});
+</script>

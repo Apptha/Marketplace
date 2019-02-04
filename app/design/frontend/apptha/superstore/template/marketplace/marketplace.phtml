@@ -1,0 +1,61 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+    $groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+    $customerStatus = Mage::getSingleton ( 'customer/session' )->getCustomer ()->getCustomerstatus ();
+    $marketplace_groupId = Mage::helper('marketplace')->getGroupId();
+    if ($groupId == $marketplace_groupId && $customerStatus == 0) {      
+       echo "<h3><i>". $this->__('Admin Approval is required. Please wait until admin confirms your Seller Account').".</i></h3>";
+    } else {
+ ?>
+<div class="box-account box-info">
+<h1><?php echo $this->__('Become A Seller'); ?></h1>
+<p><?php echo $this->__('Turn in to a seller today and enjoy some incredible benefits like adding logo to your profile page for better branding, setting up multiple products to improve conversions, etc.'); ?></p>
+<p><?php echo $this->__('Click the button to become a Seller'); ?></p>
+ <form name="buyer-seller" id="buyer-seller" action="<?php echo $this->becomeAsellerUrl(); ?>">
+ <div class="input-box">
+            <input type="checkbox" id="privacy_policy" name="privacy_policy" value="1" title="<?php echo $this->__('I agree the Terms and Condition') ?>" class="checkbox required-entry"/>
+            <label for="privacy_policy"> <?php echo $this->__('I agree the').' '; ?> <a href="<?php 
+            echo Mage::helper('cms/page')->getPageUrl(6) ?>" target="_blank">
+            <?php echo $this->__('Terms and Conditions'); ?></a></label>
+        </div>
+<button class="button" >
+    <span>
+        <span><?php echo $this->__('Become a Seller') ?></span>
+    </span>
+</button>
+ </form>
+</div>
+<?php } 
+ } ?>
+<script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('buyer-seller', true);
+        </script>

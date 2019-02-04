@@ -1,0 +1,133 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+
+<?php
+/**
+ * One page checkout payment methods
+ *
+ * @see Mage_Checkout_Block_Onepage_Payment_Methods
+ */
+?>
+<?php 
+$paymentmethods = Mage::getStoreConfig('onestepcheckout/general/default_payment_method');
+?>
+<dl class="sp-methods apptha_checkout-payment-method-load" id="checkout-payment-method-load">
+<?php foreach ($this->getMethods() as $_method):
+ $_code = $_method->getCode() ?>
+    <dt>
+    <?php if( sizeof($this->getMethods()) > 1 ): ?>
+        <input id="p_method_<?php echo $_code ?>" value="<?php
+         echo $_code ?>" type="radio" name="payment[method]" title="<?php
+          echo $this->htmlEscape($_method->getTitle()) ?>" onclick="payment.switchMethod('<?php
+           echo $_code ?>')"<?php
+            if($_code==$paymentmethods): ?> checked="checked" <?php endif; ?>  class="radio validate-one-required-by-name" />
+    <?php else: ?>
+        <span class="no-display"><input id="p_method_<?php echo $_code ?>" value="<?php
+         echo $_code ?>" type="radio" name="payment[method]" onclick="payment.switchMethod('<?php
+          echo $_code ?>')"<?php
+           if($_code): ?> checked="checked"<?php endif; ?>  class="radio" /></span>
+    <?php endif; ?>
+        <label for="p_method_<?php echo $_code ?>"><?php
+         echo $this->getMethodTitle($_method) ?> <?php
+          echo $this->getMethodLabelAfterHtml($_method) ?></label>
+    </dt>
+    <?php if ($html = $this->getPaymentMethodFormHtml($_method)): ?>
+    <dd id="container_payment_method_<?php echo $_code; ?>" class="payment-method">
+        <?php echo $html; ?>
+    </dd>
+    <?php endif; ?>
+<?php endforeach; ?>
+</dl>
+<?php echo $this->getChildChildHtml('additional'); ?>
+<script type="text/javascript">
+var paymentMethod;
+//<![CDATA[
+<?php  if(sizeof($this->getMethods()) ==1 || isset($paymentmethods)) { ?>
+paymentMethod = "<?php echo $paymentmethods ?>"; 
+payment.switchMethod('<?php echo $paymentmethods ?>');
+<?php }?>    
+//]]> 
+ 
+window.onload = function() { 
+//<![CDATA[
+
+<?php  if(sizeof($this->getMethods()) ==1 || isset($paymentmethods)) { ?>
+payment.currentMethod = "<?php echo $paymentmethods ?>"; 
+payment.switchMethod('<?php echo $paymentmethods ?>')
+<?php }?>    
+<?php echo $this->getChildChildHtml('scripts'); ?>
+//]]> 
+ 
+}
+
+$$('#checkout-payment-method-load dt input').invoke('observe', 'click', function(e) {
+
+    var element = e.element();
+    var name = 'payment_form_' + element.getValue();
+    payment.currentMethod = element.getValue();
+    /* Hide all other forms */
+    $$('dd.payment-method').invoke('hide');
+
+    if(element.checked) {
+        var form = $(name);
+        var container = $('container_payment_method_' + element.getValue());
+
+        if(element !== null && container !== null)    {
+            container.show();
+            $(name).show();
+        }
+    }
+});
+
+/// cvv number
+    function toggleToolTip(event){
+        if($('payment-tool-tip')){
+            $('payment-tool-tip').setStyle({
+                top: (Event.pointerY(event)-560)+'px'              
+            })
+            $('payment-tool-tip').toggle();
+        }
+        Event.stop(event);
+    }
+    if($('payment-tool-tip-close')){
+        Event.observe($('payment-tool-tip-close'), 'click', toggleToolTip);
+    }
+
+ $$('.cvv-what-is-this').each(function(element) {
+element.href="javascript:void(0);";
+element.observe('click', respond);
+function respond()
+{
+document.getElementById('payment-tool-tip').style.display="block";
+document.getElementById('payment-tool-tip').style.top="450px";
+}
+})
+</script>

@@ -1,0 +1,161 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file contains seller vacation mode functionality
+ */
+    $vacationInfoData = $this->loadVactionInfo();
+    ?>
+    <div class="page-title">
+        <h1><?php echo $this->__('My Vacation'); ?></h1>
+    </div>
+     <div class="my-account-wrapper"><form method="post" name="vacation_mode" class="vacation_mode" id="vacation_mode" action="<?php echo Mage::helper('marketplace/general')->getVacationModeSaveUrl(); ?>"> 
+      <div class="fieldset vacation_mode_fieldset">
+        <h2 class="legend"><?php echo $this->__('Vacation Configuration'); ?></h2>
+        <p class="required"><?php echo Mage::helper('marketplace')->__('* Required Fields') ?></p> 
+        <ul class="form-list" id="vacation">        
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_status" class="required"><?php echo $this->__('Vacation Status'); ?><em><?php
+                     echo $this->__('*'); ?></em></label>                    
+                    <div class="input-box">
+                        <input type="radio" class="validate-one-required-by-name radio" id="yes_vacation_status" name="vacation_status" value="0" <?php if (isset($vacationInfoData['vacation_status']) && $vacationInfoData['vacation_status'] == 0) {
+                            ?> checked <?php 
+} ?>/>
+<label for="yes_vacation_status"> 
+<?php echo Mage::helper('marketplace')->__('YES')?>
+</label>
+                        <input type="radio" class="radio" id="no_vacation_status" name="vacation_status" value="1" <?php if (isset($vacationInfoData['vacation_status']) && $vacationInfoData['vacation_status'] == 1) {
+                            ?> checked <?php 
+} ?>/>
+<label for="no_vacation_status"> 
+<?php echo $this->__('NO')?> 
+</label>
+<br/>
+                    </div> 
+                </div>               
+            </li>
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_message" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('Vacation Message'); ?></label>
+                    <div class="input-box">
+                        <textarea rows="10" cols="30" name="vacation_message" id="vacation_message" class="input-text required-entry"><?php echo $vacationInfoData['vacation_message']; ?></textarea><br/>
+                    </div>
+                </div>
+            </li>
+            <li class="fields">          
+                <div class="field">
+                    <label for="disable_products" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('Disable Products'); ?></label>
+                    <div class="input-box">
+                        <input type="radio" class="validate-one-required-by-name radio" id="yes_disable_products" name="disable_products" name="disable_products" value="0" <?php if (isset($vacationInfoData['product_disabled']) && $vacationInfoData['product_disabled'] == 0) {
+                            ?> checked <?php 
+} ?>/>
+<label for="yes_disable_products"> 
+<?php echo $this->__('YES')?>
+</label>
+                        <input type="radio" class="radio" id="no_disable_products" name="disable_products" value="1" <?php if (isset($vacationInfoData['product_disabled']) && $vacationInfoData['product_disabled'] == 1) {
+                            ?> checked <?php 
+} ?>/>
+<label for="no_disable_products"> 
+<?php echo Mage::helper('marketplace')->__('NO')?>
+</label>
+<br/>   
+                    </div>
+                </div>
+            </li>
+            <?php $calendarImageUrl =  $this->getSkinUrl("images/calendar.gif"); ?>            
+            <li class="fields">          
+                <div class="field date-field">
+                    <label for="date_from" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('From Date'); ?></label>
+                    <div class="input-box">
+                        <input type="text" name="date_from" class="required-entry validate-date validate-date-range date-range-date-from" id="date_from" value="<?php if(isset($vacationInfoData['date_from']) && $vacationInfoData['date_from']!=''){
+                            echo date('m/d/Y', strtotime($vacationInfoData['date_from'])); 
+                        } ?>" />
+                        <img src="<?php echo $calendarImageUrl; ?>" alt="" class="v-middle" id="special_from_date_trig" title="<?php
+                         echo Mage::helper('marketplace')->__('Select Date'); ?>" style="" />
+                    </div>
+                </div>
+            </li>
+            <li class="fields vacation_enddate">          
+                <div class="field date-field">
+                    <label for="date_to" class="required">
+                    <em>*</em><?php 
+                    $toDateLabel = $this->__('To Date');
+                    echo $toDateLabel; ?></label>    
+                    <div class="input-box">    
+                        <input type="text" name="date_to" class="required-entry validate-date validate-date-range date-range-date-to" id="date_to" value="<?php if(isset($vacationInfoData['date_to']) && $vacationInfoData['date_to']!='') {
+                        $dateTo = $vacationInfoData['date_to'];
+                        echo date('m/d/Y', strtotime($dateTo)); 
+                        } ?>" />
+                        <img src="<?php echo $calendarImageUrl; ?>" alt="" class="v-middle" id="special_to_date_trig" title="<?php
+                         echo $this->__('Select Date'); ?>" style="" />                                                
+                    </div>
+                </div>
+            </li>
+        </ul>
+      </div>
+        <!--Submit button -->
+    <div class="buttons-set">        
+        <button type="submit" class="button vacation_btn"  title="<?php echo $this->__('Submit') ?>" name="submit" id="submit" >
+        <span><span><?php echo $this->__('Submit') ?></span></span></button>   
+    </div> 
+    </form></div>
+    <script type="text/javascript">
+        var dataForm = new VarienForm('vacation_mode');
+        // <![CDATA[
+        Calendar.setup({
+            inputField: 'date_from',
+            ifFormat: '%m/%e/%y',
+            button: 'special_from_date_trig',
+            align: 'Bl',
+            singleClick: true
+        });
+        Calendar.setup({
+            inputField: 'date_to',
+            ifFormat: '%m/%e/%y',
+            button: 'special_to_date_trig',
+            align: 'Bl',
+            singleClick: true
+        });
+        // ]]>
+    </script>
+ <script>
+ var jQ=jQuery.noConflict();
+	jQ("input[name='vacation_status']").click(function(e) {
+	var vacationstatus=jQ(this).val();
+	if(vacationstatus==1){
+		jQ('#vacation li:not(:first)').hide();
+	
+	}
+	else{
+		jQ('#vacation li:not(:first)').show();
+		
+		}
+	});
+</script>

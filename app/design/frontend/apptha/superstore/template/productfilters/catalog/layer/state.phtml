@@ -1,0 +1,58 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Advancedfilters
+ * @version     1.0.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php $_filters = $this->getActiveFilters() ?>
+<?php if(!empty($_filters)): ?>
+<?php $obj = new Mage_Catalog_Block_Navigation(); ?>
+<?php $_current_category=$obj->getCurrentCategory()->getUrlPath(); ?> 	
+<?php $subs = $obj->getCurrentCategory()->getAllChildren(true); ?> 
+<div class="currently">
+    <p class="block-subtitle"><?php echo $this->__('Currently Shopping by:') ?></p>
+    <ol>
+    <?php foreach ($_filters as $_filter): ?>
+        <li>
+        	<span class="label"><?php echo $this->__($_filter->getName()) ?> :</span><span class="value"><?php echo $this->stripTags($_filter->getLabel()) ?></span>
+        
+            <?php
+                $clearLinkUrl = $_filter->getClearLinkUrl();
+                $getVar = $_filter->getFilter()->getRequestVar();
+                $value = $_filter->getValue();
+                if ($clearLinkUrl):
+            ?>
+                <!--<a  data-name="<?php echo $getVar; ?>" data-value="<?php echo $value; ?>" class="btn-previous" href="<?php echo $_filter->getRemoveUrl() ?>" title="<?php echo $this->__('Previous') ?>"><?php echo $this->__('Previous') ?></a>-->
+                <a  data-name="<?php echo $getVar; ?>" data-value="<?php echo (!is_array($value))?$value:implode('-', $value); ?>" class="btn-remove" title="<?php echo $this->escapeHtml($_filter->getFilter()->getClearLinkText()) ?>" href="<?php echo $clearLinkUrl ?>"><?php echo $this->escapeHtml($_filter->getFilter()->getClearLinkText()) ?></a>
+            <?php else: ?>
+                <a  data-name="<?php echo $getVar; ?>" data-value="<?php echo (!is_array($value))?$value:implode('-', $value); ?>" class="btn-remove" href="<?php echo $_filter->getRemoveUrl() ?>" title="<?php echo $this->__('Remove This Item') ?>"><?php echo $this->__('Remove This Item') ?></a>
+            <?php endif; ?>
+        </li>
+    <?php endforeach; ?>
+    </ol>
+</div>
+<?php endif; ?>

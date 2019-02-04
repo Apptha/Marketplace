@@ -1,0 +1,112 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/* ============================================ *
+ * Header - Account
+ * ============================================ */
+
+/* -------------------------------------------- *
+ * Skip Link - Account
+ */
+
+.skip-account {
+
+    &:not(.skip-active):hover {
+        .icon {
+            background-position: -50px+4px (-50px + ($toolbar-icon-padding-offset/2) + 2px);
+        }
+    }
+
+    .icon {
+        @extend .icon-sprite;
+        background-position: -0px+4px (-50px + ($toolbar-icon-padding-offset/2) + 2px);
+    }
+}
+
+// ---------------------------------------------
+
+@include bp(min-width, $bp-medium + 1) {
+
+    .skip-account {
+        position: absolute;
+        top: 0;
+        right: 115px;
+        width: auto;
+        padding: 0 10px;
+        text-transform: uppercase;
+    }
+
+    .skip-account:hover {
+    }
+
+    #header-account.skip-active {
+        @include menu;
+        display: block;
+        position: absolute;
+        z-index: 200;
+        top: 40px;
+        right: 115px;
+        width: 200px;
+    }
+
+    #header-account a {
+        display: block;
+        padding: 5px 10px;
+        color: $c-text;
+        line-height: 2;
+    }
+
+    #header-account a:hover {
+        color: $c-action;
+    }
+
+}
+
+/* -------------------------------------------- *
+ * Account Links
+ */
+
+#header-account {
+    padding: 5px 0;
+}
+
+//#header-account li { }
+
+#header-account a {
+    position: relative;
+    display: block;
+    padding: 0 10px;
+    line-height: 33px;
+    text-align: center;
+}
+
+#header-account a:hover {
+    color: $c-action;
+}
+

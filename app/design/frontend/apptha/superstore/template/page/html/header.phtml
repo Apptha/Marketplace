@@ -1,0 +1,288 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800,300' property='stylesheet' rel='stylesheet' type='text/css' />
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' property='stylesheet' rel='stylesheet' type='text/css' />
+<div class="header-language-background">
+<div class="header-language-container">
+<div class="store-language-container">
+            <?php echo $this->getChildHtml('store_language')?>
+            <?php echo $this->getChildHtml('currency_switcher')?>
+ 
+        <!-- Account -->
+<?php
+$loginId = Mage::getSingleton ( 'customer/session' )->isLoggedIn ();
+$groupId = Mage::getSingleton ( 'customer/session' )->getCustomerGroupId ();
+$getGroupId = Mage::helper ( 'marketplace' )->getGroupId ();
+$customer = Mage::getSingleton ( "customer/session" )->getCustomer ();
+$customer_status = $customer->getCustomerstatus ();
+$fb_page = Mage::getStoreConfig ( 'marketplace/marketplace/facebook_page' );
+$twitter_page = Mage::getStoreConfig ( 'marketplace/marketplace/twitter_page' );
+?>
+<div class="header-account">
+            <?php echo $this->getChildHtml('topLinks')?>
+</div>
+<?php 
+$marketplaceActivate = Mage::getStoreConfig ( 'marketplace/marketplace/activate' );
+/**
+ * Check whether Marketplace enabled or not
+ */
+if($marketplaceActivate == 1){
+?>
+<div class="top_header_nav">
+<div class="top_menu_wrapper">
+<!--Market Place link -->
+<ul id="mp_top_nav" class="cf">
+<li class="mp_engage_tab"><a class="dropdown"><span><?php echo $this->__('Engage'); ?> </span></a>
+<div>
+<ul>
+<li><a href="https://www.facebook.com/<?php echo $fb_page; ?>"
+title="" target="_blank"><span><?php echo $this->__('Join us on facebook'); ?></span></a></li>
+<li><a href="https://www.twitter.com/<?php echo $twitter_page; ?>"
+title="" target="_blank"><span><?php echo $this->__('Join us on twitter'); ?></span></a></li>
+</ul>
+</div>
+</li>
+<li class="mp_sellers">
+<a class="dropdown"><span><?php echo $this->__('Sellers'); ?> </span></a>
+<div>
+<ul>
+                            <?php if ($groupId != $getGroupId && $loginId) { ?>
+                                <li><a
+                        href="<?php echo Mage::getUrl('marketplace/general/changebuyer'); ?>"
+                         title=""><span><?php echo $this->__('Become a seller'); ?></span></a></li>
+                            <?php } else {
+                            if ($groupId != $getGroupId || !$loginId) { ?>
+                                <li><a
+                        href="<?php echo Mage::helper('marketplace/url')->getregisterUrl(); ?>"
+                        title=""><span><?php echo $this->__('Register as seller '); ?></span></a></li> 
+                            <?php }
+                                  } ?>
+            <?php if ($groupId == $getGroupId && $loginId && $customer_status == 1) { ?>
+                                <li><a
+                       href="<?php echo Mage::helper('marketplace/dashboard')->dashboardUrl(); ?>"
+                       title=""><span><?php echo $this->__('Seller dashboard'); ?></span></a></li>
+                            <?php } elseif ($groupId != $getGroupId && !$loginId) { ?>
+                                <li><a
+                       href="<?php echo Mage::helper('marketplace/dashboard')->getregister(); ?>"
+                       title=""><span><?php echo $this->__('Seller login'); ?></span></a></li>
+                            <?php } else { ?>
+                                 <li><a
+                     href="<?php echo Mage::getUrl('customer/account'); ?>" title="">
+                     <span><?php echo $this->__('Account Dashboard'); ?></span></a></li>
+                            <?php } ?>
+                        </ul>
+                      </div>
+                       </li>
+                       <li class="mp_sellers_tab">
+                         <a class="dropdown"><span><?php echo $this->__('Our sellers'); ?> </span></a>
+                    <?php $increment = 0; ?>
+                                <div>
+<ul>
+<?php
+                       $model = Mage::getModel ( 'customer/customer' )->getCollection ()->addAttributeToFilter ( 'customerstatus', 1 );
+                       $id = array ();
+                       if ($model->getSize () > 0) {
+                       foreach ( $model as $_model ) {
+                        $id [] = $_model ['entity_id'];
+}
+$collection = Mage::getModel ( 'marketplace/sellerprofile' )->topSeller ( $id );
+foreach ( $collection as $_collection ) {
+$seller_id = $_collection ['seller_id'];
+$target_path = 'marketplace/seller/displayseller/id/' . $seller_id;
+$mainUrlRewrite = Mage::getModel ( 'core/url_rewrite' )->load ( $target_path, 'target_path' );
+$getRequestPath = $mainUrlRewrite->getRequestPath ();
+$get_requestPath = Mage::getUrl ( $getRequestPath );
+if ($increment < 5 && $_collection ['store_title'] != '') {
+?>
+                               <li><a href="<?php echo $get_requestPath; ?>" title="<?php
+                                echo $_collection['store_title']; ?>"> <span><?php
+                                 echo $_collection['store_title']; ?></span></a></li><?php
+}
+$increment ++;
+}
+}
+?>
+                    <li class="view_all_seller"><a href="<?php echo Mage::helper('marketplace/url')->getviewallsellerUrl(); ?>">
+                    <span><?php echo $this->__('View All'); ?></span></a></li>
+    </ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<?php
+/**
+ * End if for checking whether Marketplace enable or not
+ */
+}
+?>
+<p class="welcome-msg"><?php echo $this->getChildHtml('welcome') ?> <?php
+ echo $this->getAdditionalHtml() ?></p>
+</div>
+</div>
+</div>
+<header id="header" class="page-header">
+<div class="page-header-container">
+<a class="logo" href="<?php echo $this->getUrl('') ?>"> <img
+src="<?php echo $this->getLogoSrc() ?>"
+alt="<?php echo $this->getLogoAlt() ?>" class="large" /> <img
+src="<?php echo $this->getLogoSrcSmall() ?>"
+alt="<?php echo $this->getLogoAlt() ?>" class="small" />
+</a>
+<?php 
+/**
+ * In order for the language switcher to display next to logo on smaller viewports, it will be moved here.
+ */
+/**
+ * See app.js for details
+ */?>
+        <div class="store-language-container"></div>
+<!-- Skip Links -->
+<div class="skip-links">
+<a href="#header-nav" class="skip-link skip-nav"> <span class="icon"></span>
+<span class="label"><?php echo $this->__('Menu'); ?></span>
+</a> <a href="#header-search" class="skip-link skip-search"> <span
+class="icon"></span> <span class="label"><?php echo $this->__('Search'); ?></span>
+</a> <a href="#header-account" class="skip-link skip-account"> <span
+class="icon"></span> <span class="label"><?php echo $this->__('Account'); ?></span>
+</a>
+<!-- Cart -->
+<div class="header-minicart" id="header-minicart">
+                <?php echo $this->getChildHtml('minicart_head'); ?>
+            </div>
+</div>
+<!-- Search -->
+<div id="header-search" class="skip-content">
+            <?php echo $this->getChildHtml('topSearch')?>
+        </div>
+<!-- Account -->
+<div id="header-account" class="skip-content">
+            <?php echo $this->getChildHtml('topLinks')?>
+        </div>
+<!-- Cart -->
+<!-- <div id="header-cart" class="skip-content">
+            <div class="mini-cart">
+                <div class="menu-wrapper">
+                    <div class="menu cart-menu">
+                        <div class="empty">Your cart is empty.</div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+</div>
+</header>
+<!-- Navigation -->
+
+<div id="header-nav" class="skip-content">
+<?php echo $this->getChildHtml('topMenu')?>
+</div>
+
+<?php echo $this->getChildHtml('topContainer'); ?>
+
+<script type="text/javascript">
+//quick view function pop up
+		$jQno = jQuery.noConflict();
+		$jQno(function() {
+			  $jQno('a[rel*=facebox]').facebox();
+		});
+document.observe("dom:loaded", function() {
+// Sticky header scroll function
+    var facebookVar= 0;
+Event.observe(window, 'scroll', function() {
+var scrollOffsets = document.viewport.getScrollOffsets();
+    var scrollTop = scrollOffsets.top;    
+if(scrollTop){
+     if (scrollTop > 50) {
+     $('header').addClassName('f-header');
+     } else {    
+     $('header').removeClassName('f-header');
+     }     
+}
+
+});
+window.onscroll = appthascroll;
+var reviewScroll = 0;
+function appthascroll () {
+var scrollOffsets = document.viewport.getScrollOffsets();
+    var scrollTop = scrollOffsets.top;  
+    if(scrollTop == 0){
+    $('header').removeClassName('f-header');
+    }
+            
+}
+
+});
+
+jQuery(document).ready(function() {
+var isWindowsPhone = /windows phone/i.test(navigator.userAgent.toLowerCase());	
+var ll = jQuery( window ).width();
+if(isWindowsPhone){
+	jQuery("#mp_top_nav li.mp_engage_tab").click(function() {
+		jQuery("#mp_top_nav li.mp_engage_tab ul").toggle();
+		jQuery("#mp_top_nav li.mp_sellers ul").hide();
+		jQuery("#mp_top_nav li.mp_sellers_tab ul").hide();
+		});
+		jQuery("#mp_top_nav li.mp_sellers").click(function() {
+		jQuery("#mp_top_nav li.mp_sellers ul").toggle();
+		jQuery("#mp_top_nav li.mp_engage_tab ul").hide();
+		jQuery("#mp_top_nav li.mp_sellers_tab ul").hide();
+		});
+		jQuery("#mp_top_nav li.mp_sellers_tab").click(function() {		
+		jQuery("#mp_top_nav li.mp_sellers_tab ul").toggle();
+		jQuery("#mp_top_nav li.mp_sellers ul").hide();
+		jQuery("#mp_top_nav li.mp_engage_tab ul").hide();	
+		});	
+}else{
+if(ll == 320 || ll == 1000)
+{
+jQuery("#mp_top_nav li.mp_engage_tab").click(function() {
+jQuery("#mp_top_nav li.mp_engage_tab ul").toggle()
+});
+jQuery("#mp_top_nav li.mp_sellers").click(function() {
+jQuery("#mp_top_nav li.mp_sellers ul").toggle()
+});
+jQuery("#mp_top_nav li.mp_sellers_tab").click(function() {
+jQuery("#mp_top_nav li.mp_sellers_tab ul").toggle()
+});
+}
+}
+});
+
+function checkcartProducts(){
+	var checkSellerProduct = '<?php echo Mage::helper ( 'marketplace/common' )->checkSellerProduct();?>';
+	 if(checkSellerProduct == ''){
+		 alert('Seller can\'t buy their own product.');
+		 return false;
+	 }
+	 review.save();
+	 return true;
+}
+</script>

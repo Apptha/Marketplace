@@ -1,0 +1,90 @@
+<?php 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package    	Apptha_Advancedfilters
+ * @version     1.0.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+?>
+
+
+<div id="price-range" class="filter-track price-slider">
+    <span id="price-min" class="filter-handle price-slider-from" title="Scroll to set your minimum value"></span>
+    <span id="price-max" class="filter-handle price-slider-to" title="Scroll to set your maximum value"></span>
+</div>
+<ul>
+    <li>
+        <span id="price-min-display"><?php echo  ceil($this->getCurrentMinPriceFilter()); ?></span>
+        <span style="float: right;" id="price-max-display"><?php echo ceil($this->getCurrentMaxPriceFilter()); ?></span>
+    </li>
+</ul>
+
+<script type="text/javascript">
+
+    var priceSliderUrlTemplate = '<?php echo $this->getUrlPattern(); ?>';
+    
+   <?php if (!$this->getRequest()->isAjax()): ?>
+
+   function handlePriceEvent(val) {
+        if (val) {
+        	FILTER.filter_array['<?php echo $this->getFilterVar(); ?>'] = [val];
+        	FILTER.formUrl(FILTER.filter_array);
+        }
+        
+   }
+   <?php endif; ?>
+    
+    var maxPriceInt = <?php echo $this->getMaxPriceFloat(); ?>;
+    var minPriceInt = <?php echo $this->getMinPriceFloat(); ?>;
+    var timerSlider = null;
+    var priceSliderDelay = 100;
+
+    // horizontal slider control with preset values
+    new Control.Slider([$('price-min'), $('price-max')], 'price-range', {
+        range: $R(minPriceInt, maxPriceInt),
+        sliderValue: [<?php echo $this->getCurrentMinPriceFilter(); ?>, <?php echo $this->getCurrentMaxPriceFilter(); ?>],
+        values: $R(minPriceInt, maxPriceInt),
+
+        restricted: true,
+        onChange: function(val){
+            if (val[0] != <?php echo $this->getCurrentMinPriceFilter(); ?> || val[1] != <?php echo $this->getCurrentMaxPriceFilter(); ?>) {
+            	  
+               if (timerSlider) {
+                   clearTimeout(timerSlider);
+             	}
+                timerSlider = setTimeout(handlePriceEvent, priceSliderDelay,val.join('-'));
+            }
+        },
+        onSlide: function(val){ 
+            $('price-max-display').innerHTML = val[1];
+            $('price-min-display').innerHTML = val[0];
+        }
+
+        
+       
+    });
+</script>
+    

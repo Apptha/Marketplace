@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+* Super Menu Module configuration file
+*/
+-->
+    <!-- 
+    config tab starts
+     -->
+<config>
+    <modules>
+        <Apptha_Supermenu>
+            <version>1.0</version>
+        </Apptha_Supermenu>
+    </modules>
+     <!-- 
+    modules tab ends
+    front end start
+     -->
+    <frontend>
+        <routers>
+            <supermenu>
+                <use>standard</use>
+                <args>
+                    <frontName>supermenu</frontName>
+                    <module>Apptha_Supermenu</module>
+                </args>
+            </supermenu>
+        </routers>
+        <layout>
+            <updates>
+                <supermenu>
+                    <file>supermenu.xml</file>
+                </supermenu>
+            </updates>
+        </layout>
+    </frontend>
+     <!-- 
+     front end tab ends
+    adminhtml tab start
+     -->
+    <adminhtml>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <supermenu translate="title" module="supermenu">
+                                            <title><![CDATA[Super Menu]]></title>
+                                            <sort_order>2000</sort_order>
+                                        </supermenu>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+     <!-- 
+    adminhtml tab ends
+     -->
+    <global>
+        <blocks>
+            <catalog>
+                <rewrite>
+                    <navigation>Apptha_Supermenu_Block_Navigation</navigation>
+                </rewrite>
+            </catalog>
+            <page>
+                <rewrite>
+                    <html_topmenu>Apptha_Supermenu_Block_Topmenu</html_topmenu>
+                </rewrite>
+            </page>
+            <supermenu>
+                <class>Apptha_Supermenu_Block</class>
+            </supermenu>
+        </blocks>
+        <helpers>
+            <supermenu>
+                <class>Apptha_Supermenu_Helper</class>
+            </supermenu>
+        </helpers>
+    </global>
+     <!-- 
+    Global tab ends
+     -->
+      <!-- 
+    default tab start
+     -->
+    <default>
+        <supermenu>
+         <!-- 
+    config tab starts
+     -->
+            <general>
+                <enabled>1</enabled>
+                <ajax_load_content>1</ajax_load_content>              
+                <display_empty_categories>1</display_empty_categories>
+                <max_level>3</max_level>
+                <show_home_link>1</show_home_link>
+                <non_breaking_space>0</non_breaking_space>             
+            </general>
+             <!-- 
+    general tab ends
+     -->
+      <!-- 
+    columns tab start
+     -->
+            <columns>
+                <count>3</count>
+                <divided_horizontally>0</divided_horizontally>
+                <integrate>1</integrate>
+            </columns>
+             <!-- 
+    Columns tab ends
+     -->
+            <popup>
+                <width>0</width>
+                <top_offset>0</top_offset>
+                <delay_displaying>150</delay_displaying>
+                <delay_hiding>100</delay_hiding>
+            </popup>
+        </supermenu>
+    </default>
+     <!-- 
+    default tab ends
+     -->
+</config>
+    <!-- 
+    config tab ends
+     -->

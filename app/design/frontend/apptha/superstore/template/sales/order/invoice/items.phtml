@@ -1,0 +1,82 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php  $_order = $this->getOrder() ?>
+<p class="order-links"><a href="<?php echo $this->getPrintAllInvoicesUrl($_order) ?>" onclick="this.target='_blank'" class="link-print"><?php // echo $this->__('Print All Invoices') ?></a></p>
+<?php foreach ($_order->getInvoiceCollection() as $_invoice):
+
+$allItemsForOrder = $allItemsForInvoice = array();
+
+foreach($_order->getAllItems() as $orderItemValue){
+$allItemsForOrder[] = $orderItemValue->getProductId();	
+}
+
+foreach($_invoice->getAllItems() as $invoiceItemValue){
+$allItemsForInvoice[] = $invoiceItemValue->getProductId();
+}
+
+$orderAndInvoiceDiff = array_diff($allItemsForOrder,$allItemsForInvoice);
+$orderAndInvoiceDiffCount = count($orderAndInvoiceDiff);
+if($orderAndInvoiceDiffCount != 0){
+?>
+<h2 class="sub-title"><?php echo $this->__('Invoice #') ?><?php echo $_invoice->getIncrementId(); ?> <span class="separator">|</span> <a href="<?php echo $this->getPrintInvoiceUrl($_invoice) ?>" onclick="this.target='_blank'" class="link-print"><?php echo $this->__('Print Invoice') ?></a></h2>
+<h3 class="table-caption"><?php echo $this->__('Items Invoiced') ?></h3>
+<table class="data-table" id="my-invoice-table-<?php echo $_invoice->getId(); ?>">
+    <col />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <thead>
+        <tr>
+            <th><?php echo $this->__('Product Name') ?></th>
+            <th><?php echo $this->__('SKU') ?></th>
+            <th class="a-right"><?php echo $this->__('Price') ?></th>
+            <th class="a-center"><span class="nobr"><?php echo $this->__('Qty Invoiced') ?></span></th>
+            <th class="a-right"><?php echo $this->__('Subtotal') ?></th>
+        </tr>
+    </thead>
+    <tfoot>
+        <?php echo $this->getInvoiceTotalsHtml($_invoice)?>
+    </tfoot>
+    <?php $_items = $_invoice->getAllItems(); ?>
+    <?php $_count = count($_items) ?>
+    <?php foreach ($_items as $_item): ?>
+    <?php if ($_item->getOrderItem()->getParentItem()) continue; ?>
+    <tbody>
+        <?php echo $this->getItemHtml($_item) ?>
+    </tbody>
+    <?php endforeach; ?>
+</table>
+<script type="text/javascript">decorateTable('my-invoice-table-<?php echo $_invoice->getId(); ?>', {'tbody' : ['odd', 'even'], 'tbody tr' : ['first', 'last']})</script>
+<?php echo $this->getInvoiceCommentsHtml($_invoice)?>
+<?php 
+}
+endforeach; ?>

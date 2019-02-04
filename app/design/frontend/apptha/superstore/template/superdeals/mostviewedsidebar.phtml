@@ -1,0 +1,93 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to display Most viewed products sidebar
+ */
+$products = $this->getProductCollection();
+$coreHelper = $this->helper('core');
+?>
+<div class="block block-dealmostviewed">
+    <div class="block-title">
+        <strong> <span><?php echo $this->__('Most Viewed Deals') ?> </span> </strong>
+    </div>
+    <div class="block-content">
+        <?php if (count($products) > 0): ?>
+            <ol class="mini-products-list" id="mostviewed-sidebar">
+                <?php
+                foreach ($products as $item) {
+                    $originalPrice = $item->getPrice(); 
+                    $discountPrice = $item->getSpecialPrice(); 
+                    $savings = $originalPrice - $discountPrice; 
+                    $savingsPercentage = round(($savings / $originalPrice) * 100, 0);
+                    for ($increment = 0; $increment < 1; $increment++) {
+                        ?>
+                        <li class="item">
+                            <a class="product-image"
+                                            href="<?php echo $item->getProductUrl() ?>"
+                                            style="overflow: hidden; height: 50px;"> 
+                                <img
+                                    src="<?php echo $this->helper('catalog/image')->init($item, 'thumbnail'); ?>"
+                                    alt="<?php echo $this->htmlEscape($item->getName()) ?>" width="60" />
+                            </a>
+                            <div class="product-details">
+                                <p class="product-name">
+                                    <a href="<?php echo $item->getProductUrl() ?>"><?php
+                                     echo $this->htmlEscape($item->getName()) ?>
+                                    </a>
+                                </p>
+                                
+                                <span class="offer_price">
+                                    <?php echo $coreHelper->currency($item->getSpecialPrice(), true, false); ?>
+                                </span>
+                                
+                                <span class="original_price">
+                                    <?php echo $coreHelper->currency($item->getPrice(), true, false); ?>
+                                </span> 
+                                
+                                <span class="discount_label">
+                                    <?php echo $this->__('Discount: ') ?> </span> 
+                                <span class="discount_price" <?php echo $this->getIdSuffix() ?>> <?php
+                                 echo $savingsPercentage.'%'; 
+                                 echo ' '.$this->__('Off');
+                                ?>
+                                </span>
+                            </div>
+                        </li>
+        <?php }
+    } ?>
+            </ol>
+            <script type="text/javascript">decorateList('mostviewed-sidebar');</script>
+            <?php else: ?>
+            <div class="empty">
+                <?php echo $this->__('No items for this category') ?>
+            </div>
+<?php endif ?>
+    </div>
+</div>

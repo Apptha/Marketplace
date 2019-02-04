@@ -1,0 +1,99 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+
+$category_info = $this->getCategoryinfo ();
+$currentDate = Mage::getModel ( 'core/date' )->date ( 'Y-m-d' );
+$sort_product = $this->getRequest ()->getParam ( 'sorting' );
+?>
+<h1><?php echo $category_info->getName(); ?></h1>
+<?php if ($category_info->getImageUrl()) { ?>
+<img src="<?php echo $category_info->getImageUrl(); ?>" height="258" width="686" />
+<?php
+}
+$collection = $this->getCollection ();
+if (count ( $collection ) > 0) {
+?>
+<div class="sorter">
+<form name="category_products_list" class="mp_category_products" id="mp_category_products" action=""
+method="post">
+<select name="sorting" onchange="this.form.submit();" id="sorting">
+<option value="name"
+<?php
+
+if ($sort_product == 'name') {
+?>
+selected="selected" <?php } ?>>
+<?php echo $this->__('Name'); ?></option>
+<option value="price"
+<?php
+
+if ($sort_product == 'price') {
+?>
+selected="selected" <?php } ?>>
+                <?php echo $this->__('Price'); ?></option>
+</select>
+</form>
+</div>
+<ul class="mp_product_list sellers_product_categories clearfix">
+        <?php foreach ($collection as $_collection) { ?>
+            <li><a href="<?php echo $_collection->getProductUrl(); ?>">
+                    <?php
+      $newproduct = $this->helper ( 'catalog/image' )->init ( $_collection, 'image' )->constrainOnly ( TRUE )->keepAspectRatio ( TRUE )->keepFrame ( FALSE )->resize ( 324, null )?>
+                    <img class="product-image"
+src="<?php echo $newproduct ?>" width="1.6" height="1.6"
+alt="<?php echo $this->stripTags($this->getImageLabel($_collection, 'small_image'), null, true) ?>" />
+</a>
+<div class="mp_product_shop">
+<a href="<?php echo $_collection->getProductUrl(); ?>"> 
+ <?php echo $_collection->getName(); ?></a>
+<?php
+// Display Product Price
+$price = $_collection->getPrice ();
+$spl_price = $_collection->getSpecialPrice ();
+$dealExpireDate = $_collection->getspecial_to_date ();
+if (! empty ( $spl_price ) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) {
+?>
+                        <p><?php echo '<del>' . Mage::helper('core')->currency($price, true, false) . '</del>'; ?></p>
+<p class="mp_category_price"><?php echo Mage::helper('core')->currency($spl_price, true, false); ?></p>
+        <?php } else { ?>
+                        <p><?php echo Mage::helper('core')->currency($price, true, false); ?></p>
+            <?php } ?>
+                    <p><?php echo $_collection->getShortDescription(); ?></p>
+</div></li>
+    <?php } ?>
+    </ul>
+<?php echo $this->getPagerHtml(); ?>
+<?php
+} else {
+echo 'No products exists';
+}
+?>

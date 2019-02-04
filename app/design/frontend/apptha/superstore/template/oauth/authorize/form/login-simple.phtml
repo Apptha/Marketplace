@@ -1,0 +1,80 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Simple login form template
+ *
+ * @var $this Mage_Oauth_Block_Authorize
+ */
+?>
+<div class="content-container">
+    <div class="login-box">
+        <div class="page-title">
+            <h1><?php echo $this->__('Log In') ?></h1>
+        </div>
+        <div class="form-box">
+            <?php echo $this->getMessagesBlock()->toHtml() ?>
+            <?php if (!$this->getHasException()) : ?>
+            <form method="post" action="<?php echo $this->getPostActionUrl() ?>" id="loginForm">
+                <div class="fieldset" class="fieldset">
+                    <h2 class="legend"><?php echo $this->getFormTitle() ?></h2>
+                    <p class="description"><?php echo $this->__('Log in to use <strong>%s</strong>', $this->getConsumer()->getName()) ?></p>
+                    <div class="login-form simple">
+                            <input type="hidden" name="oauth_token" value="<?php echo $this->escapeHtml($this->getToken()) ?>"/>
+                            <div class="input-box input-left">
+                                <label for="username">
+                                    <em class="required">*</em>&nbsp;<?php echo $this->getIdentityLabel(); ?>
+                                </label>
+                                <input type="text" id="username" name="login[username]" value="" class="required-entry input-text"/>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="input-box input-right">
+                                <label for="login">
+                                    <em class="required">*</em>&nbsp;<?php echo $this->__('Password') ?>
+                                </label>
+                                <input type="password" id="login" name="login[password]" class="required-entry input-text"
+                                       value=""/></div>
+                            <div class="clear"></div>
+                            <div class="form-buttons">
+                                <button type="submit" class="form-button"
+                                       title="<?php echo $this->__('Login') ?>"/><?php
+                                        echo $this->__('Login') ?></button>
+                                <button type="button" onclick="document.location.href='<?php echo $this->getRejectUrl(); ?>';"
+                                        title="<?php echo $this->__('Reject') ?>"><?php
+                                         echo $this->__('Reject') ?></button>
+                                <p class="required"><?php echo $this->__('* Required Fields') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            <?php endif; ?>
+        </div>
+        <div class="bottom"></div>
+    </div>
+</div>

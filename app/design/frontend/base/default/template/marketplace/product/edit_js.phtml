@@ -1,0 +1,321 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<script type="text/javascript">
+var addProductForm = new VarienForm('edit_exist_product_form', true);
+function checkTextarea() {
+    var nicEdit = new nicEditors.findEditor('short_description');
+    var questionVar = nicEdit.getContent();
+    if (questionVar == '') {
+        $('short_description').show();
+        $('short_description').setStyle({
+            'width': '529px',
+            'margin-top': '-140px',
+            'border': 'none !important',
+            'background': 'none !important',
+            'padding': '0px',
+            'position': 'absolute',
+            'z-index': '-1'
+        });
+    }
+    var nicEdit = new nicEditors.findEditor('description');
+    var questionVar = nicEdit.getContent();
+    if (questionVar == '') {
+        $('description').show();
+        $('description').setStyle({
+            'width': '529px',
+            'margin-top': '-140px',
+            'border': 'none !important',
+            'background': 'none !important',
+            'padding': '0px',
+            'position': 'absolute',
+            'z-index': '-1'
+        });
+
+    }
+}
+</script>
+<!-- Product SKU available or not -->
+<script type="text/javascript">
+$('sku').observe('keyup', function(event) { 
+//alert($('sku_for_avail').getValue());	
+validateSkuForAddProduct();	
+});
+
+function validateSkuForAddProduct(){
+    var inputskuVar = $('sku').getValue();
+    var emptycheck = inputskuVar.replace(/^\s+/, '').replace(/\s+$/, '');
+    var sku = inputskuVar.trim().length;
+    if (sku === 0 && emptycheck === '') {      
+        $('empty-text').setStyle({display: 'block'});     
+        $('not-available').setStyle({display: 'none'});
+        $('available').setStyle({display: 'none'});
+    } else {
+
+    $('not-available').setStyle({display: 'none'});
+    $('available').setStyle({display: 'none'});  
+    $('empty-text').setStyle({display: 'none'});
+       
+    $('category-loading').show(); 
+        new Ajax.Request("<?php echo Mage::getBaseUrl(); ?>marketplace/product/checksku/", {
+            method: "get",
+            parameters: {sku: inputskuVar},
+            onSuccess: successFunc
+        });
+    } 	
+}
+
+//Check sku empty validation
+function checkSkuValidation(){
+    var inputskuVar = $('sku').getValue();
+    var sku = inputskuVar.length;
+    if (sku === 0) {
+        $('empty-text').setStyle({display: 'block'});
+        $('available').setStyle({display: 'none'});
+        $('not-available').setStyle({display: 'none'});  
+        $('sku').setStyle({'border-color': 'red'});           
+        return false;
+    }
+    $('sku').setStyle({'border-color': '#ccc'}); 
+    return true;
+}
+
+function successFunc(response) {  
+$('category-loading').hide(); 
+  var inputskuVar = $('sku').getValue();
+      var sku = inputskuVar.length;      
+    var content = response.responseText;
+        
+    if (content == 0) {
+        $('available').setStyle({display: 'block'});
+        $('not-available').setStyle({display: 'none'});
+        $('empty-text').setStyle({display: 'none'});
+    }
+    else {
+        $('available').setStyle({display: 'none'});
+        $('not-available').setStyle({display: 'block'});
+        $('empty-text').setStyle({display: 'none'});
+    }
+
+    if (sku === 0) {
+        $('empty-text').setStyle({display: 'block'});
+        $('not-available').setStyle({display: 'none'});
+        $('available').setStyle({display: 'none'});
+        return;
+    } 
+}
+</script>
+
+<!-- Special to date picket -->
+<script type="text/javascript">
+//<![CDATA[
+Calendar.setup({
+    inputField: "special_to_date",
+    ifFormat: "%m/%e/%Y",
+    showsTime: false,
+    button: "special_to_date_trig",
+    align: "Bl",
+    singleClick: true
+});
+//]]>
+</script>
+
+<!-- Special from date picket -->
+<script type="text/javascript">
+//<![CDATA[
+Calendar.setup({
+    inputField: "special_from_date",
+    ifFormat: "%m/%e/%Y",
+    showsTime: false,
+    button: "special_from_date_trig",
+    align: "Bl",
+    singleClick: true
+});
+//]]>
+</script>
+
+<!-- Category child node show/hide -->
+<script type="text/javascript">
+$$('.block-category li.parent ul').each(function(item) {
+    item.hide();
+});
+
+$$('.block-category li.parent > a span').each(function(element) {
+    element.observe('click', function(e) {
+        e.element().toggleClassName('end-minus', true);
+        e.element().toggleClassName('end-plus', true);
+        var idd = e.element().up().next('ul');
+        Effect.toggle(idd, 'blind', {duration: 0.5});
+
+        e.preventDefault();
+    });
+    element.observe('dblclick', function(e) {
+        e.element().toggleClassName('end-minus', true);
+        e.element().toggleClassName('end-plus', true);
+        var idd = e.element().up().next('ul');
+        Effect.toggle(idd, 'blind', {duration: 0.5});
+
+        e.preventDefault();
+    });
+});
+</script>
+
+<!-- Multiple image upload -->
+<script type="text/javascript">
+var fields = 0;
+function addNewImage() {
+    var id = "image" + fields;
+    $("marketplace_image_list").insert("<div class='market_place_add_image'><input type='file' name='" + id + "' /><button type='button' class='button' onclick='removeAddedImage(this)' /><span><span><?php echo $this->__('Remove'); ?></span></span></button>");
+    fields += 1;
+}
+function removeAddedImage(value) {
+    value.up('div').remove();
+}
+</script>
+
+<!-- Product custom option and dynamically add downloadable product data -->
+<script type="text/javascript">
+function removeMarketPlaceCustomOption(value) {
+    value.up('div').remove();
+}
+
+function changeMarketPlaceCustomOption(value, option_value) {
+    var child_html;
+    var child_custom_option_value = value.getValue();
+    switch (child_custom_option_value) {   
+        case "drop_down":
+        case "radio":
+        case "checkbox":
+        case "multiple":
+            child_html = $("product_option_CCC_type_select").innerHTML.replace(/CCC/g, option_value);
+            break; 
+        case "field":
+        case "area":
+            child_html = $("product_option_CCC_type_text").innerHTML.replace(/CCC/g, option_value);
+            break;     
+        case "date":
+        case "date_time":
+        case "time":
+            child_html = $("product_option_CCC_type_date").innerHTML.replace(/CCC/g, option_value);
+            break;      
+        case "file":
+            child_html = $("product_option_CCC_type_file").innerHTML.replace(/CCC/g, option_value);
+            break;  
+        default :
+            child_html = $("product_option_CCC_type_text").innerHTML.replace(/CCC/g, option_value);
+    }
+    if (value.up('table').nextSiblings('table') != '')
+    {
+        value.up('table').next('table').remove();
+        value.up('div').insert(child_html);
+    }
+    else
+    {
+        value.up('div').insert(child_html);
+    }
+}
+
+function removeMarketPlaceChildSelectOption(value) {
+    value.up('tr').remove();
+}
+
+function addMarketPlaceChildSelectOption(value, sub_option_value) {
+    var selectChildCustomOption = $("product_option_CCC_select_AAA").innerHTML.replace(/CCC/g, sub_option_value);
+    var new_selectChildCustomOption = selectChildCustomOption.replace(/AAA/g, selectSubChildCustomOptionCount);
+    $(value).insert(new_selectChildCustomOption);
+    selectSubChildCustomOptionCount = selectSubChildCustomOptionCount + 1;
+}
+var marketplaceDownloadableSampleRow = document.getElementById('downloadable_sample_count_value').value;
+var marketplaceDownloadableLinkRow = document.getElementById('downloadable_link_count_value').value;
+function addMarketPlaceDownloadableSamplesRow(value) {
+    var selectSampleOption = $("marketplace_download_sample_row_CCC").innerHTML.replace(/CCC/g, marketplaceDownloadableSampleRow);
+    $(value).insert(selectSampleOption);
+    marketplaceDownloadableSampleRow = parseInt(marketplaceDownloadableSampleRow) + 1;
+}
+
+function addMarketPlaceDownloadableLinksRow(value) {
+    var selectLinkOption = $("marketplace_download_link_row_CCC").innerHTML.replace(/CCC/g, marketplaceDownloadableLinkRow);
+    $(value).insert(selectLinkOption);
+    marketplaceDownloadableLinkRow = parseInt(marketplaceDownloadableLinkRow) + 1;
+}
+
+function removeMarketPlaceDownloadableSamplesRow(value) {
+    value.up('tr').remove();
+}
+
+//Hiding existing sample, link and link sample files name
+function hideOldFileName(id)
+{
+    var hide_div = id + '-old';
+    $(hide_div).hide();
+}
+
+function removeMarketPlaceDownloadableLinksRow(value) {
+    value.up('table').remove();
+}
+
+
+//For text editor
+//<![CDATA[
+bkLib.onDomLoaded(function() {
+  new nicEditor({iconsPath: '<?php echo $this->getSkinUrl('marketplace/nicEditorIcons.gif'); ?>'}).panelInstance('short_description');
+});
+//]]>
+
+// For text editor
+//<![CDATA[
+bkLib.onDomLoaded(function() {
+    new nicEditor({iconsPath: '<?php echo $this->getSkinUrl('marketplace/nicEditorIcons.gif'); ?>'}).panelInstance('description');
+});
+//]]>
+</script>
+<script type="text/javascript">
+
+function sellerShippingFunctionChange(){
+    var selected = $('seller_shipping').select("option[selected]")[0].innerHTML;
+    if (selected == 'Shipping Cost') {
+        $('shipping_price').setStyle('display:block');
+    } else  {
+    $('shipping_price').setStyle('display:none');
+        $('national_shipping_price').value = '0';
+    $('international_shipping_price').value = '0';
+    }
+}
+
+document.observe("dom:loaded", function() {
+if($('seller_shipping')){
+    var shippingoption = $('seller_shipping').select("option[selected]")[0].innerHTML;    
+    if(shippingoption == 'Shipping Cost'){       
+      $('shipping_price').setStyle('display:block');  
+    }
+} 
+});
+
+</script>

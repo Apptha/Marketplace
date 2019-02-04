@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<config>
+<!-- 
+Create the acl menu which is placed into apptha children menu
+ -->
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <superdeals translate="title" module="superdeals">
+                                        <title>Apptha Section</title>
+                                        <sort_order>0</sort_order>
+                                    </superdeals>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+    <!-- 
+    Create super deals menu in system configuration
+    Which is comes under  Apttha tab menu
+     -->
+    <menu>
+        <report translate="title" module="superdeals">
+            <children>
+                <report_dealz module="superdeals">
+                    <title>Super Deal Orders</title>
+                    <sort_order>0</sort_order>
+                    <action>superdeals/adminhtml_report_dealz/index</action>
+                </report_dealz>
+            </children>
+        </report>
+    </menu>
+</config>

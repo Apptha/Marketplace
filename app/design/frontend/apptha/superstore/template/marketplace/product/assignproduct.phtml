@@ -1,0 +1,250 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Get the filter name from passed value
+ * then check the filter name is not empty
+ * if so retrieve the filter name for pagination
+*/
+
+if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+	$sellerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+	$subscriptionEnabled = Mage::getStoreConfigFlag('marketplace/subscription/enablesubscription');
+	$subscriptionEndDate 	= Mage::helper('marketplace/subscription')->checkSubscribed($sellerId);
+	$subscribedPlanInfo 	= Mage::helper('marketplace/subscription')->getPlanInfo($sellerId);
+	$productCount 			= Mage::helper('marketplace/marketplace')->getProductCount($sellerId);
+	$planId 				= $subscribedPlanInfo->getPlanId();
+	$planInfo 				= Mage::helper('marketplace/subscription')->getSubscriptionPlanInfo($planId);
+	$planType 				= $planInfo->getProductType();
+	$numOfProducts 			= $planInfo->getProductCount();
+}
+if(($subscriptionEndDate==1) && (($numOfProducts>$productCount) || ($planType == 2)) || !$subscriptionEnabled){
+	$filterName = $this->getRequest()->getParam('filter_name');
+	if(empty($filterName)){
+	$filterName = Mage::getSingleton('core/session')->getFilterNameForPagination();
+	}
+	?>
+	<div class="account-login market_place_assign_products" id="market_place_assign_products">
+	    <div class="page-title">
+	        <h1 class="manage_products_head"><?php echo $this->__('Assign Product') ?></h1>
+	    </div>
+	    <div class="my-account-wrapper">   
+	     
+	<form name="assign_product_form" class="assign_product_form" id="assign_product_form" method="get" action="<?php echo $this->getmultiselectUrl(); ?>">   
+	<div>
+	<h3>
+	<?php echo Mage::helper('marketplace')->__('Search product in store'); ?>
+	</h3>
+	<input class="required-entry assign_product_name" type="text" placeholder="<?php echo Mage::helper('marketplace')->__('Product Name'); ?>" value="<?php
+	 echo $filterName; ?>" name="filter_name" id="filter_name"/>
+	<button type="submit" class="button multi_submit" title="<?php echo $this->__('Search') ?>" name="multi_submit" id="multi_submit" >
+	<span><span><?php echo $this->__('Search') ?></span></span></button>
+	<?php echo Mage::helper('marketplace')->__("Not exist in the Store's Catalog? Want to add a new product?"); ?>
+	<a class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/create/'); ?>"><?php
+	/**
+	 * Option to add new product
+	*/
+	echo Mage::helper('marketplace')->__('Click here'); ?></a>
+	</div>
+	<?php
+	 echo $this->getMessagesBlock()->getGroupedHtml(); 
+	$products = $this->getCollection(); 
+	/**
+	 * set sno in collection and current page
+	 */
+	 $snumber = 1;
+	 $current_page = Mage::getBlockSingleton('page/html_pager')->getCurrentPage();
+	 /**
+	  * Get Products page size
+	  */
+	 $getPageSize = $products->getPageSize();
+	 /**
+	  * Check the current page is greater than
+	  * or equal to 2
+	  */
+	if ($current_page >= 2) {
+	/**
+	 * Calcualte page
+	 */
+	    $cal_page = ceil($products->getSize() / $getPageSize);
+	    /**
+	     * Check the current page is less than
+	     * or equal to the calcualted page
+	     * if so assign increment the serial number using current page
+	     * else increment the serial number using calculated page
+	     */
+	    if ($current_page <= $cal_page) {
+	        $snumber = abs(($current_page * $getPageSize) - $getPageSize) + 1;
+	    } else {
+	        $snumber = abs(($cal_page * $getPageSize) - $getPageSize) + 1;
+	    }
+	    
+	} else {
+	/**
+	 * If the current page is less than 2
+	 * assign the serial number as 1
+	 */
+	$snumber = 1;
+	}
+	 ?>
+	   <table class="data-table my-product-table" id="my-product-table">
+	    <col width="1" />
+	    <col width="1" />
+	    <col />
+	    <col width="1" />
+	    <col width="1" />
+	    <col width="1" />
+	    <thead>
+	        <tr>           
+	            <th colspan="2" width="33%" class="mtext_left"><?php echo $this->__('Product Name') ?></th>      
+	            <th><?php echo $this->__('Price') ?></th>
+	            <th class="no-border-right"><?php echo $this->__('Action') ?></th>
+	        </tr>    
+	    </thead>
+	    <tbody>
+	        <?php if($products->getSize()): 
+	        foreach ($products as $product): ?>
+	        <tr>   
+	        <?php 
+	        $assignProductFlag='';
+	        $productAssigned=$this->getAssignedProducts($sellerId,$product->getId());
+	        if(count($productAssigned)>0){
+	            $productData=$productAssigned->getFirstItem();
+	            $producsId= $productData->getId();
+	            $assignProductFlag=1; 
+	        }
+	        else{
+	         $assignProductFlag=0;
+	        }
+	        /**
+	         * Display Product image
+	         */
+	        ?>
+	           <td class="img_td">
+	               <?php if($product->getStatus() == 1){ ?>
+	               <a href="<?php echo $product->getProductUrl() ?>" class="product-image">
+	               <img src="<?php
+	                echo $this->helper('catalog/image')->init($product, 'small_image')->resize(55,45); ?>" width="55" height="45" alt="<?php
+	                 echo $product->getName(); ?>" />                  
+	               </a>                
+	               <?php }else{ ?>
+	               <img src="<?php echo $this->helper('catalog/image')->init($product, 'small_image')->resize(55,45); ?>" width="55" height="45" alt="<?php
+	                echo $product->getName(); ?>" title="<?php
+	                 echo $product->getName(); ?>" />
+	               <?php } ?>            
+	           </td>
+	            <td class="mtext_left">
+	            <?php if($product->getStatus() == 1){ ?>
+	            <a href="<?php echo $product->getProductUrl();  ?>" class="get_pdct_name" ><?php
+	             echo $product->getName(); ?>            
+	            </a>
+	            <?php }else{ ?>
+	            <span class="get_pdct_name"><?php echo $product->getName(); ?></span>
+	            <?php } ?>
+	            <?php
+	            /**
+	             * Get the category ids
+	             * and category count
+	             */
+	            $categoryIds = $product->getCategoryIds();            
+	            $count = count($categoryIds);
+	            $cat = Mage::getModel('catalog/category')->getCollection()
+	                    ->addAttributeToSelect('category_id');
+	            $inc_cat = 1;
+	            /**
+	             * Check the count is greater than zero
+	             * if so then display category name with its link
+	             */
+	            if($count>0){
+	            echo $this->__('(');
+	            foreach($categoryIds as $_categoryIds){
+	               $cat = Mage::getModel('catalog/category');
+	               $cat->load($_categoryIds);
+	               
+	               ?>
+	              <a href="<?php echo $cat->getUrl(); ?>"><?php
+	               echo $cat->getName(); ?></a> 
+	               <?php               
+	               if($inc_cat != $count){
+	                   echo ' ,'; 
+	               }
+	               $inc_cat = $inc_cat + 1;
+	               
+	             }
+	              echo $this->__(')');
+	             ?>
+	            <?php } ?>   
+	            </td>
+	            <td><em><?php echo Mage::helper('core')->currency($product->getPrice(),true,false); ?></em></td>    
+	            <td> 
+	          	<?php if($assignProductFlag!=1){?>
+	            <a class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/addassignproduct/',array('id' => $product->getId())); ?>"><?php
+	             echo Mage::helper('marketplace')->__('use'); ?></a>
+	             <?php }else{?>
+	               <a class="button" href="<?php echo Mage::getUrl('marketplace/sellerproduct/addassignproduct/',array('pid' => $producsId)); ?>"><?php
+	             echo Mage::helper('marketplace')->__('used'); ?></a>
+	             <?php }?>
+	            </td>    
+	        </tr>
+	        <?php $snumber++; endforeach; ?>
+	    </tbody>
+	    <?php else: ?>
+	    <p><tr class="mtext_center"><td colspan="3" class="no_product_content"><?php echo $this->__('You have no product.'); ?></td></tr></p>
+	 <?php endif ?>
+	</table>   
+	<script type="text/javascript">decorateTable('my-product-table');</script>
+	   <?php echo $this->getPagerHtml(); ?>
+	</div></form></div>
+	
+	<script type="text/javascript">
+	    //< ![CDATA[
+	        var assignProductUploadForm = new VarienForm('assign_product_form');
+	    //]]>
+	</script> 
+	<?php 
+}else {
+	if($sellerId){
+		$subscriptionPlanDetail 	= Mage::helper('marketplace/subscription')->checkSubscribed($sellerId);
+		if($subscriptionPlanDetail){$displayMsg = 'Your limit for adding products has been exceeded, Please click here to subscribe with some other plans.';
+			$subscriptionButton = $this->__('Upgrade Subscription Plan');
+		}else{	$displayMsg = 'Thank you for registering as a seller. Please choose a plan to add your products to the site.';
+			$subscriptionButton = $this->__('Subscription Plan');
+		}?>
+		<p><?php echo $this->__($displayMsg); ?></p>
+			<button onclick="window.location='<?php  echo Mage::helper('marketplace/general')->getSubscriptionUrl();?>'" title="Subscription" class="button left mp_addnew_pdt">
+				<span><?php echo $subscriptionButton; ?></span>
+			</button>
+		<?php	
+	}
+} 
+?>		
+
+        

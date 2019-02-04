@@ -1,0 +1,117 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+ <div class="block"> 
+<?php 
+/**
+ * get seller id
+ */
+$id = $this->getRequest()->getParam('id');
+$customerData = Mage::getModel('customer/customer')->load($id);
+/**
+ * Get Vacation mode
+ */
+$vacationMode = Mage::getModel('marketplace/vacationmode')->load($id,'seller_id');
+/**
+ * Get Status
+ */
+$vacationStatus = $vacationMode->getVacationStatus();
+/**
+ * Get Current Url
+ */
+$currentUrl = Mage::helper('core/url')->getCurrentUrl();
+/**
+ * Get Current Date
+ */
+$currentDate = Mage::getModel('core/date')->date('Y-m-d');
+
+/**
+ * display product collection
+ */
+$sellerPage = Mage::getModel('marketplace/sellerprofile')->collectprofile($id);
+ $displayProductCount = $this->getCollection();
+ /**
+  * count collection
+  */
+    $countProduct = count($displayProductCount);
+    if($countProduct>0){ ?>
+        <div class="block-title"><strong><span><?php echo $this->__('Product Categories')?></span></strong></div>
+    <?php } 
+/**
+ * Display seller category and products  
+ */ ?>
+  <div class="block-content toggle-content">
+<?php
+$catIdsValue          = array();
+$displayCatProduct    = $this->getRequest()->getParam('category_name');
+$sortProduct           = $this->getRequest()->getParam('sorting');
+$sellerValue           = $this->sellerproduct($id);
+foreach ($sellerValue as $_value) {
+    if (!in_array($_value['category_id'], $catIdsValue)) {
+        $catIdsValue[] = $_value['category_id'];
+    }
+}
+/**
+ * Get Collection
+ */
+ $displayProduct = $this->getCollection();
+        if (count($displayProduct)>0) { ?>
+        <div class="sorter">
+             <ul id="categoty-name">
+                        <?php
+                        foreach ($catIdsValue as $category) {
+                            $cat = Mage::getModel('catalog/category');
+                            $cat->load($category);
+                            ?>   
+                      <li ><a id="<?php echo $cat->getId();?>"><?php
+                       echo $cat->getName(); ?></a></li>
+                    <?php } ?>
+              </ul>  
+        </div>
+        <?php } ?>
+        <script type="text/javascript">
+        $mp = jQuery.noConflict();
+        $mp("#categoty-name li a").click(function() {
+           var sellerId = "<?php echo $id;?>"; 
+           var categoryId = this.id; 
+           $mp("#loader-image").show();
+           $mp.ajax({url:"<?php echo Mage::getUrl('marketplace/seller/getProductList');?>",
+                type: 'GET',
+                data: { id: categoryId, sellerid :sellerId},
+                success:function(result){
+                $mp( "#mp-product-list" ).empty();
+                $mp("#loader-image").hide();                
+                $mp("#mp-product-list").html(result);
+                }});
+        });
+
+</script>
+        </div> 
+    </div>

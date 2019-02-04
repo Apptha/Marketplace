@@ -1,0 +1,440 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<!-- Following div dynamically create custom options  -->
+<div class="hidden-custom-option" style="display: none;">
+
+<div class="option-box" id="marketplace_custom_option_YYY">
+<!-- Div for removing custom option -->
+<div class="dont-remove market_place_option-box">
+<!-- Product custom option table -->
+<table id="product_option_XXX" class="option-header form-list"
+cellpadding="0" cellspacing="0">
+<input type="hidden" id="product_option_XXX_is_delete"
+name="product[options][XXX][is_delete]" value="">
+<input type="hidden" id="product_option_XXX_previous_type"
+name="product[options][XXX][previous_type]" value="">
+<input type="hidden" id="product_option_XXX_previous_group"
+name="product[options][XXX][previous_group]" value="">
+<input type="hidden" id="product_option_XXX_id"
+name="product[options][XXX][id]" value="XXX">
+<input type="hidden" id="product_option_XXX_option_id"
+name="product[options][XXX][option_id]" value="0">
+<thead>
+<tr>
+<th class="opt-title"><label class="required"><em>*</em> <?php echo $this->__('Title'); ?></label>
+</th>
+<th class="opt-type"><label class="required"><em>*</em> <?php echo $this->__('Input Type'); ?></label></th>
+<th class="opt-req"><label><?php echo $this->__('Is Required'); ?></label></th>
+<!--<th class="opt-order"><label><?php echo $this->__('Sort Order'); ?></label></th>-->
+<th class="a-right"><button id="delete_product_option_XXX"
+title="<?php echo $this->__('Delete Option'); ?>" type="button"
+class="button scalable delete delete-product-option "
+onclick="removeMarketPlaceCustomOption(this)" style="">
+<span><span><?php echo $this->__('Delete Option'); ?></span></span>
+</button></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><input type="text" class="required-entry input-text"
+id="product_option_XXX_title" name="product[options][XXX][title]"
+value=""></td>
+<td><select onchange="changeMarketPlaceCustomOption(this, XXX)"
+name="product[options][XXX][type]" id="product_option_XXX_type"
+class="select validate-select" title="">
+<option value="">-- <?php echo $this->__('Please select'); ?> --</option>
+<optgroup label="<?php echo $this->__('Text'); ?>">
+<option value="field"><?php echo $this->__('Field'); ?></option>
+<option value="area"><?php echo $this->__('Area'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('File'); ?>">
+<option value="file"><?php echo $this->__('File'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('Select'); ?>">
+<option value="drop_down"><?php echo $this->__('Drop-down'); ?></option>
+<option value="radio"><?php echo $this->__('Radio Buttons'); ?></option>
+<option value="checkbox"><?php echo $this->__('Checkbox'); ?></option>
+<option value="multiple"><?php echo $this->__('Multiple Select'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('Date'); ?>">
+<option value="date"><?php echo $this->__('Date'); ?></option>
+<option value="date_time"><?php echo $this->__('Date'); ?> &amp; <?php
+        echo $this->__ ( 'Time' );
+        ?></option>
+<option value="time"><?php echo $this->__('Time'); ?></option>
+</optgroup>
+</select></td>
+<td class="opt-req"><select
+name="product[options][XXX][is_require]"
+id="product_option_XXX_is_require" class="select" title="">
+<option value="1"><?php echo $this->__('Yes'); ?></option>
+<option value="0"><?php echo $this->__('No'); ?></option>
+</select></td>
+<!--                         <td> -->
+<!--                             <input type="text" class="validate-zero-or-greater input-text" name="product[options][XXX][sort_order]" value=""> -->
+<!--                         </td> -->
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Product custom option text -->
+<div id="product_option_CCC_type_text" class="grid tier form-list">
+<table class="form-list border custom_option_text_field" cellpadding="0" cellspacing="0">
+<tbody>
+<tr class="headings">
+<th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+<th class="type-type"><label><?php echo $this->__('Price Type'); ?></label></th>
+<th class="type-sku"><label><?php echo $this->__('SKU'); ?></label></th>
+<th class="type-last last"><label><?php echo $this->__('Max Characters'); ?></label></th>
+</tr>
+<tr>
+<td><input type="text"
+class="input-text validate-number product-option-price product-custom-option-price-val"
+id="product_option_CCC_price" name="product[options][CCC][price]"
+value=""></td>
+<td><select name="product[options][CCC][price_type]"
+id="product_option_CCC_price_type"
+class="select product-option-price-type" title="">
+<option value="fixed"><?php echo Mage::helper('marketplace')->__('fixed'); ?></option>
+<option value="percent"><?php echo $this->__('Percent'); ?></option>
+</select></td>
+<td><input type="text" class="input-text"
+name="product[options][CCC][sku]" value=""></td>
+<td class="type-last last"><input type="text"
+class="input-text validate-zero-or-greater"
+name="product[options][CCC][max_characters]" value=""></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Product custom option file -->
+<div id="product_option_CCC_type_file" class="grid tier">
+<table class="border form-list mareket_place_price_table"
+cellpadding="0" cellspacing="0">
+<tbody>
+<tr class="headings">
+<th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+<th class="type-type"><label><?php echo $this->__('Price Type'); ?></label></th>
+<th class="type-sku"><label><?php echo $this->__('SKU'); ?></label></th>
+<th class="type-title"><label><?php echo $this->__('Allowed File Extensions'); ?></label></th>
+<th class="last"><label><?php echo $this->__('Maximum Image Size'); ?></label></th>
+</tr>
+<tr>
+<td><input class="input-text validate-zero-or-greater" type="text"
+name="product[options][CCC][price]" value=""></td>
+<td><select name="product[options][CCC][price_type]"
+id="product_option_CCC_price_type"
+class="select product-option-price-type" title="">
+<option value="fixed"><?php echo $this->__('fixed'); ?></option>
+<option value="percent"><?php echo $this->__('Percent'); ?></option>
+</select></td>
+<td><input type="text" class="input-text"
+name="product[options][CCC][sku]" value=""></td>
+<td><input class="input-text" type="text"
+name="product[options][CCC][file_extension]" value=""></td>
+<td class="type-last last" nowrap=""><input class="input-text"
+type="text" name="product[options][CCC][image_size_x]" value=""><?php echo $this->__('x'); ?>&nbsp;
+<input class="input-text" type="text"
+name="product[options][CCC][image_size_y]" value=""><?php echo $this->__('px') . '.'; ?>
+<br><?php echo $this->__('leave blank if its not an image'); ?>
+                </td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Product custom option date -->
+<div id="product_option_CCC_type_date" class="grid tier form-list"
+style="">
+<table class="border form-list mareket_place_date_table" cellpadding="0" cellspacing="0">
+<tbody>
+<tr class="headings">
+<th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+<th class="type-type"><label><?php echo Mage::helper('marketplace')->__('Price Type'); ?></label></th>
+<th class="last"><label><?php echo Mage::helper('marketplace')->__('SKU'); ?></label></th>
+</tr>
+<tr>
+<td><input type="text"
+class="input-text validate-number product-option-price product-option-price-val-data"
+id="product_option_CCC_price" name="product[options][CCC][price]"
+value=""></td>
+<td><select name="product[options][CCC][price_type]"
+id="product_option_CCC_price_type"
+class="select product-option-price-type" title="">
+<option value="fixed"><?php echo Mage::helper('marketplace')->__('fixed'); ?></option>
+<option value="percent"><?php echo Mage::helper('marketplace')->__('Percent'); ?></option>
+</select></td>
+<td class="last"><input type="text" class="input-text type-sku"
+name="product[options][CCC][sku]" value=""></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Product custom option select -->
+<div id="product_option_CCC_type_select" class="grid tier form-list">
+<table class="border market_place_dropdown_row form-list"
+cellpadding="0" cellspacing="0">
+<input type="hidden" class="required-option-select-type-rows"
+name="validation_CCC_result" value="">
+<thead>
+<tr class="headings">
+<th class="type-title"><label class="required"> <em>*</em> <?php echo $this->__('Title'); ?> </label></th>
+<th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+<th class="type-type"><label><?php echo $this->__('Price Type'); ?></label></th>
+<th class="type-sku"><label><?php echo $this->__('SKU'); ?></label></th>
+<th class="type-order"><label><?php echo $this->__('Sort Order'); ?></label></th>
+<th class="type-butt last">&nbsp;</th>
+</tr>
+</thead>
+<tbody id="select_option_type_row_CCC">
+</tbody>
+<tfoot>
+<tr>
+<td colspan="100" class="a-right">
+<button id="add_select_row_button_CCC"
+name="select_option_type_row_CCC"
+title="<?php echo $this->__('Add New Row'); ?>" type="button"
+class="button scalable add add-select-row"
+onclick="addMarketPlaceChildSelectOption(this.name, CCC)">
+<span><span><?php echo $this->__('Add New Row'); ?></span></span>
+</button>
+</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<!-- Product custom option select add row -->
+<table>
+<tr id="product_option_CCC_select_AAA">
+<td><input type="hidden"
+name="product[options][CCC][values][AAA][option_type_id]" value="-1">
+<input type="hidden" id="product_option_CCC_select_AAA_is_delete"
+name="product[options][CCC][values][AAA][is_delete]" value=""> <input
+type="text" class="required-entry input-text select-type-title"
+id="product_option_CCC_select_AAA_title"
+name="product[options][CCC][values][AAA][title]" value=""></td>
+<td><input type="text"
+class="input-text validate-number product-option-price"
+id="product_option_CCC_select_AAA_price"
+name="product[options][CCC][values][AAA][price]" value=""></td>
+<td><select name="product[options][CCC][values][AAA][price_type]"
+id="product_option_CCC_select_AAA_price_type"
+class="select product-option-price-type" title="">
+<option value="fixed"><?php echo $this->__('fixed'); ?></option>
+<option value="percent"><?php echo $this->__('Percent'); ?></option>
+</select></td>
+<td><input type="text" class="input-text"
+name="product[options][CCC][values][AAA][sku]" value=""></td>
+<td><input type="text" class="validate-zero-or-greater input-text"
+name="product[options][CCC][values][AAA][sort_order]" value=""></td>
+<td class="last"><span title="Delete row">
+<button id="delete_select_row_button" title="Delete Row"
+type="button"
+class="button delete_select_row_button scalable delete delete-select-row icon-btn"
+onclick="removeMarketPlaceChildSelectOption(this)" style="">
+<span> <span><?php echo $this->__('Delete Row'); ?></span></span>
+</button>
+</span></td>
+</tr>
+</table>
+</div>
+
+<!-- Dynamically downloadable products Sample and Sample_links row -->
+<table style="display: none;">
+<tr id="marketplace_download_sample_row_CCC">
+<td><input type="hidden" class="__delete__"
+name="downloadable[sample][CCC][is_delete]" value=""> <input
+type="hidden" name="downloadable[sample][CCC][sample_id]" value="CCC">
+<input type="text" class="required-entry input-text"
+name="downloadable[sample][CCC][title]" value=""></td>
+<td>
+<div class="files-wide">
+<div class="marketplace_row">
+<label for="downloadable_sample_CCC_file_type"> <input type="radio"
+class="radio validate-one-required-by-name"
+id="downloadable_sample_CCC_file_type"
+name="downloadable[sample][CCC][type]" value="file"
+checked="checked"> 
+<?php echo $this->__('File'); ?>:</label> <input type="file"
+class="validate-downloadable-file"
+id="downloadable_sample_CCC_file_save" name="sample_CCC" value="">
+<div id="downloadable_sample_CCC_file">
+<div class="no-display" id="downloadable_sample_CCC_file-template">
+</div>
+</div>
+</div>
+<div class="row">
+<label for="downloadable_sample_CCC_url_type"> <input type="radio"
+class="radio validate-one-required-by-name"
+id="downloadable_sample_CCC_url_type"
+name="downloadable[sample][CCC][type]" value="url"> 
+<?php echo $this->__('URL'); ?>:</label> <input type="text"
+class="validate-downloadable-url input-text"
+name="downloadable[sample][CCC][sample_url]" value="">
+</div>
+<div>
+<span id="downloadable_sample_CCC_container"></span>
+</div>
+</div>
+</td>
+<td class="a-center"><input type="text"
+name="downloadable[sample][CCC][sort_order]" value=""
+class="input-text sort marketplace_sort_order"></td>
+<td>
+<button onclick="removeMarketPlaceDownloadableSamplesRow(this)"
+type="button" class="scalable button">
+<span><span><span><?php echo $this->__('Delete'); ?></span></span></span>
+</button>
+</td>
+</tr>
+</table>
+
+<!-- Dynamically downloadable products Links row -->
+<table style="display: none;">
+<tr id="marketplace_download_link_row_CCC">
+<td class="marketplace_download_info_td">
+<table border="0" cellspacing="0" cellpadding="0" width="100%"
+class="marketplace_download_info_table">
+<tr>
+<th><label><?php echo $this->__('Title'); ?></label><span
+class="required"></span></th>
+<td><input type="hidden" class="__delete__"
+name="downloadable[link][CCC][is_delete]" value=""> <input
+type="hidden" name="downloadable[link][CCC][link_id]" value="CCC">
+<input type="text" class="required-entry input-text"
+name="downloadable[link][CCC][title]" value=""></td>
+</tr>
+<tr>
+<th><label><?php echo $this->__('Price'); ?></label></th>
+<td class="input-price"><input type="text"
+id="downloadable_link_CCC_price_value"
+class="input-text validate-number link-prices"
+name="downloadable[link][CCC][price]" value="0">
+<p>
+<label> [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]</label>
+</p></td>
+</tr>
+<tr>
+<th><label class="nobr"><?php echo $this->__('Max. Downloads'); ?></label></th>
+<td><input type="text" id="downloadable_link_CCC_downloads"
+name="downloadable[link][CCC][number_of_downloads]"
+class="input-text downloads" value="0">
+<p>
+<input type="checkbox" class="checkbox"
+id="downloadable_link_CCC_is_unlimited"
+name="downloadable[link][CCC][is_unlimited]" value="1"
+checked="checked"> <label
+for="downloadable_link_CCC_is_unlimited"><?php echo $this->__('Unlimited'); ?></label>
+</p></td>
+</tr>
+<tr>
+<th><label><?php echo $this->__('Shareable'); ?></label></th>
+<td><select id="downloadable_link _CCC_shareable"
+name="downloadable[link][CCC][is_shareable]">
+<option value="1"><?php echo $this->__('Yes'); ?></option>
+<option value="CCC"><?php echo $this->__('No'); ?></option>
+<option value="2" selected="selected"><?php echo $this->__('Use config'); ?></option>
+</select></td>
+</tr>
+<tr>
+<th><label><?php echo $this->__('Sample'); ?></label></th>
+<td>
+<div class="files-wide">
+<div class="marketplace_row">
+<label for="downloadable_link_CCC_sample_file_type"> <input
+type="radio" class="radio"
+id="downloadable_link_CCC_sample_file_type"
+name="downloadable[link][CCC][sample][type]" value="file">
+<?php echo $this->__('File'); ?>:</label> <input type="file"
+class="validate-downloadable-file"
+id="downloadable_link_CCC_file_save" name="l_sample_CCC"
+value="">
+</div>
+<div class="row">
+<label for="downloadable_link_CCC_sample_url_type"> <input
+type="radio" class="radio"
+id="downloadable_link_CCC_sample_url_type"
+name="downloadable[link][CCC][sample][type]" value="url">
+<?php echo $this->__('URL'); ?>:</label> <input type="text"
+class="input-text" name="downloadable[link][CCC][sample][url]"
+value="">
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<th><label><?php echo $this->__('File'); ?></label></th>
+<td>
+<div class="files-wide">
+<div class="marketplace_row">
+<label for="downloadable_link_CCC_file_type"> <input
+type="radio" class="radio validate-one-required-by-name"
+id="downloadable_link_CCC_file_type"
+name="downloadable[link][CCC][type]" value="file"
+checked="checked">
+<?php echo $this->__('File'); ?>:
+    </label> <input type="file" class="validate-downloadable-file"
+id="downloadable_sample_link_CCC_file_save" name="links_CCC"
+value="">
+</div>
+<div class="row">
+<label for="downloadable_link_CCC_url_type"> <input type="radio"
+class="radio validate-one-required-by-name"
+id="downloadable_link_CCC_url_type"
+name="downloadable[link][CCC][type]" value="url">
+<?php echo $this->__('URL'); ?>:</label><input type="text"
+class="validate-downloadable-url input-text"
+name="downloadable[link][CCC][link_url]" value="">
+</div>
+</div>
+</td>
+</tr>
+<tr>
+
+<th><label class="nobr"><?php echo $this->__('Sort Order'); ?></label></th>
+<td><input type="text" name="downloadable[link][CCC][sort_order]"
+value="" class="input-text sort"></td>
+</tr>
+<tr>
+<th>&nbsp;</th>
+<td>
+<button id="downloadable_link_CCC_delete_button"
+onclick="removeMarketPlaceDownloadableLinksRow(this);"
+type="button" class="scalable button">
+<span><span><span> <?php echo $this->__('Delete'); ?></span></span></span>
+</button>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>

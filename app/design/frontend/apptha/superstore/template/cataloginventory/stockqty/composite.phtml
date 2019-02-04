@@ -1,0 +1,72 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/**
+ * @see Mage_CatalogInventory_Block_Stockqty_Composite
+ */
+?>
+<?php if($this->isMsgVisible()): ?>
+    <p class="availability-only">
+        <a href="#" id="<?php echo $this->getPlaceholderId() ?>" 
+        title="<?php echo $this->__('Only %s left', ($this->getStockQty())) ?>">
+        <?php echo $this->__('Only %s left', "<strong>{$this->getStockQty()}</strong>") ?></a>
+    </p>
+    <table id="<?php echo $this->getDetailsPlaceholderId() ?>" class="availability-only-details no-display data-table">
+        <col />
+        <col width="1" />
+        <thead>
+            <tr>
+                <th><?php echo $this->__('Product Name') ?></th>
+                <th class="a-center"><?php echo $this->__('Qty') ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($this->getChildProducts() as $childProduct) : ?>
+            <?php $childProductStockQty = $this->getProductStockQty($childProduct); ?>
+            <?php if ($childProductStockQty > 0) : ?>
+                <tr>
+                    <td><?php echo $childProduct->getName() ?></td>
+                    <td class="a-center"><?php echo $childProductStockQty ?></td>
+                </tr>
+            <?php endif ?>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+    //<![CDATA[
+    $('<?php echo $this->getPlaceholderId() ?>').observe('click', function(event){
+        this.toggleClassName('expanded');
+        $('<?php echo $this->getDetailsPlaceholderId() ?>').toggleClassName('no-display');
+        event.stop();
+        decorateTable('<?php echo $this->getDetailsPlaceholderId() ?>');
+    });
+    //]]>
+    </script>
+<?php endif ?>

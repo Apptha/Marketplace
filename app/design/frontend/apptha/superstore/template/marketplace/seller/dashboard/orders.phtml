@@ -1,0 +1,95 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+        $id = Mage::getSingleton('customer/session')->getId();        
+      
+        ?>
+     <h3><?php echo $this->__('Orders');?></h3>
+     <div class="content_wr">
+     <div class="text_wr">
+     <ul class="marketplace_order_colors">
+     <li class="red-color"><span><?php echo $this->__('Total');?></span><?php
+      echo $this->getTotalOrders($id);?></li>
+     <li class="green-color"><span><?php echo $this->__('Completed');?></span><?php
+      echo $this->getCompleteStatus($id);?></li>
+     <li class="gray-color"><span><?php echo $this->__('Pending');?></span><?php
+      echo $this->getPendingStatus($id);?></li>
+     <li class="blue-color"><span><?php echo $this->__('Processing');?></span><?php
+      echo $this->getProcessingStatus($id);?></li>
+     <li class="red-color"><span><?php echo $this->__('Cancelled');?></span><?php
+      echo $this->getCancelledStatus($id);?></li>
+     <li class="green1-color"><span><?php echo $this->__('Refunded');?></span><?php
+      echo $this->getRefundedStatus($id);?></li>
+     <li class="orange-color"><span><?php echo $this->__('Onhold');?></span><?php
+      echo $this->getOnholdStatus($id);?></li>
+     
+     </ul>
+     </div>
+     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+     <script type="text/javascript">
+     google.load("visualization", "1", {
+             packages: ["corechart"]
+     });
+     google.setOnLoadCallback(drawChart);
+
+     function drawChart() {
+             var data = new google.visualization.DataTable();
+                 data.addColumn('string', 'Status');
+        data.addColumn('number', 'Count');
+        data.addRows([           
+            ['Completed', roundNumber(<?php echo $this->getCompleteStatus($id);?>, 2)],
+            ['Pending', roundNumber(<?php echo $this->getPendingStatus($id);?>, 2)],
+            ['Processing', roundNumber(<?php echo $this->getProcessingStatus($id);?>, 2)],
+            ['Cancelled', roundNumber(<?php echo $this->getCancelledStatus($id);?>, 2)],
+            ['Refunded', roundNumber(<?php echo $this->getRefundedStatus($id);?>, 2)],
+            ['Onhold', roundNumber(<?php echo $this->getOnholdStatus($id);?>, 2)]
+            ]);
+        var options = {
+            width: 450,
+            height: 300,
+            colors: ['#99cc66','#7d7d7d','#6699cc','#ff3333','#cccc33','#ff9900'],
+            legend: {position:'none'},
+            pieHole: 0.4,
+            animation: {duration:500,easing:'in'},
+            
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+
+    function roundNumber(num, dec) {
+        var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
+        return result;
+    }
+
+     </script>    
+       <div class="total-orders"><?php echo $this->getTotalOrders($id);?></div><div class="chart_div" id="chart_div"></div></div> 
+       
+       

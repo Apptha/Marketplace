@@ -1,0 +1,159 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Display todays sales of a seller
+ */
+
+        $id = Mage::getSingleton('customer/session')->getId();  ?>  
+         <?php
+        /**
+         * To display Life time sales
+         */
+        $sellerProduct = Mage::getModel('marketplace/sellerprofile')->sellerProduct($id);
+        $lifetimeSales = array();
+        $orderIds = array();
+        $productIds = array();
+        $averageOrders = '';
+        foreach ($sellerProduct as $_sellerProduct) {
+            $lifetimeSales[] = $_sellerProduct['seller_amount'];
+            $orderIds[] = $_sellerProduct['order_id'];
+            $productIds[] = $_sellerProduct['product_id'];
+        }
+        $totalSum = array_sum($lifetimeSales);
+        $orderSum = count($orderIds);
+        if (!empty($orderSum)) {
+            $averageOrders = $totalSum / $orderSum;
+        }
+        ?>     
+      
+       <div class="orders-wr"><div class="page-title">
+        <h3><?php echo $this->__('Last Five Orders'); ?></h3>
+                </div>
+                <div class="mp_dashboard_container data-table">    
+                    <?php
+                    /**
+                     *  To display Last Five Orders      
+                     */
+        
+                    $dataProduct = Mage::getModel('marketplace/sellerprofile')->getdataProduct($orderIds);
+                    $size = count($dataProduct);
+                    ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><?php echo $this->__('Order Id'); ?></th>
+                                <th><?php echo $this->__('Product Name'); ?></th>
+                                <th><?php echo $this->__('Price'); ?></th>
+                                <th class="no-border-right"><?php echo $this->__('Quantity'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($size > 0) {
+                                foreach ($dataProduct as $_dataproduct) {
+                                    if (in_array($_dataproduct['product_id'], $productIds)) {
+                                        ?>                
+                                        <tr>
+                                            <td><?php echo $_dataproduct['increment_id']; ?></td>
+                                            <td><?php echo $_dataproduct['name']; ?></td>
+                                            <td><?php echo Mage::helper('core')->currency($_dataproduct['base_price'], true, false); ?></td>
+                                            <td><?php echo round($_dataproduct['qty_ordered']); ?></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                <?php } else { ?>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="a-center no_product_content"><?php echo $this->__('There is no orders to view'); ?></td>
+                                </tr>
+                            </tfoot>
+                <?php } ?>              
+        
+                    </table>
+                </div></div>
+                <?php
+        /**
+         *  To display Most viewed Products 
+         */
+                $currentDate = Mage::getModel('core/date')->date('Y-m-d');
+                ?>
+                <div class="page-title">
+                    <h3><?php echo $this->__('Most Viewed Products'); ?></h3>
+                </div>
+               <div class="content_wr"> <div class="mp_dashboard_container data-table mp_dashboard_container_viewed">
+                    <?php  $mostViewed = $this->mostViewed($id); ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><?php echo $this->__('Product Name'); ?></th>
+                                <th><?php echo $this->__('Price'); ?></th>
+                                <th class="no-border-right"><?php echo $this->__('No of Views'); ?></th>
+                            </tr> 
+                        </thead>
+                        <tbody>
+                            <?php 
+                                $mostViewedProductIds = array();
+                                foreach ($mostViewed as $_mostViewed) {
+                                    /**
+                                     * Deal Expire date
+                                     */
+                                    if ($_mostViewed['seller_id'] == $id) {
+                                        $mostViewedProductIds = $_mostViewed['entity_id'];
+                                        $dealExpireDate = $_mostViewed['special_to_date'];
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $_mostViewed['id'].$_mostViewed['name']; ?> </td>
+                                            <td><?php
+                                                if (!empty($_mostViewed['price']) && ($dealExpireDate != '') && ($dealExpireDate >= $currentDate)) {
+                                                    echo Mage::helper('core')->currency($_mostViewed['special_price'], true, false);
+                                                } else {
+                                                    echo Mage::helper('core')->currency($_mostViewed['price'], true, false);
+                                                }
+                                                ?>
+                                            </td>
+                                            <td width="20%"><?php echo $_mostViewed['views']; ?> </td>
+                                        </tr>     
+                                <?php }
+                            }
+                            ?>
+                            </tbody>               
+                <?php if(empty($mostViewedProductIds))  { ?>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="a-center no_product_content"><?php echo $this->__('There is no recent views'); ?></td>
+                                </tr>
+                            </tfoot>
+                <?php  } ?>
+                    </table>
+                </div>
+       </div>

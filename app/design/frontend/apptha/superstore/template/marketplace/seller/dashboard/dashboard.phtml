@@ -1,0 +1,90 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Seler Dashboard file is used to display Total sales, Average orders, Last five orders, Most Viewed Products
+ * and a graph that shows the sales report for that particular seller
+ */
+
+echo $this->getMessagesBlock()->getGroupedHtml(); 
+
+    $groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+    $marketplaceGroupId = Mage::helper('marketplace')->getGroupId();
+    if ($groupId == $marketplaceGroupId) {    
+        $id = Mage::getSingleton('customer/session')->getId();
+        $user = $this->__('Welcome, %s!', Mage::getSingleton('customer/session')->getCustomer()->getName());
+    } ?>
+    <div class="page-title">
+            <h1 class="manage_products_head"><?php echo $this->__('Seller Dashboard'); ?></h1>
+            <span class="mp_top_amount"><?php echo $user; ?></span>
+    </div>
+
+<?php 
+/**
+ * Todays Sales and today order count
+ */
+?>
+<div class="seller-today-sales"><?php 
+echo $this->getLayout()->createBlock('marketplace/seller_dashboard_dashboard')
+->setTemplate('marketplace/seller/dashboard/todaysales.phtml')
+->toHtml(); ?></div>
+<?php 
+/**
+ * Last week, Last month and Last Year sales
+ */
+?>
+<div class="seller-sales-income"><?php 
+echo $this->getLayout()->createBlock('marketplace/seller_dashboard_dashboard')->setTemplate('marketplace/seller/dashboard/yourincome.phtml')->toHtml() ?></div>
+ <?php 
+/**
+ * Orders status donut chart
+ */
+?>
+<div class="seller-donut-chart"><?php 
+echo $this->getLayout()->createBlock('marketplace/seller_dashboard_dashboard')
+->setTemplate('marketplace/seller/dashboard/orders.phtml')
+->toHtml() ?></div>               
+<?php 
+/**
+ * Sales report chart
+ */
+?>
+<div class="seller-sales-chart"><?php 
+echo $this->getLayout()->createBlock('marketplace/seller_dashboard_dashboard')->setTemplate('marketplace/seller/dashboard/salesreport.phtml')->toHtml() ?></div>               
+
+<?php 
+/**
+ * Last five orders and Most viewed
+ */
+?>
+<div class="seller-orders-viewed"><?php 
+echo $this->getLayout()->createBlock('marketplace/seller_dashboard_dashboard')
+->setTemplate('marketplace/seller/dashboard/mostviewedandlastorders.phtml')
+->toHtml() ?></div>               
+       

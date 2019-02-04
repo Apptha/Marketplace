@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Seller Shipping Configuration File
+ */
+ -->
+<config>
+   <modules>
+      <Apptha_Merchantshipping>
+         <version>1.6</version>
+      </Apptha_Merchantshipping>
+   </modules>
+   <frontend>
+      <routers>
+         <merchantshipping>
+            <use>standard</use>
+            <args>
+               <module>Apptha_Merchantshipping</module>
+               <frontName>merchantshipping</frontName>
+            </args>
+         </merchantshipping>
+      </routers>
+      <layout>
+         <updates>
+            <merchantshipping>
+               <file>merchantshipping.xml</file>
+            </merchantshipping>
+         </updates>
+      </layout>
+   </frontend>
+   <global>
+      <models>
+         <merchantshipping>
+            <class>Apptha_Merchantshipping_Model</class>
+            <resourceModel>merchantshipping_mysql4</resourceModel>
+         </merchantshipping>
+         <merchantshipping_mysql4>
+            <class>Apptha_Merchantshipping_Model_Mysql4</class>
+            <entities>
+               <merchantshipping>
+                  <table>merchantshipping</table>
+               </merchantshipping>
+            </entities>
+         </merchantshipping_mysql4>
+      </models>
+      <resources>
+         <merchantshipping_setup>
+            <setup>
+               <module>Apptha_Merchantshipping</module>
+            </setup>
+            <connection>
+               <use>core_setup</use>
+            </connection>
+         </merchantshipping_setup>
+         <merchantshipping_write>
+            <connection>
+               <use>core_write</use>
+            </connection>
+         </merchantshipping_write>
+         <merchantshipping_read>
+            <connection>
+               <use>core_read</use>
+            </connection>
+         </merchantshipping_read>
+      </resources>
+      <blocks>
+         <merchantshipping>
+            <class>Apptha_Merchantshipping_Block</class>
+         </merchantshipping>
+      </blocks>
+      <helpers>
+         <merchantshipping>
+            <class>Apptha_Merchantshipping_Helper</class>
+         </merchantshipping>
+      </helpers>
+   </global>
+   <default>
+      <carriers>
+         <apptha>
+            <active>1</active>
+            <model>merchantshipping/carrier_shipping</model>
+            <title>Carrier Title</title>
+            <name>Method Name</name>
+            <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+         </apptha>
+      </carriers>
+   </default>
+</config>

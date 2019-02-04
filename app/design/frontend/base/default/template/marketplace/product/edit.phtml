@@ -1,0 +1,1010 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php 
+/**
+ * Including js file for text editor
+ */
+?>
+<script
+src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>marketplace/nicEdit.js"
+type="text/javascript"></script>
+<?php
+/**
+ * Initilize product id
+ */
+$productId = $this->getRequest ()->getParam ( 'id' );
+/**
+ * Checking product id is not equal to empty
+ * Initilize product data
+ */
+if (! empty ( $productId )) {
+    $product = $this->getProductData ( $productId );
+}
+/**
+ * Initilising product custom options like
+ * sub option count
+ * option count
+ * custom options enable
+ * option count
+ */
+$select_sub_option_count = '';
+$optionCount = $selectSubOptionCount = 0;
+$product_custom_options_enable = 0;
+$product_custom_options_enable = Mage::helper ( 'marketplace' )->getPrdouctCustomOptions ();
+$option_count = '';
+
+
+/**
+ * Confirming whether product exist or not by checking
+ * prodcut is not equal to empty 
+ * and count product is equal to 1
+ */
+if (! empty ( $product ) && count ( $product ) == 1) {
+    /**
+     * Initilize variables with empty value like
+     * type 
+     * product name
+     * product description
+     * product short description
+     * product meta title
+     * product meta keywork
+     * set banner
+     * product meta description
+     * product special price
+     * special from date
+     * special to date
+     * product special from date
+     * product special to date
+     */
+    $type = $productName = $productDescription = $productShortDescription = $productMetaTitle = $productMetaKeyword = $setBanner = $productMetaDescription = $productSpecialPrice = $specialFromDate = $specialToDate = $productSpecialFromDate = $productSpecialToDate = '';
+    /**
+     * Initilize variables with 0 value like
+     * product weight
+     * product price
+     * product quantity
+     * sku
+     */
+    $productWeight = $productPrice = $productQty = $sku = 0;
+    $productIsInStock = 1;
+    /**
+     *Initialise product image with empty array
+     */
+    $productImages = array ();
+    $type = $product->getTypeId ();
+    /**
+     * Get Product Name
+     */
+    $productName = $product->getName ();
+    /**
+     * Get Product Weight
+     */
+    $productWeight = $product->getWeight ();
+    /**
+     * Get Product Sku
+     */
+    $productSku = $product->getSku ();
+    /**
+     * Get Product Banner
+     */
+    $setBanner = $product->getSetbanner ();
+    /**
+     * Get Product Description
+     */
+    $productDescription = $product->getDescription ();
+    /**
+     * Get Product short Description
+     */
+    $productShortDescription = $product->getShortDescription ();
+    /**
+     * Get Product Price
+     */
+    $productPrice = $product->getPrice ();
+    /**
+     * Get Product special price
+     */
+    $productSpecialPrice = $product->getSpecialPrice ();
+    /**
+     * Get Special price date format
+     */
+    $specialPriceDateFormat = 'd/m/Y';
+    /**
+     * Get Special from date
+     */
+    $specialFromDate = $product->getSpecialFromDate ();
+    /**
+     * Get Special to Date
+     */
+    $specialToDate = $product->getSpecialToDate ();
+    /**
+     * Check the special from date is not equal to empty
+     * and special to date is not equal to empty
+     * if so get the product special from date
+     * and product special to date
+     */
+    if (! empty ( $specialFromDate ) && ! empty ( $specialToDate )) {
+        $productSpecialFromDate = Mage::getModel ( 'core/date' )->date ( 'm/d/Y', strtotime ( $specialFromDate ) );
+        $productSpecialToDate = Mage::getModel ( 'core/date' )->date ( 'm/d/Y', strtotime ( $specialToDate ) );
+    }
+    /**
+     * Get Product Meta Title
+     */
+    $productMetaTitle = $product->getMetaTitle ();
+    /**
+     * Get Product Meta Keyword
+     */
+    $productMetaKeyword = $product->getMetaKeyword ();
+    /**
+     * Get Product Meta Description
+     */
+    $productMetaDescription = trim ( $product->getMetaDescription () );
+    /**
+     * Get Product Images
+     */
+    $productImages = $product->getGalleryImages ();
+    /**
+     * Get Product Quantity
+     */
+    $productQty = Mage::getModel ( 'cataloginventory/stock_item' )->loadByProduct ( $productId )->getQty ();
+    /**
+     * Get Product is in stock
+     */
+    $productIsInStock = Mage::getModel ( 'cataloginventory/stock_item' )->loadByProduct ( $productId )->getIsInStock ();
+    /**
+     * Initialising category ids and category id with empty array
+     */
+    $categoryids = array ();
+    $categoryid = array ();
+    /**
+     * Get the values and assingn to variables like
+     * category ids
+     * category id
+     * selected product image
+     * shipping option
+     * national shipping price
+     * internation shipping price
+     * default country
+     */
+    $categoryids [] = $product->getCategoryIds ();
+    $categoryid = $this->getCategoryIds ( $categoryids );
+    $selectedProductImage = $product->getImage ();
+    $shippingOption = $product->getSellerShippingOption ();
+    $nationalShippingPrice = $product->getNationalShippingPrice ();
+    $internationalShippingPrice = $product->getInternationalShippingPrice ();
+    $defaultCountry = $product->getDefaultCountry ();
+    /**
+     * Get the Shippping details like
+     * shipping type id
+     * seller shipping attribute
+     */
+    $shippingtypeId = Mage::helper ( 'marketplace/marketplace' )->getSellerShipping ();
+    $sellerShippingAttribute = Mage::getModel ( 'eav/config' )->getAttribute ( 'catalog_product', $shippingtypeId );
+    $sellerShipping = array ();
+    $selectShipping = '<option value="">' . $this->__ ( 'Select' ) . '</option>';
+    foreach ( $sellerShippingAttribute->getSource ()->getAllOptions () as $option ) {
+        $value = $option ['value'];
+        /**
+         * Check the shipping value i snot equal to empty value
+         */
+        if ($value != '') {
+            /**
+            * Get Product Meta Title
+            */
+            if ($shippingOption == $value) {
+                $sellerShipping [$value] = $option ['label'];
+                $selectShipping .= "<option selected='selected'  value='" . $option ['value'] . "'>" . $option ['label'] . '</option>';
+            } else {
+                $sellerShipping [$value] = $option ['label'];
+                $selectShipping .= "<option value='" . $option ['value'] . "'>" . $option ['label'] . '</option>';
+            }
+        }
+    }
+    ?>
+
+<!-- Marketplace wrapper -->
+<div class="marketplace-wrapper" id="marketplace-wrapper">
+<div class="page-title">
+<h1><?php 
+/**
+ * Display Edit Product option
+ */
+echo $this->__('Edit Product'); ?></h1>
+<?php
+    $productTypeForConfigurable = '';
+    $productTypeForConfigurable = $product->getTypeId ();
+    /**
+     * Check the product type for configurable is equal to configurable
+     */
+    if ($productTypeForConfigurable == 'configurable') {
+        $configurableProductId = $product->getId ();
+        $configurableProductSet = $product->getAttributeSetId ();
+        ?>
+<a
+href="<?php echo Mage::getUrl('marketplace/sellerproduct/configurable/',array('id' => $configurableProductId,'set'=>$configurableProductSet)); ?>"><?php
+/**
+ * Display Edit Associated Products option
+ */        
+echo $this->__ ( 'Edit Associated Products' );
+        ?></a>
+<?php
+    }
+    ?>
+        
+    </div>
+<form action="<?php echo $this->editProductAction(); ?>" method="post"
+id="edit_exist_product_form" class="edit_exist_product_form" enctype="multipart/form-data">
+<!-- Marketplace category type container -->
+<div class="fieldset marketplace-category-type">
+<h2 class="legend"><?php 
+/**
+ * Display Product Categories
+ */
+echo $this->__('Product Categories'); ?></h2>
+<div class="clear"></div>
+<div class="block-category">
+<?php
+    /**
+     * Get default store root category id
+     */ 
+    $rootcatId = Mage::app ()->getStore ()->getRootCategoryId ();
+    /**
+     * else use default category id =2
+     */
+    $categories = Mage::getModel ( 'catalog/category' )->getCategories ( $rootcatId );
+    /**
+     * Displaying product categories
+     */
+    echo $this->getCategoriesTree ( $categories, $categoryid );
+    ?>
+        </div>
+</div>
+<!-- Marketplace product general information container -->
+<div class="fieldset marketplace-general">
+<h2 class="legend"><?php echo $this->__('General'); ?></h2>
+<div class="clear"></div>
+<ul class="form-list">
+<li class="fields wide">
+<div class="field">
+<label for="name" class="required"> <em>*</em> <?php echo $this->__('Name'); ?></label>
+<div class="input-box">
+<input id="name" name="product[name]"
+value="<?php
+/**
+ * Check the product name is not equal to empty
+ * if so display product name as value
+ */
+    if (! empty ( $productName )) {
+        echo $productName;
+    }
+    ?>"
+class="required-entry input-text" type="text">
+</div>
+</div>
+</li>
+<li class="fields wide">
+<div class="field">
+<label for="description" class="required"> <em>*</em> <?php
+/**
+ * Product Description Section
+ */
+echo $this->__('Description'); ?> </label>
+<div class="input-box">
+<textarea id="description" name="product[description]"
+class="required-entry textarea" rows="7" cols="75"
+style="width: 710px;"><?php
+/**
+ * Check the product description is not equal to empty
+ * if so display product description
+ */
+    if (! empty ( $productDescription )) {
+        echo $productDescription;
+    }
+    ?></textarea>
+</div>
+</div>
+</li>
+<li class="fields wide">
+<div class="field">
+<label for="short_description" class="required"> <em>*</em> <?php 
+/**
+ * Product short description section
+ */
+echo $this->__('Short Description'); ?> </label>
+<div class="input-box">
+<textarea id="short_description"
+name="product[short_description]"
+class="required-entry textarea" rows="7" cols="75"
+style="width: 710px;"><?php
+/**
+ * Check the product short descripition is not equal to empty
+ * if so display product short description
+ */
+    if (! empty ( $productShortDescription )) {
+        echo $productShortDescription;
+    }
+    ?></textarea>
+</div>
+</div>
+</li>
+<li class="fields wide">
+<div class="field">
+<div class="marketplace_weight_div"
+<?php
+/**
+ * Check the type is not equal to empty
+ * and type is not equal to simple
+ */
+    if (! empty ( $type ) && $type != 'simple') {
+        echo 'style="display:none;"';
+    }
+    ?>>
+<label for="weight" class="required"> <em>*</em><?php echo $this->__('Weight'); ?> </label>
+<div class="input-box">
+<input id="weight" name="product[weight]"
+value="<?php
+/**
+ * Check the product weight is set
+ * if so display the product weight as value
+ */
+    if (isset ( $productWeight )) {
+        echo round ( $productWeight, 2 );
+    }
+    ?>"
+class="required-entry validate-number validate-zero-or-greater validate-number-range number-range-0-99999999.9999 input-text"
+type="text"
+<?php
+/**
+ * Check the type is not equal to empty
+ * and type is not equal to simple
+ */
+    if (! empty ( $type ) && $type != 'simple') {
+        echo 'disabled="disabled"';
+    }
+    ?>>
+</div>
+
+</div>
+</div>
+</li>
+<li class="wide fields">
+<div class="field">
+<label for="sku" class="required"> <em>*</em> <?php 
+/**
+ * Displaying sku
+ */
+echo $this->__('SKU'); ?> </label>
+<div class="input-box">
+<input id="sku_for_avail" name="sku_for_avail" type="hidden" value="<?php echo $productSku; ?>" />
+<input id="sku" onblur="validateSkuForAddProduct();" name="product[sku]"
+value="<?php echo $productSku; ?>"
+class="input-text required-entry" type="text" />
+<div id="category-loading" style="display: none">
+<img
+src="<?php echo Mage::getBaseUrl('skin') . 'frontend/apptha/superstore/marketplace/images/bx_loader.gif'; ?>" />
+</div>
+<span id="empty-text"
+style="display: none; color: red; margin-top: 3px; clear: both; font-size: 13px;"></span>
+<span id="available"
+style="display: none; color: green; margin-top: 3px;"><?php echo $this->__('SKU Available'); ?></span>
+<span id="not-available"
+style="display: none; color: red; margin-top: 3px;"><?php echo $this->__('SKU Not Available'); ?></span>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<!-- Marketplace product price information container -->
+<div class="fieldset marketplace-price">
+<h2 class="legend"><?php echo $this->__('Prices'); ?></h2>
+<div class="clear"></div>
+<ul class="form-list">
+<li class="fields"><label for="price" class="required"><em>*</em> <?php echo $this->__('Price'); ?> </label>
+<div class="input-box" style="width: auto;">
+<input id="price" name="product[price]"
+value="<?php
+/**
+ * Check product price has been set
+ * if so display the product price as value
+ */
+    if (isset ( $productPrice )) {
+        echo round ( $productPrice, 2 );
+    }
+    ?>"
+class="required-entry validate-number validate-zero-or-greater validate-number-range number-range-0-99999999.9999 input-text"
+type="text"> <strong>
+[<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+                </strong>
+</div></li>
+</ul>
+
+<ul class="form-list">
+<li class="fields"><label for="special_price"><?php echo $this->__('Special Price'); ?></label>
+<div class="input-box" style="width: auto;">
+<input id="special_price" name="product[special_price]"
+value="<?php
+/**
+ * Check the product special price has been set
+ * if so display product special price as value
+ */
+    if (isset ( $productSpecialPrice )) {
+        echo $productSpecialPrice;
+    }
+    ?>"
+class="validate-zero-or-greater input-text" type="text"> <strong>
+[<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+                </strong>
+</div></li>
+<li class="fields"><label for="special_from_date"><?php echo $this->__('Special Price From Date'); ?></label>
+<div class="input-box manage_product_date_validation"
+style="width: auto;">
+<input name="product[special_from_date]" id="special_from_date"
+value="<?php
+/**
+ * Check the product special from date is not equal to empty
+ * if so display product special from date as value
+ */
+    if (! empty ( $productSpecialFromDate )) {
+        echo $productSpecialFromDate;
+    }
+    ?>"
+class="validate-date validate-date-range date-range-date-from"
+type="text" /> <img
+src="<?php echo $this->getSkinUrl("images/calendar.gif"); ?>"
+alt="" class="v-middle" id="special_from_date_trig"
+title="<?php
+/**
+ * Display Select date
+ */
+    echo $this->__ ( 'Select Date' );
+    ?>" style="" />
+</div></li>
+
+<li class="fields"><label for="special_to_date"><?php 
+/**
+ * Display special price to date
+ */
+echo $this->__('Special Price To Date'); ?></label>
+<div class="input-box manage_product_date_validation"
+style="width: auto;">
+<input name="product[special_to_date]" id="special_to_date"
+value="<?php
+/**
+ * Check the product special to date is not equal to empty
+ * if so display the product special to date as value
+ */
+    if (! empty ( $productSpecialToDate )) {
+        echo $productSpecialToDate;
+    }
+    ?>"
+class="validate-date validate-date-range date-range-date-to"
+type="text" /> <img
+src="<?php echo $this->getSkinUrl("images/calendar.gif"); ?>"
+alt="" class="v-middle" id="special_to_date_trig"
+title="<?php
+    echo $this->__ ( 'Select Date' );
+    ?>" style="" />
+</div></li>
+</ul>
+
+</div>
+<!-- Seller Shipping price -->
+<?php 
+/**
+ * Check the type is downloadable
+ * and type is not equal to virtual
+ */
+if($type != 'downloadable' && $type != 'virtual' ){ ?>
+<div class="fieldset marketplace-shipping">
+<h4 class="legend"><?php echo $this->__('Shipping'); ?></h4>
+<ul class="form-list">
+<li class="fields"><label for="default_country" class="required"><em>*</em><?php echo $this->__('Select Default Country'); ?></label>
+<div class="input-box">
+<select id="default_country" name="product[default_country]"
+class="select select input-text required-entry input-text_pro">
+        <?php
+        $collection = Mage::getModel ( 'directory/country' )->getCollection ();
+        foreach ( $collection as $country ) {
+            $cid = $country->getId ();
+            $cname = $country->getName ();
+            /**
+             * Check the customer default country is equal to country id
+             * make the drop down as selected
+             */
+            if ($defaultCountry == $cid) {
+                echo '<option selected="selected" value="' . $cid . '">' . $cname . '</option>';
+            } else {
+                echo '<option value="' . $cid . '">' . $cname . '</option>';
+            }
+        }
+        ?>   
+
+        </select>
+</div></li>
+<li class="fields"><label for="seller_shipping" class="required"><em>*</em><?php echo $this->__('Select Shipping'); ?></label>
+<div class="input-box">
+<select id="seller_shipping"
+name="product[seller_shipping_option]"
+onchange="sellerShippingFunctionChange()"
+class="select select input-text required-entry input-text_pro">
+<?php echo $selectShipping; ?>
+            </select>
+</div></li>
+<li class="fields" id="shipping_price" style="display: none"><label
+for="national_shipping_price" class="required"><em>*</em><?php echo 
+/**
+ * Display national shipping price
+ */
+$this->__('National Shipping Price'); ?></label>
+<div class="input-box">
+<input id="national_shipping_price"
+name="product[national_shipping_price]"
+value="<?php echo $nationalShippingPrice;  ?>"
+class="required-entry validate-zero-or-greater input-text"
+type="text">
+</div> <label for="international_shipping_price" class="required"><em>*</em><?php 
+/**
+ * Display the international shipping price
+ */
+echo $this->__('International Shipping Price'); ?></label>
+<div class="input-box">
+<input id="international_shipping_price"
+name="product[international_shipping_price]"
+value="<?php echo $internationalShippingPrice;  ?>"
+class="required-entry validate-zero-or-greater input-text"
+type="text">
+</div></li>
+</ul>
+<div class="clear"></div>
+</div>
+    <?php } ?>
+<!-- Marketplace product image information container -->
+<div class="fieldset marketplace-image">
+<h2 class="legend"><?php echo $this->__('Images'); ?></h2>
+<div class="clear"></div>
+<?php 
+/**
+ * Get product images
+ */
+$images = Mage::getModel('catalog/product')->load($product->getId())->getMediaGalleryImages(); ?>
+<?php 
+/**
+ * Check the images has been set
+ */
+if ($images) { ?>   
+<ul>
+<?php
+        $i = 0;
+        foreach ( $images as $image ) {
+            $i ++;
+            ?>
+
+<li
+<?php
+            if ($i > 0 && $i % 5 == 0) {
+                echo 'class="remove-margin"';
+            }
+            ?>><img
+src="<?php echo $this->helper('catalog/image')->init($product, 'thumbnail', $image->getFile())->resize(108, 90); ?>"
+alt="<?php
+            echo $this->htmlEscape ( $image->getLabel () );
+            ?>"
+title="<?php
+            $this->htmlEscape ( $image->getLabel () );
+            ?>" /> <span class="market_place_img_set"> <span class="remove_img"><input
+type="checkbox" id="<?php echo 'image_check' . $i; ?>"
+name="deleteimages[]" value="<?php
+            echo $image->getFile ();
+            ?>"> <label for="<?php
+            echo 'image_check' . $i;
+            ?>"><?php
+            /**
+             * Display option to remove
+             */
+            echo $this->__ ( 'Remove' );
+            ?></label></span> <span class="bg_img"> <input type="radio"
+id="<?php echo 'image_radio' . $i; ?>" name="baseimage"
+<?php
+/**
+ * Check the selected product image is not equal to empty
+ * and selected product image is equal to the got file
+ * then display as cheked
+ */
+            if (! empty ( $selectedProductImage ) && $selectedProductImage == $image->getFile ()) {
+                echo 'checked="checked"';
+            }
+            ?>
+value="<?php echo $image->getFile(); ?>"> <label
+for="<?php
+            echo 'image_radio' . $i;
+            ?>"><?php
+            /**
+             * Display option to set as base image
+             */
+            echo $this->__ ( 'Set as base image' );
+            ?></label></span>
+</span></li> 
+<?php
+        
+        }
+        ?> </ul><?php
+    
+    }
+    ?>
+    <div class="clear"></div>
+
+<button class="button right" type="button" onclick="addNewImage()">
+<span><span>+ <?php echo $this->__('Add Image'); ?></span></span>
+</button>
+<div id="marketplace_image_list"></div>
+<div class="clear"></div>
+</div>
+<!-- Marketplace product meta information container -->
+<div class="fieldset marketplace-meta-information">
+<h2 class="legend"><?php 
+/**
+ * Display meta information
+ */
+echo $this->__('Meta Information'); ?></h2>
+<div class="clear"></div>
+<ul class="form-list">
+<li class="fields wide">
+<div class="field">
+<label for="meta_title"><?php 
+/**
+ * Display meta title
+ */
+echo $this->__('Meta Title'); ?></label>
+<div class="input-box">
+<input id="meta_title" name="product[meta_title]"
+value="<?php
+/**
+ * Check the product metat title is not equal to empty
+ * if so display product meta title
+ */
+    if (! empty ( $productMetaTitle )) {
+        echo $productMetaTitle;
+    }
+    ?>"
+class=" input-text" type="text">
+</div>
+</div>
+</li>
+<li class="fields">
+<div class="field">
+<label for="meta_keyword"><?php
+/**
+ * Display product meta keywords
+ */
+echo $this->__('Meta Keywords'); ?></label>
+<div class="input-box">
+<textarea id="meta_keyword" name="product[meta_keyword]"
+class=" textarea" rows="2" cols="15"><?php
+/**
+ * Check the product meta keyword is not equal to empty
+ * if so display product meta keyword
+ */
+    if (! empty ( $productMetaKeyword )) {
+        echo $productMetaKeyword;
+    }
+    ?></textarea>
+</div>
+</div>
+<div class="field">
+<label for="meta_description"><?php 
+/**
+ * Display Meta description
+ */
+echo $this->__('Meta Description'); ?></label>
+<div class="input-box">
+<textarea id="meta_description" name="product[meta_description]"
+class="validate-length maximum-length-255 textarea" rows="2"
+cols="15"><?php
+/**
+ * Check the product meta Description is not equal to empty
+ * if so display product meta Description
+ */
+    if (! empty ( $productMetaDescription )) {
+        echo $productMetaDescription;
+    }
+    ?></textarea>
+<p class="note"><?php 
+/**
+ * Display constraing message like
+ * Maximum of 255 characters only be entered
+ */
+echo $this->__('Maximum 255 chars'); ?></p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<?php 
+/**
+ * Marketplace product inventory information container
+ */
+?>
+<div class="fieldset marketplace-inventory">
+<h2 class="legend"><?php echo $this->__('Inventory'); ?></h2>
+<div class="clear"></div>
+<ul class="form-list">
+<li class="fields">
+<div class="field" <?php if($type == 'configurable' || $type == 'downloadable'){
+                        echo 'style="display:none;"'; 
+                    } ?>>
+<label for="inventory_qty" class="required"><em>*</em> <?php
+/**
+ * Display Quantity information
+ */
+echo $this->__('Qty'); ?></label>
+<div class="input-box">
+<input type="text"
+class="input-text required-entry validate-digits"
+id="inventory_qty" name="product[stock_data][qty]"
+value="<?php
+/**
+ * Check the product quantity has been set
+ * if so display the product quantity as value
+ */
+    if (isset ( $productQty )) {
+        echo round ( $productQty, 0 );
+    }
+    ?>">
+</div>
+</div>
+<div class="field">
+<label for="inventory_stock_availability"><?php
+/**
+ * Display the stock availability information
+ */
+echo $this->__('Stock Availability'); ?></label>
+<div class="input-box">
+<select id="inventory_stock_availability"
+name="product[stock_data][is_in_stock]" class="select">
+<option value="1"
+<?php
+/**
+ * Check the product is in stock is set
+ * if so display the message like in stock
+ */
+    if (isset ( $productIsInStock ) && $productIsInStock == 1) {
+        echo 'selected';
+    }
+    ?>><?php echo $this->__('In Stock'); ?></option>
+<option value="0"
+<?php
+/**
+ * Check the product is in stock is set
+ * and product is in stock is equal to zero
+ * if so display message like out of stock
+ */
+    if (isset ( $productIsInStock ) && $productIsInStock == 0) {
+        echo 'selected';
+    }
+    ?>><?php echo $this->__('Out of Stock'); ?></option>
+</select>
+</div>
+</div>
+</li>
+</ul>
+</div>
+
+<!-- Marketplace custom attribute section -->
+<?php if(Mage::helper('marketplace/general')->getCustomAttributeEnableOrNot()){ ?>
+<div class="fieldset marketplace-custom-option">
+<ul class="form-list">
+<?php 
+$attributeSetId = $product->getAttributeSetId();
+$attributeGroupCollection = Mage::getResourceModel('eav/entity_attribute_group_collection')->setAttributeSetFilter($attributeSetId)->setSortOrder()->load();
+$attributeCodes = array();
+foreach ($attributeGroupCollection as $group) {
+    $groupName          = $group->getAttributeGroupName();
+    if($groupName == "Custom Attribute"){
+        echo "<h4>".$this->__($groupName)."</h4>";
+        $groupId = $group->getAttributeGroupId();
+        $attributes = Mage::getResourceModel('catalog/product_attribute_collection')
+        ->setAttributeGroupFilter($group->getId())
+        ->addVisibleFilter()
+        ->checkConfigurableProducts()
+        ->load();
+        if ($attributes->getSize() > 0) {
+            foreach ($attributes->getItems() as $attribute) {
+                /* @var $child Mage_Eav_Model_Entity_Attribute */
+                $attributeCodes[] = $attribute->getAttributeCode();
+                $attributeCode = $attribute->getAttributeCode();
+                $isRequired = $attribute->getIsRequired();
+                $attributeName = $attribute->getFrontendLabel();
+                $attributeType = $attribute->getFrontendInput();
+            switch ($attributeType) {
+            	case "text":
+            	    echo ' <li class="wide fields">
+						   <div class="field">
+						   <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+            			        <div class="input-box">
+            			             <input id="'.$attributeCode.'" name="product['.$attributeCode.']"  value=" ';?><?php if(!empty($product[$attributeCode])) { echo $product[$attributeCode]; }echo '" '; ?> <?php if($isRequired != 0 ) { echo 'class="input-text required-entry"'; } else { echo 'class="input-text"' ;} echo'  type="text" />
+            				    </div>
+            				</div>
+            				</li>';
+            				break;
+            				case "boolean":
+            				$attributeIdArray = Mage::getResourceModel('eav/entity_attribute')->getIdByCode('catalog_product', $attributeCode);
+            				$attributeOptionArray = Mage::getModel('eav/config')->getAttribute('catalog_product', $attributeIdArray );
+            				echo '<li class="fields">
+            					  <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+            							                        <div class="input-box">
+            							                            <select id="'.$attributeCode.'" name="product['.$attributeCode.']">'; ?>
+            							                            <?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attr_option) {
+                                                                                   if($product[$attributeCode] == $attr_option["value"]) {
+            																				echo '<option selected="selected" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																			else {
+            																				echo '<option value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																		
+            																	  } echo '
+            							                            </select>                      
+            							                        </div>
+            							                    </li>';
+            									break;
+            								case "select":
+            									$attributeIdArray = Mage::getResourceModel('eav/entity_attribute')->getIdByCode('catalog_product', $attributeCode);
+            									$attributeOptionArray = Mage::getModel('eav/config')->getAttribute('catalog_product', $attributeIdArray );
+            									echo '<li class="fields">
+            							                        <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+            							                        <div class="input-box">
+            							                            <select id="'.$attributeCode.'" name="product['.$attributeCode.']" '; ?> <?php if($isRequired != 0 ) { echo 'class="select select input-text required-entry input-text_pro"'; } else { echo 'class="select select input-text input-text_pro"' ;}'>
+            							    							';?><?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attr_option) {
+            																			if($product[$attributeCode] == $attr_option["value"]) {
+            																				echo '<option selected="selected" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																			else {
+            																				echo '<option value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																		
+            																	  } echo '
+            							                            </select>                      
+            							                        </div>
+            							                    </li>';
+            									break;
+            								case "multiselect":
+            									$attributeIdArray = Mage::getResourceModel('eav/entity_attribute')->getIdByCode('catalog_product', $attributeCode);
+            									$attributeOptionArray = Mage::getModel('eav/config')->getAttribute('catalog_product', $attributeIdArray );
+             									$attributeCodeArray  = explode(',',$product[$attributeCode]);
+            									echo '<li class="fields">
+            							                        <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+            							                        <div class="input-box">
+            							                            <select multiple="multiple" id="'.$attributeCode.'" name="product['.$attributeCode.'][]" '; ?> <?php if($isRequired != 0 ) { echo 'class="multiselect required-entry"'; } else { echo 'class="multiselect"' ;}'>
+            							    							';?><?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attr_option) {
+            																			if(in_array($attr_option["value"],$attributeCodeArray)) {
+            																				echo '<option selected="selected" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																			else {
+            																				echo '<option value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+            																			}
+            																		
+            																	  } echo '
+            							                            </select>                      
+            							                        </div>
+            							                    </li>';
+            									break;
+            								case "textarea":
+            										echo ' <li class="fields wide">
+            							                        <div class="field">   
+            							                            <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo'  </label>  
+            							                            <div class="input-box">
+             															<textarea id="'.$attributeCode.'" name="product['.$attributeCode.']" '; ?> <?php if($isRequired != 0 ) { echo 'class="required-entry textarea"'; } else { echo 'class="textarea"' ;} echo'  rows="7" cols="0" style="width: 710px;white-space: nowrap;">
+            		 														 ';?><?php
+            																		if(!empty($product[$attributeCode])) {
+            																                 echo $product[$attributeCode];
+            																          }
+            																  echo '
+            															</textarea>
+            														</div>
+            							                        </div>
+            							                    </li>';
+            										break;
+            								case "price":
+            										echo '<li class="fields">
+            												<label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; }   ?><?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo'  </label>
+            										                        <div class="input-box" style="width: auto;"> <input id="'.$attributeCode.'" name="product['.$attributeCode.']" value="'; ?><?php
+            										    if (isset($product[$attributeCode])) {
+            										        echo $product[$attributeCode];
+            										    }
+            										    echo '"'; ?> <?php if($isRequired != 0 ) { echo 'class="required-entry validate-zero-or-greater input-text"'; } else { echo 'class="validate-zero-or-greater input-text"' ;} echo' type="text" '; ?><?php 
+            										   echo '>    
+            										                            <strong>
+            										                                ['; ?><?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); echo ']
+            										                            </strong></div>
+            										
+            										    </li>';
+            										break;
+            					    case "date":									
+            									$dateIsSet ="set";
+									echo '<li class="fields custom_input">
+												<label for="'.$attributeCode.'">'; ?><?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo '</label>
+													<div class="input-box" style="width: auto;">
+															<input name="product['.$attributeCode.']"  id="'.$attributeCode.'"  value="'; ?><?php 
+																	if (!empty($product[$attributeCode])) {
+																			echo $product[$attributeCode];
+																	}
+																	echo '" class="validate-date validate-date-range date-range-date-from" type="text"'; ?> <?php 
+																	echo '/> 
+																	<img src="'; ?><?php echo $this->getSkinUrl("images/calendar.gif"); echo '" alt="" class="v-middle" id="';?><?php echo $attributeCode.'_trig" title="'; ?><?php echo $this->__('Select Date'); echo '" style="" /> 
+													</div>
+											</li>';
+            									break;
+            							}
+        }
+    }
+    }
+    }
+?>
+</ul>
+</div>
+<?php }
+/**
+ * End if for custom attributes section
+ */
+?>
+
+<?php echo $this->getChildHtml('marketplace_productedit_downloadble'); ?>
+<?php echo $this->getChildHtml('marketplace_productedit_customoption'); ?>
+<!-- Marketplace product hidden fields container -->
+<div class="marketplace-hidden-values">
+<input type="hidden" name="product_id"
+value="<?php echo $product->getId(); ?>" id="marketplace_product_id"> <input
+type="hidden" name="type"
+value="<?php
+    if (! empty ( $type )) {
+        echo $type;
+    } else {
+        echo 'simple';
+    }
+    ?>"
+id="hidden_type">
+</div>
+<div class="buttons-set">
+<p class="required">* <?php echo $this->__('Required Fields') ?></p>
+<button class="button" onclick="checkTextarea()" type="submit"
+title="<?php echo $this->__('Save Product') ?>" class="button">
+<span><?php echo $this->__('Save Product') ?></span>
+</button>
+</div>
+</form>
+</div>
+
+<?php
+/**
+ * End for checking whether product data exist or not
+ */
+}
+?>
+<?php echo $this->getChildHtml('marketplace_productedit_dynamicoption'); ?>
+
+<?php echo $this->getChildHtml('marketplace_productedit_js'); ?>

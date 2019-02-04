@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Advancedfilters
+ * @version    	1.0.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2014 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+ -->
+<config>
+    <tabs>
+        <Apptha translate="label" module="productfilters">
+            <label>Apptha</label>
+            <sort_order>210</sort_order>
+        </Apptha>
+    </tabs>
+    <sections>
+        <advancedproductfilters translate="label" module="productfilters">
+            <label>Advanced Filters</label>
+            <tab>Apptha</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>10001</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <catalog translate="label">
+                    <label>Catalog Layered Navigation</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enable</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <ajax_enabled translate="label">
+                            <label>Enable AJAX</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                            </depends>
+                        </ajax_enabled>
+                        <price_slider translate="label">
+                            <label>Enable Price Slider</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                            </depends>
+                        </price_slider>
+                       <!--  <new_from translate="label">
+				           <label>New arrivals from</label>
+				           <frontend_type>text</frontend_type> Use text instead of "myDateSelection"
+				           <frontend_model>productfilters/adminhtml_system_config_date</frontend_model> Call a module specific renderer model
+				           <sort_order>20</sort_order>
+				           <show_in_default>1</show_in_default>
+				           <show_in_website>1</show_in_website>
+				           <validate>required-entry</validate> Optional
+				           <show_in_store>1</show_in_store>
+				           <depends>
+                                <enabled>1</enabled>
+                           </depends>
+          				</new_from> -->
+                    </fields>
+                </catalog>
+            </groups>
+        </advancedproductfilters>
+    </sections>
+</config>

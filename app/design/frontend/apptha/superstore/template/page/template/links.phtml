@@ -1,0 +1,65 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * @see Mage_Page_Block_Template_Links
+ */
+?>
+<?php $_links = $this->getLinks(); ?>
+<?php if(count($_links)>0): ?>
+<div class="links">
+    <?php if($this->getTitle()): ?>
+    <div class="block-title"><strong><span><?php echo $this->__($this->getTitle()); ?></span></strong></div>
+    <?php endif; ?>
+    <ul<?php if($this->getName()): ?> id="<?php
+     echo $this->getName() ?>"<?php
+      endif;?>>
+        <?php foreach($_links as $_link): ?>
+            <?php if ($_link instanceof Mage_Core_Block_Abstract):?>
+                <?php echo $_link->toHtml() ?>
+            <?php else: ?>
+                <li<?php if($_link->getIsFirst()||$_link->getIsLast()):
+                 ?> class="<?php
+                 if($_link->getIsFirst()):
+                  ?>first<?php endif; ?><?php
+                  if($_link->getIsLast()): ?> last<?php endif; ?>"<?php endif; ?> <?php
+                   echo $_link->getLiParams() ?>><?php
+                    echo $_link->getBeforeText() ?>
+                    <a href="<?php echo $_link->getUrl() ?>" title="<?php
+                     echo $_link->getTitle() ?>" <?php
+                      echo $_link->getAParams() ?>><?php
+                       echo $_link->getLabel() ?></a>
+                       <?php echo $_link->getAfterText() ?></li>
+            <?php endif;?>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>

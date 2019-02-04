@@ -1,0 +1,110 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+/**
+ * This file contains seller facebook store functionality
+ */
+if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+	$customerData = Mage::getSingleton('customer/session')->getCustomer();
+	$sellerId = $customerData->getId();
+	$facebookStore = Mage::getModel ( 'marketplace/facebookstore' )->load ( $sellerId, 'seller_id' );
+	$enableBanner = $facebookStore['banner_enable'];
+	$enableFacebook = $facebookStore['facebook_enable'];
+	$facebookAppId = $facebookStore['facebook_appid'];
+	$facebookAppCanvas = $facebookStore['facebook_appcanvas'];
+	$facebookAppSecret = $facebookStore['facebook_appsecret'];
+	$bannerImages = $facebookStore['bannername'];
+	$bannerImages = explode(',', $bannerImages);
+	$bannerImageSelected = $facebookStore['banner_selected'];
+}
+    $vacationInfoData = $this->loadVactionInfo();
+    ?>
+    <div class="page-title">
+        <h1><?php echo $this->__('FaceBook Store'); ?></h1>
+    </div>
+    
+   
+     <div class="my-account-wrapper">
+     <form method="post" name="vacation_mode" class="vacation_mode" id="vacation_mode" enctype="multipart/form-data" action="<?php echo Mage::helper('marketplace/outofstock')->getfacebookstoreconfigSaveUrl(); ?>"> 
+      <div class="fieldset vacation_mode_fieldset">
+       
+     	<ul class="form-list">   
+     	<h6 class="commission" style="margin-left:0px !important;"><?php echo $this->__('Store Id ');?><span> <?php echo $sellerId;  ?></span></h6>
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_status" class="required"><?php echo $this->__('Enable FaceBook Store'); ?><em><?php
+                     echo $this->__('*'); ?></em></label>                    
+                    <div class="input-box">
+                    	<select class="validate-select" name="facebook_enable">
+                    	  <option value=""><?php echo $this->__('Select')?></option>
+						  <option value="0" <?php if($enableFacebook=='0'){echo $this->__('selected');}?>><?php echo $this->__('Yes')?></option>
+						  <option value="1" <?php if($enableFacebook=='1'){echo $this->__('selected');}?>><?php echo $this->__('No')?></option>
+						</select>
+                     </div> 
+                </div>               
+            </li>
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_message" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('FaceBook App ID'); ?></label>
+                    <div class="input-box">
+                        <input type="text" name="appId" id="appId" class="input-text required-entry" value="<?php echo $facebookAppId; ?>"></input><br/>
+                    </div>
+                </div>
+            </li>
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_message" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('FaceBook App Canvas Page'); ?></label>
+                    <div class="input-box">
+                        <input type="text" name="appCanvas" id="appCanvas" class="input-text required-entry" value="<?php echo $facebookAppCanvas; ?>"></input><br/>
+                    </div>
+                </div>
+            </li>
+            <li class="fields">          
+                <div class="field">
+                    <label for="vacation_message" class="required"><em>*</em><?php echo Mage::helper('marketplace')->__('FaceBook App Secret'); ?></label>
+                    <div class="input-box">
+                        <input type="text" name="appSecret" id="appSecret" class="input-text required-entry" value="<?php echo $facebookAppSecret; ?>"></input><br/>
+                    </div>
+                </div>
+            </li>
+          </ul>
+      </div>
+        <!--Submit button -->
+    <div class="buttons-set">
+        <p class="required"><?php echo Mage::helper('marketplace')->__('* Required Fields') ?></p> 
+        <button type="submit" class="button vacation_btn"  title="<?php echo $this->__('Submit') ?>" name="submit" id="submit" >
+        <span><span><?php echo $this->__('Submit') ?></span></span></button>   
+    </div>
+    <input type="hidden" name="customerId" value="<?php echo $sellerId; ?>" /> 
+    </form>
+    </div>
+    <script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('vacation_mode', true);
+        </script>

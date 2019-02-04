@@ -1,0 +1,108 @@
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.8.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+/* ============================================ *
+ * Search - Auto Suggest
+ * ============================================ */
+
+.search-autocomplete {
+    left: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+    top: 15px !important;
+    width: 100% !important;
+    z-index: 200;
+
+    ul {
+        @include border-radius(2px);
+        background-color: #FFFFFF;
+        border: 1px solid $c-module-border-highlight;
+        left: 0;
+        padding-left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+
+        li {
+            border-bottom: 1px solid $c-module-background;
+            color: $c-link;
+            cursor: pointer;
+            font-size: $f-size-xs;
+            padding: 4px 6px;
+            text-align: left;
+
+            &:hover {
+                color: $c-link-hover;
+            }
+
+            &.selected {
+                background-color: $c-action;
+                color: white;
+            }
+
+            .amount {
+                float: right;
+                font-weight: bold;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+    }
+
+    &:before {
+        @include triangle(up, 7px, $c-action);
+        left: 50%;
+        top: -7px;
+    }
+}
+
+/* ============================================ *
+ * Search - Advanced
+ * ============================================ */
+
+.advanced-search {
+    background: $c-module-background;
+    border: 1px solid $c-module-border-light;
+    padding: $trim;
+
+    select.multiselect {
+        option {
+            border-bottom: 1px solid $c-module-border-light;
+            padding: 2px 5px;
+        }
+    }
+}
+
+@include bp(max-width, $bp-xsmall) {
+    .advanced-search {
+        padding: $trim-small;
+    }
+}

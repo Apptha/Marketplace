@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<layout version="0.1.0">
+
+    <default>
+        <reference name="head">
+            <action method="addJs">
+                <script>superdeals/timer.js</script>
+            </action>
+            <action method="addJs">
+                <script>scriptaculous/scriptaculous.js</script>
+            </action>
+            <action method="addJs">
+				<script>superdeals/protoshow.js</script>
+            </action>
+            <action method="addCss">
+                <stylesheet>superdeals/styles.css</stylesheet>
+            </action>          
+        </reference>
+        <reference name="top.links">
+            <action ifconfig="superdeals/superdeals_group/deals_enable"
+                                method="addLink" translate="label title" module="superdeals">
+                <label>Deals</label>
+                <url helper="superdeals/getDealUrl" />
+                <title>Deals</title>
+                <prepare />
+                <urlParams />
+                <position>1</position>
+            </action>
+            <action ifconfig="advanced/modules_disable_output/Apptha_Superdeals"
+                                method="removeLinkByUrl">
+                <url helper="superdeals/getDealUrl" />
+            </action>
+        </reference>
+
+        <!-- Appptha Dealoftheday SideBar -->
+        <reference name="left">
+            <block type="superdeals/dealofthedaysidebar" name="superdeals_dealsidebar_left"
+                               before="-">
+                <action method="setTemplate" ifconfig="superdeals/dealofthedaysidebar/enable_left">
+                    <template>superdeals/dealofthedaysidebar.phtml</template>
+                </action>
+            </block>
+            <block type="superdeals/bestsellingsidebar" name="superdeals_bestsidebar_left"
+                               after="superdeals_dealsidebar_left">
+                <action method="setTemplate" ifconfig="superdeals/topsellingsidebar/enable_left">
+                    <template>superdeals/bestsellingsidebar.phtml</template>
+                </action>
+            </block>
+            <block type="superdeals/mostviewedproduct" name="superdeals_mostviewedproduct_left"
+                               after="superdeals_bestsidebar_left">
+                <action method="setTemplate" ifconfig="superdeals/mostviewedsidebar/enable_left">
+                    <template>superdeals/mostviewedsidebar.phtml</template>
+                </action>
+            </block>
+        </reference>
+        <reference name="right">
+            <block type="directory/currency" name="currency" before="cart_sidebar"
+                               template="directory/currency.phtml" />
+        </reference>
+        <reference name="right">
+            <block type="superdeals/dealofthedaysidebar" name="superdeals_dealsidebar_right"
+                               before="-">
+                <action method="setTemplate" ifconfig="superdeals/dealofthedaysidebar/enable_right">
+                    <template>superdeals/dealofthedaysidebar.phtml</template>
+                </action>
+            </block>
+
+            <block type="superdeals/bestsellingsidebar" name="superdeals_bestsidebar_right"
+                               after="superdeals_dealsidebar_right">
+                <action method="setTemplate" ifconfig="superdeals/topsellingsidebar/enable_right">
+                    <template>superdeals/bestsellingsidebar.phtml</template>
+                </action>
+            </block>
+
+            <block type="superdeals/mostviewedproduct" name="superdeals_mostviewedproduct_right"
+                               after="superdeals_bestsidebar_right">
+                <action method="setTemplate" ifconfig="superdeals/mostviewedsidebar/enable_right">
+                    <template>superdeals/mostviewedsidebar.phtml</template>
+                </action>
+            </block>
+        </reference>
+        <reference name="content">
+            <block type="superdeals/banner" template="superdeals/banner.phtml"
+                               name="banner" after="-">
+
+            </block>
+        </reference>
+    </default>
+
+
+    <superdeals_index_index>
+
+        <update handle="MAP_popup" />
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="superdeals/index" name="superdeals_index"
+                               template="superdeals/index.phtml">
+
+                <block type="catalog/product_list_toolbar" name="product_list_toolbar"
+                                       template="catalog/product/list/toolbar.phtml">
+                    <block type="page/html_pager" name="product_list_toolbar_pager" />
+                </block>
+                <action method="addColumnCountLayoutDepend">
+                    <layout>empty</layout>
+                    <count>6</count>
+                </action>
+                <action method="addColumnCountLayoutDepend">
+                    <layout>one_column</layout>
+                    <count>5</count>
+                </action>
+                <action method="addColumnCountLayoutDepend">
+                    <layout>two_columns_left</layout>
+                    <count>4</count>
+                </action>
+                <action method="addColumnCountLayoutDepend">
+                    <layout>two_columns_right</layout>
+                    <count>4</count>
+                </action>
+                <action method="addColumnCountLayoutDepend">
+                    <layout>three_columns</layout>
+                    <count>4</count>
+                </action>
+                <action method="setToolbarBlockName">
+                    <name>product_list_toolbar</name>
+                </action>
+
+                <action method="setListOrders" />
+                <action method="setListModes" />
+                <action method="setListCollection" />
+            </block>
+        </reference>
+    </superdeals_index_index>
+
+    <PRODUCT_TYPE_simple>
+        <update handle="product.info.simple" />
+        <reference name="product.info">
+            <block type="superdeals/price" name="price" as="price" />
+        </reference>
+    </PRODUCT_TYPE_simple>
+
+    <PRODUCT_TYPE_configurable>
+        <update handle="product.info.configurable" />
+        <reference name="product.info">
+            <block type="superdeals/price" name="price" as="price" />
+        </reference>
+    </PRODUCT_TYPE_configurable>
+
+    <PRODUCT_TYPE_virtual>
+        <update handle="product.info.virtual" />
+        <reference name="product.info">
+            <block type="superdeals/price" name="price" as="price" />
+        </reference>
+    </PRODUCT_TYPE_virtual>
+</layout>   
+	

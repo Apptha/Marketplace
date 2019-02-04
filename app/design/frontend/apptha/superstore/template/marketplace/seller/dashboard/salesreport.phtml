@@ -1,0 +1,384 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+        $id = Mage::getSingleton('customer/session')->getId();  ?>      
+        <div class="page-title">
+        <h3><?php echo $this->__('Sales Report'); ?>
+         <?php
+         /**
+          * Defining variables with empty values
+          */
+        $selectFilter = $data = $from = $to = '';
+        $lastWeekDate = array();
+        /**
+         * Get the posted values in a variable
+         */
+        $data = $this->getRequest()->getPost();
+        /**
+         * Check select_filter has been set
+         */
+        if (isset($data['select_filter'])) {
+            $selectFilter = $data['select_filter'];
+        }
+        /**
+         * check select filter values
+         */
+        switch ($selectFilter) {
+        
+        case "custom":
+        /**
+         *  last custom interval
+         *  Get from date
+         *  Get to date
+         */
+        $from = date('Y-m-d', strtotime($data['date_from']));
+        $to = date('Y-m-d', strtotime($data['date_to'] . ' + 1 day'));
+        $fromDisplay = $from;
+        $toDisplay = date('Y-m-d', strtotime($data['date_to']));
+        break;        
+        	/**
+        	 * Check last week report
+        	 */
+            case "last week":         
+                    $lastWeekDate = $this->getLastWeekDate();                  
+                    $startDay = $lastWeekDate[0];
+                    $endDay = $lastWeekDate[1]; 
+                    $from = date('Y-m-d', $startDay);
+                    $to = date('Y-m-d', $endDay);
+                    $to = date('Y-m-d', strtotime($to . ' + 1 day'));
+                    $fromDisplay = $from;
+                    $toDisplay = date('Y-m-d', $endDay);
+                    break;
+            /** 
+             * Check today report.
+             */
+            case "today":
+                    $startDay = strtotime("-1 today midnight");
+                    $endDay = strtotime("-1 tomorrow midnight");
+                    $from = date('Y-m-d', $startDay);
+                    $to = date('Y-m-d', $endDay);
+                    $fromDisplay = date('Y-m-d', $startDay);
+                    $toDisplay = date('Y-m-d', $startDay);
+                    break;
+            /**
+             * Check last month report.
+             */
+            case "last month":          
+                $from = date('Y-m-01', strtotime('last month'));
+                $to = date('Y-m-t', strtotime('last month'));
+                $to = date('Y-m-d', strtotime($to . ' + 1 day'));
+                $fromDisplay = $from;
+                $toDisplay = date('Y-m-t', strtotime('last month'));
+                break;  
+                
+                case "current month":
+                    $from = date('Y-m-01');
+                    $to = date('Y-m-t');
+                    $to = date('Y-m-d', strtotime($to . ' + 1 day'));
+                    $fromDisplay = $from;
+                    $toDisplay = date('Y-m-t');
+                    break;
+                
+                
+                
+                default:
+            /**
+             *  Convert local date to magento db date.
+             */
+        }
+        /**
+         *  Check select filter is not equal to empty
+         */
+        if ($selectFilter == '') {
+			/**
+			 * From date as last month
+			 */
+            $from = date('Y-m-01');
+            $to = date('Y-m-t');
+            $to = date('Y-m-d', strtotime($to . ' + 1 day'));
+            $dbFrom = $from;
+            $dbTo = date('Y-m-t');
+        } else {
+            $dbFrom = Mage::getModel('core/date')->gmtDate(null, strtotime($from));
+            $dbTo = Mage::getModel('core/date')->gmtDate(null, strtotime($to));
+        }
+
+        $lastMonth = $lastWeek = $custom = $today = '';
+        /**
+         * Add filter for last month
+         */
+        if ($selectFilter == 'last month') {
+        $lastMonth = 'selected="selected"';
+        }      
+        /**
+         * Add filter for last week.
+         */
+        if ($selectFilter == 'last week') {
+        $lastWeek = 'selected="selected"';
+        }
+        /**
+         * Add filter for custom.
+         */
+        if ($selectFilter == 'custom') {
+        $custom = 'selected="selected"';
+        }  
+        /**
+         * Add filter for today.
+         */
+        if ($selectFilter == 'today') {
+        $today = 'selected="selected"';
+        }    
+        
+        if ($selectFilter == 'current month') {
+            $currentMonth = 'selected="selected"';
+        }
+        ?>  
+               <div class="mp_seller_sales_report_wr"><form class="mp_seller_sales_report" onsubmit="return validateDateForReport(this.date_from,this.date_to,this.select_filter)" name="orders" method="post" action="">
+                    <select name="select_filter" class="select_filter" id="select_filter">
+                        
+                         <option name="currentmonth" value="current month"  <?php 
+                        /**
+                         * Check select filter is equal to last month
+                         * if so display as last month
+                         */
+                         echo $currentMonth; ?>><?php 
+echo $this->__('Current month'); ?></option>
+                        <option name="lastmonth" value="last month"  <?php 
+                        /**
+                         * Check select filter is equal to last month
+                         * if so display as last month
+                         */
+                         echo $lastMonth; ?>><?php 
+echo $this->__('Last month'); ?></option>
+                        <option name="lastweek" value="last week"  <?php
+                        /**
+                         *  Check the select filter is equal to lastweek
+                         *  if so display select filter as Last Week
+                         */
+                         echo $lastWeek; ?>><?php 
+echo $this->__('Last Week'); ?></option>
+                        <option name="custom" value="custom" <?php
+                        /**
+                         *  Check the select filter is equal to custom
+                         *  if so display select filter as Custom
+                         */
+                         echo $custom; ?>><?php 
+echo $this->__('Custom'); ?></option>
+                        <option name="today" value="today" <?php
+                        /**
+                        *  Check the select filter is equal to today
+                        *  if so display select filter as Today
+                        */
+                        echo $today; ?>><?php 
+echo $this->__('Today'); ?></option>
+                    </select>
+                    <input type="text" name="date_from" class="txtbox" id="date_from" value="<?php
+                    /**
+                    *  Check the select filter is equal to empty value
+                    *  if so display the from date value from db
+                    *  else display the calculated from display value
+                    */
+                    if ($selectFilter == '') {
+                        echo date('m/d/Y', strtotime($dbFrom));
+                    } else {
+                        echo date('m/d/Y', strtotime($fromDisplay));
+                    }
+                    ?>" />
+                    <input type="text" name="date_to" class="txtbox" id="date_to" value="<?php
+                    /**
+                     *  Checking the select filter is empty value
+                     *  if so display the to date value from db
+                     *  else display the calculated to display value
+                     */
+                    if ($selectFilter == '') {
+                        echo date('m/d/Y', strtotime($dbTo));
+                    } else {
+                        echo date('m/d/Y', strtotime($toDisplay));
+                    }
+                    ?>" />
+                    <button type="submit" class="button multi_submit"  title="<?php echo $this->__('Submit') ?>" name="filter_submit" id="multi_submit" >
+                    <span><span><?php
+                    /**
+                     *  Display form submit option
+                     */
+                    echo $this->__('Submit') ?></span></span></button>
+                </form></div> </h3>
+                </div>
+                <?php
+                $id = Mage::getSingleton('customer/session')->getId();
+                /**
+                *  Retrieve group id and marketplace group id
+                */
+                    $groupId = Mage::getSingleton('customer/session')->getCustomerGroupId();
+                    $marketplace_groupId = Mage::helper('marketplace')->getGroupId();
+                    /**
+                     *  Check group id is equal to the market place group id
+                     *  if so display the from date value from db
+                     */
+                    if ($groupId == $marketplace_groupId) {
+                        $revenue = array();    
+                        /**
+                         * Get seller sales report.
+                         * 
+                         */                  
+                        $sellerProductCollection = $this->advancedSalesReportCollection($dbFrom, $dbTo, $id);
+                        foreach ($sellerProductCollection as $_sellerProductCollection) {
+                            $dateRevenue = Mage::getModel('core/date')->date(null, strtotime($_sellerProductCollection['created_at']));
+                            $dateRevenue = date('F j, Y', strtotime($dateRevenue));
+                            /**
+                             * Check date revenue is with in the array.
+                             */
+                            if (array_key_exists($dateRevenue, $revenue)) {
+                                $revenue[$dateRevenue] = $revenue[$dateRevenue] + $_sellerProductCollection['seller_amount'];
+                            } else {
+                                $revenue[$dateRevenue] = $_sellerProductCollection['seller_amount'];
+                            }
+                        }
+                        /**
+                         *  Calculating all days between from and to dates
+                         */
+                        $salesAllDays = array();
+                        $fromAllDays = strtotime($from);
+                        $toAllDays = strtotime($to);
+                        for ($currentSalesDay = $fromAllDays; $currentSalesDay < $toAllDays; $currentSalesDay += (60 * 60 * 24)) {
+                            $currentDayString = date('F j, Y', $currentSalesDay);
+                            $salesAllDays[$currentDayString] = 0;
+                        }
+                        $totalRevenue = array_sum($revenue);
+                        /**
+                         *  Assinging value to all days
+                         */
+                        foreach ($revenue as $key => $value) {
+                            $salesAllDays[$key] = $value;
+                        }
+                        $revenueDayData = '';
+                        /**
+                         * Get all days for seller.
+                         */
+                        foreach ($salesAllDays as $key => $value) {
+                            $keyValue = date('M j, Y', strtotime($key));                            
+                            $toolData= 'point { size: 6; shape-type: circle; fill-color: #2bc191}';
+                            $removeCurrencySymbol = str_replace(Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(),'',Mage::helper('core')->currency($value, true, false));
+                            $currencyValue = str_replace(',','',$removeCurrencySymbol);
+                            $revenueDayData.="data.addRow(['{$keyValue}', {$currencyValue}, '{$toolData}']);";
+                        }
+                    }?>
+              <div class="content_wr"><div id="sales_chart_div" style="width: 780px; height: 300px; margin:15px auto;"></div>
+                <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                <script type="text/javascript">
+                    google.load("visualization", "1", {packages: ["corechart"]});
+                    google.setOnLoadCallback(drawChart);
+                    function drawChart() {
+                        var data = new google.visualization.DataTable();
+                        var currencySymbol = '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol();?>';
+                        data.addColumn('string', '<?php echo $this->__("Date"); ?>');
+                        data.addColumn('number', '<?php echo $this->__("Sales"); ?>');
+                        data.addColumn({type: 'string', 'role': 'style'});
+                        <?php echo $revenueDayData; ?>
+                        var formatter = new google.visualization.NumberFormat({prefix: currencySymbol});
+                        formatter.format(data, 1);                     
+                        var options = {                        
+                            width: 700, height: 250,
+                            colors: ['#7d7d7d', '#7d7d7d'],
+                            areaOpacity: 0.1,
+                            vAxis: {title:'Sales',format: '<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getCurrentCurrencyCode())->getSymbol(); ?>###,###,###.00', textPosition: 'in', showTextEvery: 5, slantedText: false, titleTextStyle: {color: '#7d7d7d', fontSize: 12, italic: false, bold: true}, textStyle: {color: '#7d7d7d', fontSize: 10}},
+                            hAxis: {title: '<?php if ($selectFilter == '') {
+                                echo 'Current month';
+                              } else {
+                                  echo ucwords($selectFilter); 
+                              }?>', titleTextStyle: {color: '#7d7d7d', fontSize: 12, italic: false, bold: true}, textPosition: 'out', showTextEvery: 1, slantedText: false, textStyle: {color: '#7d7d7d', fontSize: 10}},                                                      
+                            chartArea: {left: 20, top: 30, width: "100%", height: "75%"},
+                            tooltip: {isHtml: true},
+                            legend: 'none',
+                            pointSize: 10,
+                            series: {
+                                  0: { pointShape: 'circle' }                                  
+                              }                            
+                        };
+                        var chart = new google.visualization.LineChart(document.getElementById('sales_chart_div'));
+                        chart.draw(data, options);
+                    }
+                </script>
+                <script type="text/javascript">
+                    decorateTable('my-product-table');
+                    // <![CDATA[
+                    Calendar.setup({
+                        inputField: 'date_from',
+                        ifFormat: '%m/%e/%y',
+                        button: 'special_from_date_trig',
+                        align: 'Bl',
+                        singleClick: true
+                    });
+        
+                    Calendar.setup({
+                        inputField: 'date_to',
+                        ifFormat: '%m/%e/%y',
+                        button: 'special_to_date_trig',
+                        align: 'Bl',
+                        singleClick: true
+                    });
+                    // ]]>
+                    var select = $("select_filter").getValue();
+                  
+                    $('select_filter').onsubmit = function() {
+                        if (select === 'custom') {
+        
+                            $('date_from').remove();
+                            $('date_to').remove();
+                        }
+                        else
+                        {
+        
+                            $('date_from').add();
+                            $('date_to').add();
+                        }
+                    };
+
+                    function validateDateForReport(from,to,select_filter){                               
+                    if(select_filter.value == 'custom'){                   
+                    var sDate = new Date(from.value);
+                    var eDate = new Date(to.value);
+                    if(sDate> eDate){
+                    alert("<?php echo Mage::helper('marketplace')->__('Please check the End Date is greater than the Start Date.'); ?>");
+                    return false;
+                    }  
+                    }
+                    return true;
+                    }
+                                   
+                </script>
+          </div> 
+          
+          
+
+
+
+          
+          

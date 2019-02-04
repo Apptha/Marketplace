@@ -1,0 +1,298 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Assign the posted values to variables like
+ * filter_status
+ * filter_product_type
+ * filter_id
+ * filter_name
+ * filter_quantity
+*/
+
+$filterQuantity = $this->getRequest()->getParam('filter_quantity');
+$filter_status = $this->getRequest()->getParam('filter_status');
+$filterProductType =  $this->getRequest()->getParam('filter_product_type');
+$filterId = $this->getRequest()->getParam('filter_id');
+$filterName = $this->getRequest()->getParam('filter_name');
+$filterPrice = $this->getRequest()->getParam('filter_price');
+?>
+<?php 
+/**
+ * Product assigning section
+*/
+?>
+<div class="account-login market_place_manage_products" id="market_place_manage_products">
+    <div class="page-title">
+        <h1 class="manage_products_head"><?php echo $this->__('Assign Products') ?></h1>
+    </div>
+    <div class="my-account-wrapper"> 
+    <button onclick="window.location='<?php echo Mage::helper('marketplace/url')->getAssignNewProductUrl(); ?>';" title="<?php
+     echo $this->__('Assign New Product'); ?>" class="button right mp_addnew_pdt"> 
+     <span><span><?php echo $this->__('Assign New Product'); ?> </span></span></button>
+
+    <form name="multiple_select" id="multiple_select" class="multiple_select" method="post" action="<?php echo $this->getmultiselectUrl(); ?>">
+    <div class="mp_action"><b><?php echo $this->__('Action'); ?> </b>
+    <select name="multi">
+        <option name="" value="Select an option"><?php echo Mage::helper('marketplace')->__('Select an option'); ?></option>
+        <option name="delete" value="delete"><?php echo Mage::helper('marketplace')->__('Delete'); ?></option>      
+    </select>    
+    <button type="submit" class="button class="multiple_select"" onclick="document.getElementById('multi_submit').value='1'; " title="<?php echo $this->__('Submit') ?>" name="multi_submit" id="multi_submit" >
+    <span>
+    <span><?php echo Mage::helper('marketplace')->__('Submit') ?></span>
+    </span></button>       
+    </div>
+    
+<div style="clear: both;">    
+</div>       
+<?php
+echo $this->getMessagesBlock()->getGroupedHtml(); 
+$_products = $this->getCollection(); 
+/**
+ * Assign serial no value 1 
+ */
+$snum = 1;
+$currentPage = Mage::getBlockSingleton('page/html_pager')->getCurrentPage();
+/**
+ * Set page size
+ */
+$getPageSize = $_products->getPageSize();
+if ($currentPage >= 2) {
+    $calPage = ceil($_products->getSize() / $getPageSize);
+    /**
+     * Check current page with calculated page
+     */
+    if ($currentPage <= $calPage) {
+        $snum = abs(($currentPage * $getPageSize) - $getPageSize) + 1;
+    } else {
+        $snum = abs(($calPage * $getPageSize) - $getPageSize) + 1;
+    }
+} else {
+/**
+ * Set sno value 1
+ */
+   $snum = 1;
+} 
+?>
+<?php 
+/**
+ *  Display manage assign product details for seller
+ */
+ ?>
+   <table class="data-table my-product-table market_place_manage_products_table" id="my-product-table">
+    <col width="1" />
+    <col width="1" />
+    <!-- Empty column -->
+    <col />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <thead>
+        <tr>
+            <th><?php echo Mage::helper('marketplace')->__('#') ?></th>            
+            <th class="mtext_left"><?php echo Mage::helper('marketplace')->__('Id') ?></th>
+            <th colspan="2" width="33%" class="mtext_left"><?php echo Mage::helper('marketplace')->__('Product Name') ?></th>
+            <th><?php echo Mage::helper('marketplace')->__('Quantity') ?></th>
+            <th><?php echo Mage::helper('marketplace')->__('Price') ?></th>
+            <th width="12%"><?php echo Mage::helper('marketplace')->__('Type') ?></th>
+            <th width="12%"><?php echo Mage::helper('marketplace')->__('Status') ?></th>
+            <th class="no-border-right"><?php echo Mage::helper('marketplace')->__('Action') ?></th>
+        </tr>
+        <?php
+        /**
+        * Display filter functionality
+        */
+        ?>
+        <tr class="mp_filter_function">
+            <th></th>
+            <th class="mtext_left"><input type="text" value="<?php echo $filterId; ?>" name="filter_id" style="width:30px;" id="filter_id"/></th>
+             <th colspan="2" width="33%" class="mtext_left"><input type="text" value="<?php echo $filterName; ?>" name="filter_name" id="filter_name"/></th>           
+             <th><input type="text" name="filter_quantity" id="filter_quantity" value="<?php echo $filterQuantity; ?>"/></th>
+             <th><input type="text" value="<?php echo $filterPrice; ?>" name="filter_price" id="filter_price"/></th>
+                     <?php 
+            /**
+             *  Initilize product types from admin
+             */
+            $selectedType = Mage::helper('marketplace')->getSelectedPrdouctType();
+            /**
+             *  Assigning product types to array variale
+            */
+            $selectedProductType = explode(",", $selectedType);
+            ?>
+        
+           <th width="12%">                
+                <select name="filter_product_type"  onchange="this.form.submit();">
+                 <option name="select" value=""><?php echo Mage::helper('marketplace')->__('Select a type'); ?></option>
+                    <?php foreach ($selectedProductType as $value) { ?>
+                                    <option value="<?php echo $value; ?>" <?php
+                                    /**
+                                     * Check filter product type equal to value
+                                    */
+                                     if($filterProductType == $value){
+                                         echo 'selected="selected"'; 
+                                     } ?>><?php
+                                        $productTypeCaps = $this->__($value);
+                                        echo ucfirst($productTypeCaps);
+                                        ?></option>    
+                                <?php } ?>                    
+                </select>                
+            </th> 
+            <th width="12%">                
+                <select name="filter_status"  onchange="this.form.submit();">
+                    <option name="select" value="0"><?php echo Mage::helper('marketplace')->__('Select a status'); ?></option>
+                    <option name="enabled" value="1" <?php 
+                    /**
+                     * Check filter status is equal to 1
+                     * if so display as enabled
+                    */
+                    if($filter_status==1){
+                        ?> selected="selected" <?php 
+} ?>><?php
+ echo Mage::helper('marketplace')->__('Enabled'); ?></option>  
+                    <option name="disabled" value="2"  <?php
+                    /**
+                     * Check filter status is equal to 2
+                     * if so display as Disabled
+                    */
+                     if($filter_status==2){
+                        ?> selected="selected" <?php 
+} ?>><?php 
+echo Mage::helper('marketplace')->__('Disabled'); ?></option> 
+                </select>                
+            </th>
+            <th class="a-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+        /**
+         * check the product size has been set
+         * if it is display the product information like 
+         * product name
+         * product category
+        */
+        if($_products->getSize()): 
+        foreach ($_products as $_product): ?>
+        <tr>            
+            <td><input type="checkbox" name="id[]" id="id" value="<?php echo $_product->getId(); ?>"/></td>
+            <td class="mtext_left"><em><?php echo $_product->getId(); ?></em></td>
+           <td class="img_td">      
+           <img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(55,45); ?>" width="55" height="45" alt="<?php
+            echo $_product->getName(); ?>" title="<?php
+             echo $_product->getName(); ?>" />                     
+           </td>
+            <td class="mtext_left">
+            <span class="get_pdct_name"><?php echo $_product->getName(); ?></span>        
+            <?php
+            $categoryIds = $_product->getCategoryIds();            
+            $count = count($categoryIds);
+            $cat = Mage::getModel('catalog/category')->getCollection()
+                    ->addAttributeToSelect('category_id');
+            $incCat = 1;
+            if($count>0){
+            echo $this->__('(');
+            foreach($categoryIds as $_categoryIds){
+               $cat = Mage::getModel('catalog/category');
+               $cat->load($_categoryIds);
+               
+               ?>
+              <a href="<?php echo $cat->getUrl(); ?>"><?php
+               echo $cat->getName(); ?></a> 
+               <?php               
+               if($incCat != $count){
+                   echo ' ,'; 
+               }
+               $incCat = $incCat + 1;
+               
+             }
+              echo $this->__(')');
+             ?>
+            <?php } ?>   
+            </td>
+            <td width="14%"> <em><?php
+            /**
+             * check the product is saleable
+             * if it is display the available product quantity
+             * else display 'out of stock' message
+            */
+            if($_product->isSaleable()): ?>
+<?php echo $val = (int) Mage::getModel('cataloginventory/stock_item')->loadByProduct($_product)->getQty();?>
+<?php else: ?><?php 
+echo $this->__('Out of Stock') ?><?php
+ endif; ?></em></td>
+            <td><em><?php echo Mage::helper('core')->currency($_product->getPrice(),true,false); ?></em></td>
+            <td width="12%"><?php echo ucfirst($_product->getTypeId()); ?></td> 
+            <td width="12%"><em><span><?php 
+            /**
+             * Check the product status is equal to 1
+             * if so display as enabled
+             * if not display as disabled
+            */
+            if($_product->getStatus()==1):
+              echo Mage::helper('marketplace')->__('Enabled'); 
+            else:  
+            echo '<em>'.Mage::helper('marketplace')->__('Disabled').'</em>'; 
+            endif; ?></span></em></td>
+            <td>
+                <em>
+                <span class="nobr"><a href="<?php echo Mage::getUrl('marketplace/sellerproduct/addassignproduct/',array('pid' => $_product->getId())); ?>" > 
+                <img src="<?php echo $this->getSkinUrl('marketplace/images/edit.png') ?>" alt="" title="<?php
+                /**
+                 * Display assigned product edit option
+                 */
+                 echo Mage::helper('marketplace')->__('Edit') ?>"/> </a>               
+               <a href="<?php echo Mage::getUrl('marketplace/product/delete/',array('id' => $_product->getId(),'is_assign' =>1)); ?>" onclick="return confirm('<?php
+               /**
+                * confirming  assigned product Delete
+                */
+               echo Mage::helper('marketplace')->__('Are you sure want to delete?'); ?>');" > 
+                <img src="<?php echo $this->getSkinUrl('marketplace/images/delete.png') ?>" alt="" title="<?php
+                /**
+                 * Assigned product delete option
+                 */
+                echo Mage::helper('marketplace')->__('Delete') ?>"/> </a>
+                </span>
+                </em>
+            </td>
+        </tr>
+        <?php $snum++; endforeach; ?>
+    </tbody>
+    <?php 
+    /**
+     * If the product size is not set display as you have no product
+     */
+    else: ?>
+    <p><tr class="mtext_center"><td colspan="10" class="no_product_content"><?php echo $this->__('You have no product.'); ?></td></tr></p>
+ <?php endif ?>
+</table>   
+<script type="text/javascript">decorateTable('my-product-table');</script>
+   <?php echo $this->getPagerHtml(); ?>
+</div></form></div>

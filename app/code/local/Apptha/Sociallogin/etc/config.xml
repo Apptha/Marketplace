@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.0
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2015 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+-->
+<config>
+<modules> 
+        <Apptha_Sociallogin>
+        <version>0.1.5</version>
+        </Apptha_Sociallogin>
+    </modules>
+    <frontend> 
+     <routers>
+            <sociallogin> 
+                <use>standard</use>
+                <args> 
+                    <module>Apptha_Sociallogin</module>
+                    <frontName>sociallogin</frontName>
+                </args>
+            </sociallogin>
+     </routers>
+        <layout>
+            <updates>
+                <sociallogin>
+                    <file>sociallogin.xml</file>
+                </sociallogin>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Apptha_Sociallogin>
+                    <files>
+                        <default>Apptha_Sociallogin.csv</default>
+                    </files>
+                </Apptha_Sociallogin>
+            </modules>
+        </translate>
+        </frontend>
+    <adminhtml>
+		<acl>
+          <resources>
+          <all>
+          <title>Allow Everything</title>
+          </all>
+          <admin>
+          <children>
+          <Apptha_Sociallogin>
+          <title>Sociallogin Module</title>
+          <sort_order>10</sort_order>
+          </Apptha_Sociallogin>
+          </children>
+          </admin>
+          </resources>
+          </acl>
+          <layout>
+     <updates>
+          <sociallogin>
+          <file>sociallogin.xml</file>
+          </sociallogin>
+          </updates>
+     </layout>
+                <translate>
+            <modules>
+                <Apptha_Sociallogin>
+                    <files>
+                        <default>Apptha_Sociallogin.csv</default>
+                    </files>
+                </Apptha_Sociallogin>
+            </modules>
+        </translate>
+    </adminhtml>   
+    <global>
+        <models>
+            <sociallogin>
+                <class>Apptha_Sociallogin_Model</class>
+                <resourceModel>sociallogin_mysql4</resourceModel>
+            </sociallogin>
+        </models>
+        <resources>
+             <sociallogin_setup>
+                <setup>
+                    <module>Apptha_Sociallogin</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </sociallogin_setup>
+            <sociallogin_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </sociallogin_write>
+            <sociallogin_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </sociallogin_read>
+        </resources>
+        <blocks>
+            <sociallogin>
+                <class>Apptha_Sociallogin_Block</class>
+            </sociallogin>
+        </blocks>
+        <helpers>
+            <sociallogin>
+                <class>Apptha_Sociallogin_Helper</class>
+            </sociallogin>
+        </helpers>
+        <rewrite>
+        <apptha_sociallogin_login>
+				<from><![CDATA[ #^/customer/account/login/#  ]]>
+                </from>
+				<to>/sociallogin/index/login/</to>
+		</apptha_sociallogin_login>
+           </rewrite>
+              <rewrite>
+        <apptha_sociallogin_login>
+        	<from><![CDATA[ #^/customer/account/login//#  ]]>
+                </from>
+            <to>/sociallogin/index/login/</to>
+		</apptha_sociallogin_login>
+           </rewrite>
+            <rewrite>
+              <apptha_sociallogin_create>
+                <from><![CDATA[ #^/customer/account/create/#  ]]></from>
+                <to>/sociallogin/index/create/</to>
+            </apptha_sociallogin_create>
+            </rewrite>
+       <events>
+    <!--   <controller_action_predispatch_routename_controller_method>
+        <observers>
+          <module>
+            <class>module/observer</class>
+            <method>checkCaptcha</method>
+          </module>
+        </observers>
+      </controller_action_predispatch_routename_controller_method> -->
+       <controller_action_predispatch_sociallogin_index_createpost>
+        <observers>
+          <sociallogin>
+            <class>sociallogin/observer</class>
+            <method>checkCaptchaforcreate</method>
+          </sociallogin>
+        </observers>
+      </controller_action_predispatch_sociallogin_index_createpost>
+      <controller_action_predispatch_sociallogin_index_customerloginpost>
+        <observers>
+          <sociallogin>
+            <class>sociallogin/observer</class>
+            <method>checkCaptcha</method>
+          </sociallogin>
+        </observers>
+      </controller_action_predispatch_sociallogin_index_customerloginpost>
+       <controller_action_predispatch_sociallogin_index_forgotPasswordPost>
+        <observers>
+          <sociallogin>
+            <class>sociallogin/observer</class>
+            <method>checkCaptchaforgetpassword</method>
+          </sociallogin>
+        </observers>
+      </controller_action_predispatch_sociallogin_index_forgotPasswordPost>
+    </events>
+    </global>
+    <default>
+          <sociallogin>
+        <general>
+          <enable_redirect>1</enable_redirect>
+         </general>
+    	</sociallogin>
+      </default>
+</config>

@@ -1,0 +1,93 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<!DOCTYPE html>
+<!--[if IE 9 ]>    <html lang="en" id="top" class="no-js ie9"> <![endif]-->
+<!--[if lt IE 7 ]> <html lang="en" id="top" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" id="top" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" id="top" class="no-js ie8"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" id="top" class="no-js"> <!--<![endif]-->
+
+<head><?php echo $this->getChildHtml('head') ?>
+</head>
+<body
+<?php
+$bodyTheme='';
+$bodyTheme=Mage::getStoreConfig("marketplace/marketplace/color_theme");?>
+<?php echo $this->getBodyClass()?' class="'.$this->getBodyClass().'"':'' ?>>
+<?php echo $this->getChildHtml('after_body_start') ?>
+<div class="wrapper">
+    <?php echo $this->getChildHtml('global_notices') ?>
+<div class="page">
+<?php echo $this->getChildHtml('header') ?>
+        <div class="main-container col3-layout"><div class="main">
+                <?php echo $this->getChildHtml('breadcrumbs') ?>
+                <div class="col-wrapper">
+                    <?php // This left_first block will display above the main content on smaller viewports ?>
+                    <?php if ($_leftContent = $this->getChildHtml('left_first')): ?>
+                        <div class="col-left sidebar col-left-first"><?php echo $_leftContent;   ?></div>
+                    <?php endif; ?>
+                    <div class="col-main">
+                        <?php echo $this->getChildHtml('global_messages') ?>
+                        <?php echo $this->getChildHtml('content') ?></div>
+                    <div class="col-left sidebar"><?php echo $this->getChildHtml('left') ?></div>
+                </div>
+                <div class="col-right sidebar"><?php echo $this->getChildHtml('right') ?></div>
+            </div></div>
+        <?php echo $this->getChildHtml('footer_before') ?>
+        <?php echo $this->getChildHtml('footer') ?>
+        <?php echo $this->getChildHtml('global_cookie_notice') ?>
+        <?php echo $this->getChildHtml('before_body_end') ?>
+    </div></div>
+<?php echo $this->getAbsoluteFooter() ?>
+</body>
+</html>
+<script>
+var $jq=jQuery.noConflict();
+$jq(document).ready(function(){
+	$jq("body").addClass('<?php echo $bodyTheme?>');
+	
+});
+</script>
+<?php $colorPicker=Mage::getStoreConfig("marketplace/marketplace/color_picker");
+if($colorPicker){?>
+<script>
+var $jq=jQuery.noConflict();
+$jq(document).ready(function(){
+	var id= localStorage.getItem('currenttheme');
+	if(id==null){
+		id='<?php echo $bodyTheme?>';
+		}
+	$jq("body").removeClass('<?php echo $bodyTheme?>');
+	$jq("body").addClass(id);
+});
+</script>
+<?php }?>
+

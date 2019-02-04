@@ -1,0 +1,58 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/* @var $this Mage_Reports_Block_Product_Viewed */
+?>
+<?php if ($_products = $this->getRecentlyViewedProducts()): ?>
+<div class="block block-list block-viewed">
+    <div class="block-title">
+        <strong><span><?php echo $this->__('Recently Viewed Products') ?></span></strong>
+    </div>
+    <div class="block-content">
+        <ol id="recently-viewed-items" class="mini-products-list">
+        <?php foreach ($_products as $_item): ?>
+            <li class="item">
+                <a href="<?php echo $this->getProductUrl($_item) ?>">
+                    <span class="product-image"><img src="<?php echo $this->helper('catalog/image')->init($_item, 'thumbnail')->resize(50, 50)->setWatermarkSize('30x10'); ?>" width="50" height="50" alt="<?php
+                     echo $this->escapeHtml($this->getProductName()) ?>" /></span>
+                </a>
+                <div class="product-details">
+                    <p class="product-name">
+                        <a href="<?php echo $this->getProductUrl($_item) ?>">
+                            <?php echo $this->helper('catalog/output')->productAttribute($_item, $_item->getName() , 'name') ?>
+                        </a>
+                    </p>
+                </div>
+            </li>
+        <?php endforeach; ?>
+        </ol>
+        <script type="text/javascript">decorateList('recently-viewed-items');</script>
+    </div>
+</div>
+<?php endif; ?>

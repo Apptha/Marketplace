@@ -1,0 +1,196 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$_product    = $this->getProduct();
+$childIds=array();
+$configurableProduct = Mage::getModel('catalog/product')->load($_product->getId());
+$typeId=$configurableProduct->getTypeId();
+$isAssignProduct=$configurableProduct->getIsAssignProduct();
+
+if($typeId=="configurable" ){
+$childProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null,$configurableProduct);
+foreach($childProducts as $child) {
+	 $childId= $child->getId();
+	$childProductData=Mage::getModel('catalog/product')->load($childId);
+	$childIds[$childId]=$childProductData->getConfigAssignSimpleId();
+}
+
+
+
+}
+
+if($_product->isConfigurable()){
+	$_attributes = Mage::helper('core')->decorateArray($this->getAllowAttributes());
+	$_jsonConfig = $this->getJsonConfig();
+	$_renderers = $this->getChild('attr_renderers')->getSortedChildren();
+	
+	?>
+	<?php if ($_product->isSaleable() && count($_attributes)):?>
+	    <dl>
+	    <?php foreach($_attributes as $_attribute): ?>
+	        <?php
+	        $_rendered = false;
+	        foreach ($_renderers as $_rendererName):
+	            $_renderer = $this->getChild('attr_renderers')->getChild($_rendererName);
+	            if (method_exists($_renderer, 'shouldRender') && $_renderer->shouldRender($_attribute, $_jsonConfig)):
+	                $_renderer->setProduct($_product);
+	                $_renderer->setAttributeObj($_attribute);
+	                echo $_renderer->toHtml();
+	                $_rendered = true;
+	                break;
+	            endif;
+	        endforeach;
+	
+	        if (!$_rendered):
+	        ?>
+	        <dt><label class="required"><em>*</em><?php echo $_attribute->getLabel() ?></label></dt>
+	        <dd<?php if ($_attribute->decoratedIsLast){?> class="last"<?php }?>>
+	            <div class="input-box">
+	                <select onchange="spConfig.getIdOfSelectedProduct()" name="super_attribute[<?php echo $_attribute->getAttributeId() ?>]" id="attribute<?php echo $_attribute->getAttributeId() ?>" class="required-entry super-attribute-select">
+	                    <option value=""><?php echo $this->__('Choose an Option...') ?></option>
+	                  </select>
+	              </div>
+	        </dd>
+	        <?php endif; ?>
+	    <?php endforeach; ?>
+	    </dl>
+	 <script type="text/javascript">
+	        var spConfig = new Product.Config(<?php echo $_jsonConfig ?>);
+	        spConfig.getIdOfSelectedProduct = function () {                   
+	        	$$("p.assign_simple_product").each(Element.hide);
+	        	$$("form.assign_simple_product").each(Element.hide);
+	            var existingProducts = new Object();
+	            for (var i = this.settings.length - 1; i >= 0; i--) {
+	                var selected = this.settings[i].options[this.settings[i].selectedIndex];
+	                if (selected.config) {
+	                    for (var iproducts = 0; iproducts < selected.config.products.length; iproducts++) {
+	                        var usedAsKey = selected.config.products[iproducts] + "";
+	                        if (existingProducts[usedAsKey] == undefined) {
+	                            existingProducts[usedAsKey] = 1;
+	                        } else {
+	                            existingProducts[usedAsKey] = existingProducts[usedAsKey] + 1;                            
+	                        }
+	                    }
+	                }
+	            }
+	            for (var keyValue in existingProducts) {
+	                for (var keyValueInner in existingProducts) {
+	                    if (Number(existingProducts[keyValueInner]) < Number(existingProducts[keyValue])) {
+	                        delete existingProducts[keyValueInner];                        
+	                    }
+	                }
+	            }
+	            var sizeOfExistingProducts = 0;
+	            var currentSimpleProductId = "";
+	            for (var keyValue in existingProducts) {
+	                currentSimpleProductId = keyValue;
+	                sizeOfExistingProducts = sizeOfExistingProducts + 1
+	            }            
+	            if (sizeOfExistingProducts == 1) {                             
+	            updateConfigurableProductComparePrice(currentSimpleProductId); 
+	            }
+	        } 
+	        function updateConfigurableProductComparePrice(currentSimpleProductId){
+	        	var assignproduct='<?php echo $isAssignProduct?>';
+	        	if(assignproduct==1){
+	        	var complex = <?php echo json_encode($childIds); ?>;
+	        	currentSimpleProductId=complex[currentSimpleProductId];
+	        	}
+				var configSelectionOptionFlag = 1;
+	        	$$('select[class*="super-attribute-select"').each(function(configOption) { 
+	            if(configOption.value == ''){
+	            configSelectionOptionFlag = 0;    
+	            }       	       	
+	        	});              
+	
+	            if(configSelectionOptionFlag == 1){
+	        	$$("p.assign_simple_product").each(Element.hide);
+	        	$$("p.simple_id_"+currentSimpleProductId).each(Element.show);  
+	        	$$("form.assign_simple_product").each(Element.hide);
+	        	$$("form.simple_id_"+currentSimpleProductId).each(Element.show);
+	            }                	  
+	        }	       	        
+	            
+	    </script>
+
+<script type="text/javascript">	    
+<?php 
+if(Mage::getStoreConfig('configswatches/general/enabled')){
+?>
+Product.Config.prototype.handleSelectChange = function(element) {
+	$$("p.assign_simple_product").each(Element.hide);
+	$$("form.assign_simple_product").each(Element.hide);
+	var existingProductsValue = new Object();
+	for (var i = this.settings.length - 1; i >= 0; i--) {
+		var selected = this.settings[i].options[this.settings[i].selectedIndex];
+		if (selected.config) {
+			for (var iproducts = 0; iproducts < selected.config.products.length; iproducts++) {
+				var usedAsKey = selected.config.products[iproducts] + "";
+				if (existingProductsValue[usedAsKey] == undefined) {
+					existingProductsValue[usedAsKey] = 1;
+				} else {
+					existingProductsValue[usedAsKey] = existingProductsValue[usedAsKey] + 1;
+				}
+			}
+		}
+	}
+	for (var keyValue in existingProductsValue) {
+		for (var keyValueInner in existingProductsValue) {
+			if (Number(existingProductsValue[keyValueInner]) < Number(existingProductsValue[keyValue])) {
+				delete existingProductsValue[keyValueInner];
+			}
+		}
+	}
+	var sizeOfExistingProducts = 0;
+	var currentSimpleProductId = "";
+	for (var keyValue in existingProductsValue) {
+		currentSimpleProductId = keyValue;
+		sizeOfExistingProducts = sizeOfExistingProducts + 1
+	}
+	if (sizeOfExistingProducts == 1) {
+		updateConfigurableProductComparePrice(currentSimpleProductId);
+	}
+
+	this.configureElement(element);
+    this.configureObservers.each(function(funct) {
+        funct(element);
+    });
+};
+<?php 	
+}
+?>
+</script>	    
+	    
+	    
+	    <?php echo $this->getChildHtml('after') ?>
+	<?php endif;
+}
+?>

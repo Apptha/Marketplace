@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ * 
+ */
+-->
+<config>
+	<acl>
+		<resources>
+			<all>
+				<title>Allow Everything</title>
+			</all>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<config>
+								<children>
+									<marketplace translate="title" module="marketplace">
+										<title>marketplace Section</title>
+									</marketplace>
+								</children>
+							</config>
+						</children>
+					</system>
+					<!-- Add Marketplace children section -->
+					<marketplace module="marketplace">
+						<title>Marketplace</title>
+						<children>
+							<!-- Add Manage Sellers -->
+							<manageseller module="marketplace">
+								<title>Manage Sellers</title>
+							</manageseller>
+							<!-- Add Seller Orders -->
+							<order module="marketplace">
+								<title>Seller Orders</title>
+							</order>
+							<!-- Add Commission detail -->
+							<commission module="marketplace">
+								<title>Commission detail</title>
+							</commission>
+							<!-- Seller Products -->
+							<manage_products module="marketplace">
+								<title>Seller Products</title>
+							</manage_products>
+							<!-- Add Review and Ratings -->
+							<sellerreview module="marketplace">
+								<title>Review and Ratings</title>
+							</sellerreview>
+							<!-- Add Home Page Slider -->
+							<bannerslider module="marketplace">
+								<title>Home Page Slider</title>
+							</bannerslider>
+							<!-- Add Configuration -->
+							<configuration module="marketplace">
+								<title>Configuration</title>
+							</configuration>
+						</children>
+					</marketplace>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>
